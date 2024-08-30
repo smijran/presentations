@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Organizing chaos</h1>
+					<h3>Structured Concurrency</h3>
+				</section>
+				<section>
+					<h2>Konrad Szałkowski</h2>
+					<img data-src="konrad.jpg" style="height:200px;" />
+					<div>Java explorer, performance tinkerer</div> 
+					<div style="font-style: italic;">Dreams of marrying GPUs and Java</div>
+				</section>
+				<section>
+					<section>
+						<div style="font-style:italic;">This story cannot be told differently</div>
+					</section>
+					<section>
+						<img data-src="civ.gif"/>
+					</section>
+					<section>
+						<h3>First programming languages:</h2>
+						<ul>
+							<li>COBOL</li>
+							<li>FORTRAN</li>
+							<li>BASIC</li>
+						</ul>
+					</section>
+					<section>
+						And they were good
+					</section>
+					<section>
+						<div>Until HIM showed up</div>
+						<img src="https://dijkstrascry.com/sites/default/files/Dijkstra_career.jpg" style="height:80%;" />
+					</section>
+					<section>
+						<h2>GOTO is harmful</h2>
+					</section>
+					<section>
+						<div>But why?</div>
+					</section>
+					<section>
+						<div>The problem is order and control</div>
+					</section>
+					<section>
+						<div>Programs in BASIC could be simple</div>
+						<pre>
+							<code data-trim>
+								10 PRINT "Hello World!"
+								20 PRINT 2 * 2
+								30 PRINT "JDD" ;
+								40 PRINT " 2024!"
+							</code>
+						</pre>
+					</section>
+					<section>
+						<div>But one can write something like this</div>
+						<pre>
+							<code data-trim>
+								10 PRINT "START"
+								20 INPUT "Guess an operation."
+								30 INPUT "Enter a number to check result (1-3): ", N
+								40 IF N = 1 THEN GOTO 300
+								50 IF N = 2 THEN PRINT "Result of operation is 8" : GOTO 100
+								60 IF N = 3 THEN GOTO 200
+								70 GOTO 400
+								80 PRINT "END"
+								90 END
+								100 GOTO 300
+								200 PRINT "Result of operation is 7"
+								210 GOTO 100
+								300 PRINT "Result of operation is 9"
+								310 GOTO 70
+								400 PRINT "Invalid choice"
+								410 GOTO 70
+							</code>
+						</pre>
+					</section>
+					<section>
+						<img src="program_flow.png" style="height:80%;" />
+					</section>
+					<section >
+						<div>With great power comes great responsibility</div>
+						<div class="fragment">Responsibility for others - reading your code</div>
+					</section>
+					<section>
+						<div>Dijkstra then proposed</div>
+						<div class="fragment" style="font-style:italic;">Structured programing</div>
+					</section>
+					<section>
+						<div>Three simple constructs</div>
+						<figure class="fragment" style="display: inline-block; padding-right: 20px;">
+							<img src="if.svg" style="height:300px;" />
+							<figcaption>
+								Conditional
+							</figcaption>
+						</figure>
+						<figure class="fragment" style="display: inline-block; padding-right: 20px;">
+							<img src="loop.svg" style="height:300px;">
+							<figcaption>
+								Loop
+							</figcaption>
+						</figure>
+						<figure class="fragment" style="display: inline-block;">
+							<img src="function_call.svg" style="height:300px;">
+							<figcaption>
+								Function call
+							</figcaption>
+						</figure>
+					</section>
+					<section>
+						<div class="fragment">This gave us sense of <strong>predictability</strong></div>
+						<div class="fragment">This gave us sense of <strong>structure</strong></div>
+						<div class="fragment">This gave us sense of <strong>order</strong></div>
+					</section>
+					<section>
+						<div>But was it enough?</div>
+					</section>
+					<section>
+						<figure>
+							<img src="function_with_goto.svg" style="height:300px" />
+							<figcaption>
+								What about of functions with goto calls?
+							</figcaption>
+						</figure>
+					</section>
+					<section>
+						<div>;(</div>
+					</section>
+					<section>
+						<div>Java does not have GOTO</div>
+						<div>Ufff</div>
+					</section>
+					<section>
+						<div>What about exceptions?</div>
+						<div>What about labels?</div>
+					</section>
+					<section>
+						<div>They are cumbersome</div>
+						<div class="fragment">But do not cause problems with reasoning</div>
+					</section>
+					<section>
+						<div>You are not having this</div>
+						<img src="function_with_goto.svg" style="height:300px" />
+					</section>
+					<section>
+						<div>Instead of this</div>
+						<img src="straight.svg" style="height:300px" />
+					</section>
+				</section>
+				<section>
+					<section>
+						Years has passed
+					</section>
+					<section>
+						We learned to work with structural programming
+					</section>
+					<section>
+						Technology has grown
+					</section>
+					<section>
+						<div>Memory:</div>
+						<div>From 8 MBs of RAM in my 1995's machine</div>
+						<div>To 32GB in this laptop</div>
+					</section>
+					<section>
+						<div>CPUs:</div>
+						<div>From 1 core - 126.5 MIPS in 1995</div>
+						<div>To 16 cores - 70000 MIPS - this laptop</div>
+					</section>
+					<section>
+						<div>It was not easy to grasp</div>
+					</section>
+					<section>
+						<div>We started to write concurrent programs</div>
+						<div class="fragment">We realized concurrency is messy</div>
+						<div class="fragment">However it helped to be more efficient</div>
+					</section>
+					<section>
+						<div>We made our programs use every core</div>
+						<div class="fragment">But it was not enough for us</div>
+					</section>
+					<section>
+						<div>We started to think of how to get MOAR threads</div>
+						<div class="fragment">Go - goroutines</div>
+						<div class="fragment">Kotlin - coroutines</div>
+						<div class="fragment">Java 21 - Virtual Threads</div>
+					</section>
+					<section>
+						<div>There is no free lunch</div>
+					</section>
+					<section>
+						<div>What can you tell about this code?</div>
+						<pre class="fragment">
+							<code data-trim>
+						        Thread.ofVirtual().name("Kawabanga")
+						                .start(() -> somethingNeedsToBeMade());
+
+						        Thread.ofVirtual().name("Chumbawamba")
+						                .start(() -> evenMoreThingsNeedsToBeMade());
+							</code>
+						</pre>
+						<div class="fragment">Was it successful?</div>
+						<div class="fragment">What was the result?</div>
+					</section>
+					<section>
+						<img src="here_we_go_again.png">
+					</section>
+					<section>
+						<div>They came out:</div>
+						<div>
+							<figure class="fragment" style="display: inline-block; padding-right: 20px;">
+								<img src="https://media.licdn.com/dms/image/C4E03AQEpdzcxvB4fRw/profile-displayphoto-shrink_800_800/0/1517713070521?e=1724889600&v=beta&t=nGmEz87Ehk_UI_f--ICbkH6ocgPLLfmZgb9btXR6Lc4" style="height:200px">
+								<figcaption>Martin Sustrik</figcaption>
+							</figure>
+							<figure class="fragment" style="display: inline-block; padding-right: 20px;">
+								<img src="https://vorpus.org/static/cropped-portrait.jpg" style="height:200px"/>
+								<figcaption>Nathaniel J Smith</figcaption>
+							</figure>
+							<figure class="fragment" style="display: inline-block;">
+								<img src="https://media.licdn.com/dms/image/C4D03AQHce1aCNOXGBw/profile-displayphoto-shrink_800_800/0/1516269565504?e=1726099200&v=beta&t=rS3m4eChtCPMehx6vJfw7vftc6BHUCnFuAICmZfBiPk" style="height:200px">
+								<figcaption>Roman Elizarov</figcaption>
+							</figure>
+						</div>
+					</section>
+					<section>
+						<div>They came to the same idea:</div>
+					</section>
+					<section>
+						<div>Go/async is new GOTO</div>
+						<figure>
+							<img src="straight_and_deviation.svg" style="height:300px" />
+						</figure>
+					</section>
+					<section>
+						<div>Remedy: Structured Concurrency</div>
+						<small class="fragment">Put parralel tasks into structure/blocks to make reasoning about them possible</small>
+					</section>
+					<section>
+						<div>Why?</div>
+						<ol>
+							<li class="fragment">Race conditions</li>
+							<li class="fragment">Deadlocks</li>
+							<li class="fragment">Starvations</li>
+							<li class="fragment">Ordering problems</li>
+							<li class="fragment">...</li>
+						</ol>
+					</section>
+					<section>
+						<div>This allows you to answer:</div>
+						<ul>
+							<li class="fragment">Has any of threads failed?</li>
+							<li class="fragment">Was any of threads already successful?</li>
+							<li class="fragment">And many more ...</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h1>Java Structured Concurrency</h1>
+					</section>
+					<section>
+						<div>We are people 30+</div>
+						<div class="fragment">We we want to meet together</div>
+						<div class="fragment">There are 5 of us</div>
+					</section>
+					<section>
+						<div>
+							With Java 21...  
+						</div>
+					</section>
+					<section>
+						<div>Meeting simulation</div>
+					</section>
+					<section>
+						<div>Lets play CS</div>
+					</section>
+					<section>
+						<div>Scopes can form tree</div>
+						<div>Lets play football</div>
+					</section>
+					<section>
+						<div>We can even throttle</div>
+						<div>https://github.com/japplis/Virtually<div>
+					</section>
+
+				</section>
+				<section>
+					<section>
+						<h1>Scope values</h1>
+					</section>
+					<section>
+						<div>We want to have thread wide values</div>
+					</section>
+					<section>
+						<div>
+							<img src="https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/maxresdefault-1605111824.jpg?crop=0.782xw:0.695xh;0.218xw,0.0826xh&resize=1200:*">
+						</div>
+					</section>
+					<section>
+						<div>ThreadLocals have problems:</div>
+						<ol>
+							<li class="fragment">Mutability</li>
+							<li class="fragment">Lifecycle</li>
+							<li class="fragment">Inheritance</li>
+						</ol>
+					</section>
+					<section>
+						TODO przykład z lodówką i stolikiem do meczu
+					</section>
+				</section>
+				<section>
+					<section>
+						Thank you
+					</section>
+					<section>
+						Q&A
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+				preloadIframes: true,
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
