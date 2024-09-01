@@ -1,6 +1,7 @@
 package com.konrad;
 
 import java.util.*;
+import java.util.concurrent.StructuredTaskScope;
 
 public class WeArePlayingFootball {
 
@@ -8,40 +9,42 @@ public class WeArePlayingFootball {
     private final static Random RANDOM = new Random();
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         final AtomicTeamPicker atomicTeamPicker = new AtomicTeamPicker();
         playRound(atomicTeamPicker, 4);
-
-
     }
 
-    private static Team playRound(AtomicTeamPicker atomicTeamPicker, int roundLevel) {
-        Team teamA;
-        Team teamB;
+    private static Team playRound(AtomicTeamPicker atomicTeamPicker, int roundLevel) throws InterruptedException {
         if (roundLevel == 0){
-            teamA = atomicTeamPicker.pickTeam();
-            teamB = atomicTeamPicker.pickTeam();
-        } else {
-            teamA = playRound(atomicTeamPicker, roundLevel - 1);
-            teamB = playRound(atomicTeamPicker, roundLevel - 1);
+            Team teamA = atomicTeamPicker.pickTeam();
+            Team teamB = atomicTeamPicker.pickTeam();
+            return playMatch(roundLevel, teamA, teamB);
         }
 
-        System.out.println("Round " + roundLevel);
-        return playMatch(teamA, teamB);
+        try (StructuredTaskScope<Team> playSubFinals  = new StructuredTaskScope<>()){
+            StructuredTaskScope.Subtask<Team> teamA = playSubFinals.fork(() -> playRound(atomicTeamPicker, roundLevel - 1));
+            StructuredTaskScope.Subtask<Team> teamB = playSubFinals.fork(() ->playRound(atomicTeamPicker, roundLevel - 1));
+
+            playSubFinals.join();
+
+            return playMatch(roundLevel, teamA.get(), teamB.get());
+        } catch (InterruptedException e) {
+            throw e;
+        }
     }
 
-    private static Team playMatch(Team teamA, Team teamB) {
-        int teamAScore = RANDOM.nextInt(5);
-        int teamBScore = RANDOM.nextInt(5);
-        while (teamAScore == teamBScore) {
-            teamAScore = RANDOM.nextInt(5);
-            teamBScore = RANDOM.nextInt(5);
-        }
-        System.out.printf("%s %d : %d %s\n",teamA, teamAScore, teamBScore, teamB);
+    private static Team playMatch(int round, Team teamA, Team teamB) throws InterruptedException {
+        final int teamAScore = RANDOM.nextInt(5);
+        final int teamBScore = RANDOM.nextInt(5);
+        Team result = teamB;
         if (teamAScore > teamBScore) {
-            return teamA;
+            result = teamA;
+        } else if (teamAScore == teamBScore) {
+            result = RANDOM.nextBoolean() ? teamA : teamB;
         }
-        return teamB;
+        Thread.sleep(RANDOM.nextInt(2000));
+        System.out.printf("Round %d - %s %d : %d %s - Wins: %s \n", round, teamA, teamAScore, teamBScore, teamB, result);
+        return result;
 
     }
 
