@@ -1,4 +1,4 @@
-package com.konrad;
+package com.konrad.structured.examples.party;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
