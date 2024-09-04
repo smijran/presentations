@@ -25,8 +25,12 @@
 					<img data-src="konrad.jpg" style="height:200px;" />
 					<div>Java explorer, performance tinkerer</div> 
 					<div style="font-style: italic;">Dreams of marrying GPUs and Java</div>
+					<small>X: @smijran, LinkedIn: Nie ukrywam się :)</small>
 				</section>
 				<section>
+					<section>
+						<h1>Structured Concurrency</h1>
+					</section>
 					<section>
 						<div style="font-style:italic;">This story cannot be told differently</div>
 					</section>
@@ -194,6 +198,7 @@
 					<section>
 						<div>We made our programs use every core</div>
 						<div class="fragment">But it was not enough for us</div>
+						<div class="fragment">OS Threads started to limit us</div>
 					</section>
 					<section>
 						<div>We started to think of how to get MOAR threads</div>
@@ -225,7 +230,7 @@
 						<div>They came out:</div>
 						<div>
 							<figure class="fragment" style="display: inline-block; padding-right: 20px;">
-								<img src="https://media.licdn.com/dms/image/C4E03AQEpdzcxvB4fRw/profile-displayphoto-shrink_800_800/0/1517713070521?e=1724889600&v=beta&t=nGmEz87Ehk_UI_f--ICbkH6ocgPLLfmZgb9btXR6Lc4" style="height:200px">
+								<img src="https://media.licdn.com/dms/image/v2/C4E03AQEpdzcxvB4fRw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1517713070521?e=1730937600&v=beta&t=xOmOJGoyKrJRBkIJAfHRV441l7uuSuIUSKX3Ed9NmKc" style="height:200px">
 								<figcaption>Martin Sustrik</figcaption>
 							</figure>
 							<figure class="fragment" style="display: inline-block; padding-right: 20px;">
@@ -242,13 +247,15 @@
 						<div>They came to the same idea:</div>
 					</section>
 					<section>
-						<div>Go/async is new GOTO</div>
-						<figure>
+						<div>Go/async/VThread is new GOTO</div>
+						<div class="fragment"> is new GOTO</div>
+						<figure class="fragment">
 							<img src="straight_and_deviation.svg" style="height:300px" />
 						</figure>
 					</section>
 					<section>
-						<div>Remedy: Structured Concurrency</div>
+						<div>Remedy:</div>
+						<div class="fragment">Structured Concurrency</div>
 						<small class="fragment">Put parralel tasks into structure/blocks to make reasoning about them possible</small>
 					</section>
 					<section>
@@ -295,14 +302,23 @@
 						<div>Lets play football</div>
 					</section>
 					<section>
-						<div>We can even throttle</div>
+						<div>We can even throttle, while eating pizza</div>
 						<div>https://github.com/japplis/Virtually<div>
+					</section>
+					<section>
+						<div>Real life examples:</div>
+						<ol>
+							<li>Downloading chunked files</li>
+							<li>Scraping websites</li>
+							<li>Agregating elements for some computations</li>
+						</ol>
+						<div class="fragment">I would love to hear your examples</div>
 					</section>
 
 				</section>
 				<section>
 					<section>
-						<h1>Scope values</h1>
+						<h1>Scoped values</h1>
 					</section>
 					<section>
 						<div>We want to have thread wide values</div>
@@ -321,7 +337,22 @@
 						</ol>
 					</section>
 					<section>
-						TODO przykład z lodówką i stolikiem do meczu
+						<h2>Mutability</h2>
+						<div class="fragment">There is <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/ThreadLocal.html#set-T-">ThreadLocal#set()</a></div>
+					</section>
+					<section>
+						<h2>Lifecycle</h2>
+						<div class="fragment">We have thread pools</div>
+						<div class="fragment">Who remebers to cleans after themselves in kitchen?</div>
+						<div class="fragment">Always?</div> 
+						<div class="fragment"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/ThreadLocal.html#remove--">ThreadLocal#remove()</a></div>
+					</section>
+					<section>
+						<h2>Inheritance</h2>
+						<div class="fragment">Each Thread has it own copy of value</div>
+					</section>
+					<section>
+						<div>We are painting rooms for our company, but colors change</div>
 					</section>
 				</section>
 				<section>
