@@ -21,6 +21,7 @@ public class WeEatPizza {
                     .map(WeEatPizza::eat)
                     .forEach(c -> pizzaScope.fork(c));
 
+            System.out.println("I am unblocked");
             pizzaScope.join();
         }
         System.out.println(System.currentTimeMillis() - start);
