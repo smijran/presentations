@@ -288,7 +288,7 @@
 					</section>
 					<section>
 						<div>
-							With Java 21...  
+							With Java 21... preview API...
 						</div>
 					</section>
 					<section>
@@ -314,7 +314,6 @@
 						</ol>
 						<div class="fragment">I would love to hear your examples</div>
 					</section>
-
 				</section>
 				<section>
 					<section>
@@ -352,6 +351,19 @@
 						<div class="fragment">Each Thread has it own copy of value</div>
 					</section>
 					<section>
+						<div>We used ThreadLocals to share a value within the thread</div>
+						<div class="fragment">Assuming that code is executed by this thread sequentially</div>
+						<div class="fragment">And then thread ends</div>
+					</section>
+					<section>
+						<div>What is alternative?</div>
+					</section>
+					<section>
+						<h2>Scoped Values</h2>
+						<div class="fragment">A scoped value is a value that may be safely and efficiently shared to methods without using method parameters.</div>
+						<small>Still preview API</small>
+					</section>
+					<section>
 						<div>We are painting rooms for our company, but colors change</div>
 					</section>
 				</section>
@@ -361,6 +373,14 @@
 					</section>
 					<section>
 						Q&A
+					</section>
+					<section>
+						<h2>Useful links</h2>
+						<ul>
+							<li><a href="https://docs.oracle.com/en/java/javase/21/core/scoped-values.html">Oracle Scoped Values</a></li>
+							<li><a href="https://docs.oracle.com/en/java/javase/21/core/structured-concurrency.html">Oracle Structured Concurrency</a></li>
+							<li><a href="https://medium.com/@lavneesh.chandna/scoped-values-demystified-rethinking-threadlocal-in-the-age-of-virtualthread-43fc1a33f879">Medium</li>
+						</ul>
 					</section>
 				</section>
 			</div>
