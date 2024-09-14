@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Organizing chaos - Structured Concurrency</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
@@ -67,7 +67,7 @@
 							<code data-trim>
 								10 PRINT "Hello World!"
 								20 PRINT 2 * 2
-								30 PRINT "JDD" ;
+								30 PRINT "JVM" ;
 								40 PRINT " 2024!"
 							</code>
 						</pre>
@@ -151,8 +151,28 @@
 						<div>Ufff</div>
 					</section>
 					<section>
-						<div>What about exceptions?</div>
-						<div>What about labels?</div>
+						<div>
+							<div>What about exceptions?</div>
+							<pre>
+								<code data-trim>
+									throw new RuntimeException();
+								</code>
+							</pre>
+						</div>
+						<div class="fragment">
+							<div>What about labels?</div>
+							<pre>
+								<code data-trim>
+									someLabel:
+									for (int i = 0; i < 10; i++) {
+										...
+										for (int j = 0; j < 100; j++) {
+											break someLabel;
+										}
+									}
+								</code>
+							</pre>
+						</div>
 					</section>
 					<section>
 						<div>They are cumbersome</div>
@@ -229,25 +249,18 @@
 					<section>
 						<div>They came out:</div>
 						<div>
-							<figure class="fragment" style="display: inline-block; padding-right: 20px;">
-								<img src="https://media.licdn.com/dms/image/v2/C4E03AQEpdzcxvB4fRw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1517713070521?e=1730937600&v=beta&t=xOmOJGoyKrJRBkIJAfHRV441l7uuSuIUSKX3Ed9NmKc" style="height:200px">
-								<figcaption>Martin Sustrik</figcaption>
-							</figure>
-							<figure class="fragment" style="display: inline-block; padding-right: 20px;">
-								<img src="https://vorpus.org/static/cropped-portrait.jpg" style="height:200px"/>
-								<figcaption>Nathaniel J Smith</figcaption>
-							</figure>
-							<figure class="fragment" style="display: inline-block;">
-								<img src="https://media.licdn.com/dms/image/C4D03AQHce1aCNOXGBw/profile-displayphoto-shrink_800_800/0/1516269565504?e=1726099200&v=beta&t=rS3m4eChtCPMehx6vJfw7vftc6BHUCnFuAICmZfBiPk" style="height:200px">
-								<figcaption>Roman Elizarov</figcaption>
-							</figure>
+							<ul>
+								<li class="fragment">Martin Sustrik</li>
+								<li class="fragment">Nathaniel J Smith</li>
+								<li class="fragment">Roman Elizarov</li>
+							</ul>
 						</div>
 					</section>
 					<section>
 						<div>They came to the same idea:</div>
 					</section>
 					<section>
-						<div>Go/async/VThread is new GOTO</div>
+						<div>Go/async/VThread</div>
 						<div class="fragment"> is new GOTO</div>
 						<figure class="fragment">
 							<img src="straight_and_deviation.svg" style="height:300px" />
@@ -261,10 +274,10 @@
 					<section>
 						<div>Why?</div>
 						<ol>
+							<li class="fragment">Ordering problems</li>
 							<li class="fragment">Race conditions</li>
 							<li class="fragment">Deadlocks</li>
 							<li class="fragment">Starvations</li>
-							<li class="fragment">Ordering problems</li>
 							<li class="fragment">...</li>
 						</ol>
 					</section>
@@ -303,7 +316,7 @@
 					</section>
 					<section>
 						<div>We can even throttle, while eating pizza</div>
-						<div>https://github.com/japplis/Virtually<div>
+						<div class="fragment">https://github.com/japplis/Virtually<div>
 					</section>
 					<section>
 						<div>Real life examples:</div>
