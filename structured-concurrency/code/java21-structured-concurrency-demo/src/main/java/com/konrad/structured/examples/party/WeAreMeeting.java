@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
 public class WeAreMeeting {
 
     record MeetingTime(DayOfWeek dayOfWeek, LocalTime time) {
+        @Override
+        public String toString() {
+            return dayOfWeek + ":" + time;
+        }
     }
 
     private static final Set<String> NAMES = Set.of("Wojtek", "Michał", "Max", "Maciej", "Konrad");
@@ -19,36 +23,39 @@ public class WeAreMeeting {
             new MeetingTime(DayOfWeek.WEDNESDAY, LocalTime.of(21, 0, 0)),
             new MeetingTime(DayOfWeek.MONDAY, LocalTime.of(20, 0, 0)));
 
-    public static MeetingTime chooseTime(String name, Set<MeetingTime> possibilities) {
-        try {
-            int thinkingTime = (int) (Math.random() * 5000);
-            System.out.printf("%s searches in calendar for %d ms %n", name, thinkingTime);
-            Thread.sleep(thinkingTime);
-            int pick = (int) (Math.random() * possibilities.size());
-            System.out.printf("%s found a time slot! %n", name);
-            return List.copyOf(possibilities).get(pick);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    private static MeetingTime chooseTime(String name) {
+        think();
+        int pick = (int) (Math.random() * POSSIBILITIES.size());
+        System.out.printf("%s found a time slot! %n", name);
+        return List.copyOf(POSSIBILITIES).get(pick);
+
     }
 
     public static void main(String[] args) {
         int rounds = 0;
         while (true) {
             System.out.printf("Round %d %n", rounds++);
+
             try (var scope = new StructuredTaskScope<MeetingTime>()) {
-                Set<StructuredTaskScope.Subtask<MeetingTime>> tasks =
+
+                var tasks =
                         NAMES.stream()
-                                .map(name -> scope.fork(() -> chooseTime(name, POSSIBILITIES)))
+                                .map(name -> scope.fork(() -> chooseTime(name)))
                                 .collect(Collectors.toUnmodifiableSet());
+
+                // Wait for everyone to finish
                 scope.join();
+
+                // Check all the times chosen
                 Set<MeetingTime> meetingTimes =
                         tasks
                                 .stream()
                                 .map(StructuredTaskScope.Subtask::get)
                                 .collect(Collectors.toUnmodifiableSet());
+
                 System.out.println(meetingTimes);
-                if (meetingTimes.size() == 1){
+                System.out.println("--------------------------");
+                if (meetingTimes.size() == 1) {
                     System.out.println("Meeting time chosen. Ending.");
                     System.exit(0);
                 }
@@ -58,4 +65,12 @@ public class WeAreMeeting {
         }
     }
 
+    private static void think() {
+        try {
+            int thinkingTime = (int) (Math.random() * 3000);
+            Thread.sleep(thinkingTime);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

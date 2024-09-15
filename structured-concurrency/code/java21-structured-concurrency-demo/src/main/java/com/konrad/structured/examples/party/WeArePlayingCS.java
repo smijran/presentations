@@ -21,7 +21,7 @@ public class WeArePlayingCS {
         }
 
         @Override
-        public String call() throws Exception {
+        public String call() {
             try {
                 while (true) {
                     int huntTime = (int) (1000 + Math.random() * 2000);
@@ -79,6 +79,7 @@ public class WeArePlayingCS {
                         .filter(Player.class::isInstance)
                         .map(Player.class::cast)
                         .forEach(p -> System.out.println(p.name + " WIFE CALLINNNGGG!!!"));
+                System.out.println("-------------------");
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
