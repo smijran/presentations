@@ -24,16 +24,20 @@ public class WeArePaintingRooms {
 
     private static void paintRoomStep(List<String> address) {
         if (shallWeEnd(address)) return;
+
         paintRoom(address);
+
         if (shouldWeChangePaint()) {
             ScopedValue
                     .where(PAINT, pickRandomPaint())
                     .run(() -> {
                         printPaintChange(address);
-                        paintRoomsDownlane(address);
+                        paintRoomStep(append(address, "1"));
+                        paintRoomStep(append(address, "2"));
                     });
         } else {
-            paintRoomsDownlane(address);
+            paintRoomStep(append(address, "1"));
+            paintRoomStep(append(address, "2"));
         }
     }
 
@@ -52,25 +56,6 @@ public class WeArePaintingRooms {
         return false;
     }
 
-    private static void paintRoomsDownlane(List<String> address) {
-        try (StructuredTaskScope<Void> taskScope = new StructuredTaskScope<>()) {
-            taskScope.fork(asCallable(() -> paintRoomStep(append(address, "1"))));
-            taskScope.fork(asCallable(() -> paintRoomStep(append(address, "2"))));
-            try {
-                taskScope.join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private static Callable<Void> asCallable(Runnable runnable) {
-        return () ->
-        {
-            runnable.run();
-            return null;
-        };
-    }
 
     private static List<String> append(List<String> list, String toAppend) {
         return Stream.concat(
@@ -87,7 +72,7 @@ public class WeArePaintingRooms {
 
 
     private static Paint pickRandomPaint() {
-        Paint paint =  Paint.values()[RANDOM.nextInt(Paint.values().length)];
+        Paint paint = Paint.values()[RANDOM.nextInt(Paint.values().length)];
         while (paint == PAINT.get()) {
             paint = Paint.values()[RANDOM.nextInt(Paint.values().length)];
         }
