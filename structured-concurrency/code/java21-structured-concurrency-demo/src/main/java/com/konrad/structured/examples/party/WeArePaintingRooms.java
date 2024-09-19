@@ -2,9 +2,6 @@ package com.konrad.structured.examples.party;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.StructuredTaskScope;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class WeArePaintingRooms {
@@ -16,7 +13,7 @@ public class WeArePaintingRooms {
 
     private final static ScopedValue<Paint> PAINT = ScopedValue.newInstance();
 
-    public static void main(String[] args) {
+    public static void main(String[] ignoredArgs) {
         List<String> address = List.of("1");
         ScopedValue.where(PAINT, Paint.WHITE)
                 .run(() -> paintRoomStep(address));
@@ -32,13 +29,16 @@ public class WeArePaintingRooms {
                     .runWhere(PAINT, pickRandomPaint(),
                             () -> {
                                 printPaintChange(address);
-                                paintRoomStep(append(address, "1"));
-                                paintRoomStep(append(address, "2"));
+                                paintRoomsDownlane(address);
                             });
         } else {
-            paintRoomStep(append(address, "1"));
-            paintRoomStep(append(address, "2"));
+            paintRoomsDownlane(address);
         }
+    }
+
+    private static void paintRoomsDownlane(List<String> address) {
+        paintRoomStep(append(address, "1"));
+        paintRoomStep(append(address, "2"));
     }
 
     private static void printPaintChange(List<String> address) {
@@ -50,10 +50,7 @@ public class WeArePaintingRooms {
     }
 
     private static boolean shallWeEnd(List<String> address) {
-        if (address.size() == 5) {
-            return true;
-        }
-        return false;
+        return address.size() == 5;
     }
 
 

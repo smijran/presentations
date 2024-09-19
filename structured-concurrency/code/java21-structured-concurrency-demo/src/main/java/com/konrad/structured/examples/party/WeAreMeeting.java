@@ -26,16 +26,13 @@ public class WeAreMeeting {
     private static MeetingTime chooseTime(String name) {
         think();
         int pick = (int) (Math.random() * POSSIBILITIES.size());
-        System.out.printf("%s found a time slot! %n", name);
-        return List.copyOf(POSSIBILITIES).get(pick);
-
+        MeetingTime meetingTime = List.copyOf(POSSIBILITIES).get(pick);
+        System.out.printf("%s found a time slot : %s ! %n", name, meetingTime);
+        return meetingTime;
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        int rounds = 0;
+    public static void main(String[] ignoredArgs) throws InterruptedException {
         while (true) {
-            System.out.printf("Round %d %n", rounds++);
-
             try (var scope = new StructuredTaskScope<MeetingTime>()) {
 
                 var tasks =
