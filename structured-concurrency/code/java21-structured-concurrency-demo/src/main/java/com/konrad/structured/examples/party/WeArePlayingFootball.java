@@ -22,14 +22,14 @@ public class WeArePlayingFootball {
         }
 
         try (StructuredTaskScope<Team> playSubFinals  = new StructuredTaskScope<>()){
-            StructuredTaskScope.Subtask<Team> teamA = playSubFinals.fork(() -> playRound(atomicTeamPicker, roundLevel - 1));
-            StructuredTaskScope.Subtask<Team> teamB = playSubFinals.fork(() ->playRound(atomicTeamPicker, roundLevel - 1));
+            StructuredTaskScope.Subtask<Team> teamA =
+                    playSubFinals.fork(() -> playRound(atomicTeamPicker, roundLevel - 1));
+            StructuredTaskScope.Subtask<Team> teamB =
+                    playSubFinals.fork(() ->playRound(atomicTeamPicker, roundLevel - 1));
 
             playSubFinals.join();
 
             return playMatch(roundLevel, teamA.get(), teamB.get());
-        } catch (InterruptedException e) {
-            throw e;
         }
     }
 

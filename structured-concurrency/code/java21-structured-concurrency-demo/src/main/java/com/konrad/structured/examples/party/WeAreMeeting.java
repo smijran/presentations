@@ -31,7 +31,7 @@ public class WeAreMeeting {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         int rounds = 0;
         while (true) {
             System.out.printf("Round %d %n", rounds++);
@@ -59,8 +59,6 @@ public class WeAreMeeting {
                     System.out.println("Meeting time chosen. Ending.");
                     System.exit(0);
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
         }
     }

@@ -11,7 +11,7 @@ public class WeAreOrganizingParty {
     private static final Set<String> NAMES = Set.of("Wojtek", "Michał", "Max", "Maciej", "Konrad");
     private static final Set<ThingToDo> THINGS_TO_DO = Set.of(
             new ThingToDo("buying chips"),
-            new ThingToDo("buying alcohol"),
+            new ThingToDo("buying drinks"),
             new ThingToDo("setting up PlayStation"),
             new ThingToDo("buying sausages"),
             new ThingToDo("lighting the barbecue")
@@ -36,17 +36,11 @@ public class WeAreOrganizingParty {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        final LinkedList<ThingToDo> randomized = new LinkedList<>(THINGS_TO_DO);
-        Collections.shuffle(randomized);
-        Map<String, ThingToDo> tasksPicked = NAMES.stream()
-                .collect(Collectors.toMap(Function.identity(), key -> randomized.pop()));
+        Map<String, ThingToDo> tasksPicked = assignThingsToDo();
 
         try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             tasksPicked
-                    .entrySet()
-                    .forEach(
-                            task -> scope.fork(() -> doSomething(task.getKey(), task.getValue()))
-                    );
+                    .forEach((key, value) -> scope.fork(() -> doSomething(key, value)));
 
             scope.join();
             scope.throwIfFailed();
@@ -55,5 +49,12 @@ public class WeAreOrganizingParty {
             return;
         }
         System.out.println("Lets get party started!!!");
+    }
+
+    private static Map<String, ThingToDo> assignThingsToDo() {
+        final LinkedList<ThingToDo> randomized = new LinkedList<>(THINGS_TO_DO);
+        Collections.shuffle(randomized);
+        return NAMES.stream()
+                .collect(Collectors.toMap(Function.identity(), key -> randomized.pop()));
     }
 }

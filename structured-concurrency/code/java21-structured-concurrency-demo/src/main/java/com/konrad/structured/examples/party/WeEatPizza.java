@@ -2,12 +2,10 @@ package com.konrad.structured.examples.party;
 
 import com.japplis.virtually.scope.EnhancedTaskScope;
 
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 public class WeEatPizza {
-    private final static Random RANDOM = new Random();
 
     private final static Set<String> NAMES =
             Set.of("Anna", "Piotr", "Katarzyna", "Marek", "Agnieszka", "Tomasz", "Ewa", "Paweł", "Zofia", "Andrzej", "Magdalena", "Wojciech", "Maria", "Jan", "Małgorzata", "Krzysztof", "Joanna", "Łukasz", "Dorota", "Michał");

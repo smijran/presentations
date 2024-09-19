@@ -29,12 +29,12 @@ public class WeArePaintingRooms {
 
         if (shouldWeChangePaint()) {
             ScopedValue
-                    .where(PAINT, pickRandomPaint())
-                    .run(() -> {
-                        printPaintChange(address);
-                        paintRoomStep(append(address, "1"));
-                        paintRoomStep(append(address, "2"));
-                    });
+                    .runWhere(PAINT, pickRandomPaint(),
+                            () -> {
+                                printPaintChange(address);
+                                paintRoomStep(append(address, "1"));
+                                paintRoomStep(append(address, "2"));
+                            });
         } else {
             paintRoomStep(append(address, "1"));
             paintRoomStep(append(address, "2"));
