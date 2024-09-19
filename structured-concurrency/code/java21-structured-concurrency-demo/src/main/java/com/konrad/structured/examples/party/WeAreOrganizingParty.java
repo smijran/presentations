@@ -8,9 +8,6 @@ import java.util.stream.Collectors;
 
 public class WeAreOrganizingParty {
 
-    public record ThingToDo(String thing) {
-    }
-
     private static final Set<String> NAMES = Set.of("Wojtek", "Michał", "Max", "Maciej", "Konrad");
 
     private static final Set<ThingToDo> THINGS_TO_DO = Set.of(
@@ -21,12 +18,10 @@ public class WeAreOrganizingParty {
             new ThingToDo("lighting the barbecue")
     );
 
-    private final static Random RANDOM = new Random();
-
-    public static Boolean doSomething(String name, ThingToDo toDo) {
+    private static Boolean doSomething(String name, ThingToDo toDo) {
         arrangeThings();
         if (haveFailed()) {
-            throw new RuntimeException(name + " failed!! " + name + " is not " + toDo.thing);
+            throw new RuntimeException(name + " failed!! " + name + " is not " + toDo.thing());
         }
         System.out.println(name + " is " + toDo.thing());
         return true;
@@ -59,14 +54,17 @@ public class WeAreOrganizingParty {
     }
 
     private static boolean haveFailed() {
-        return RANDOM.nextDouble() < 0.1;
+        return Math.random() < 0.1;
     }
 
     private static void arrangeThings() {
         try {
-            Thread.sleep(1000 + RANDOM.nextInt(2000));
+            Thread.sleep(1000 + (int) (Math.random() * 2000));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
+}
+
+record ThingToDo(String thing) {
 }

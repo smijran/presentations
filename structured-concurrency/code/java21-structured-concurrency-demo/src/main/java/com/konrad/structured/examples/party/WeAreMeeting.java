@@ -3,18 +3,12 @@ package com.konrad.structured.examples.party;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.stream.Collectors;
 
 public class WeAreMeeting {
-
-    record MeetingTime(DayOfWeek dayOfWeek, LocalTime time) {
-        @Override
-        public String toString() {
-            return dayOfWeek + ":" + time;
-        }
-    }
 
     private static final Set<String> NAMES = Set.of("Wojtek", "Michał", "Max", "Maciej", "Konrad");
 
@@ -25,8 +19,7 @@ public class WeAreMeeting {
 
     private static MeetingTime chooseTime(String name) {
         think();
-        int pick = (int) (Math.random() * POSSIBILITIES.size());
-        MeetingTime meetingTime = List.copyOf(POSSIBILITIES).get(pick);
+        MeetingTime meetingTime = pickRandom(POSSIBILITIES);
         System.out.printf("%s found a time slot : %s ! %n", name, meetingTime);
         return meetingTime;
     }
@@ -67,5 +60,16 @@ public class WeAreMeeting {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static <T> T pickRandom(Set<T> set) {
+        return List.copyOf(set).get(new Random().nextInt(set.size()));
+    }
+}
+
+record MeetingTime(DayOfWeek dayOfWeek, LocalTime time) {
+    @Override
+    public String toString() {
+        return dayOfWeek + ":" + time;
     }
 }
