@@ -8,7 +8,10 @@ import java.util.concurrent.Callable;
 public class WeEatPizza {
 
     private final static Set<String> NAMES =
-            Set.of("Anna", "Piotr", "Katarzyna", "Marek", "Agnieszka", "Tomasz", "Ewa", "Paweł", "Zofia", "Andrzej", "Magdalena", "Wojciech", "Maria", "Jan", "Małgorzata", "Krzysztof", "Joanna", "Łukasz", "Dorota", "Michał");
+            Set.of("Anna", "Piotr", "Katarzyna", "Marek", "Agnieszka",
+                    "Tomasz", "Ewa", "Paweł", "Zofia", "Andrzej", "Magdalena",
+                    "Wojciech", "Maria", "Jan", "Małgorzata", "Krzysztof", "Joanna",
+                    "Łukasz", "Dorota", "Michał");
 
     public static void main(String[] args) throws InterruptedException {
         long start = System.currentTimeMillis();

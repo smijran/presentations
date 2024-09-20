@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 
 public class WeAreOrganizingParty {
 
-    private static final Set<String> NAMES = Set.of("Wojtek", "Michał", "Max", "Maciej", "Konrad");
+    private static final Set<String> NAMES =
+            Set.of("Wojtek", "Michał", "Max", "Maciej", "Konrad");
 
     private static final Set<ThingToDo> THINGS_TO_DO = Set.of(
             new ThingToDo("buying chips"),

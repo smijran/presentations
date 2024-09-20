@@ -5,13 +5,9 @@ import java.util.concurrent.StructuredTaskScope;
 
 public class WeArePlayingFootball {
 
-
-    private final static Random RANDOM = new Random();
-
-
     public static void main(String[] ignoredArgs) throws InterruptedException {
         final AtomicTeamPicker atomicTeamPicker = new AtomicTeamPicker();
-        playRound(atomicTeamPicker, 4);
+        playRound(atomicTeamPicker, 5);
     }
 
     private static Team playRound(AtomicTeamPicker atomicTeamPicker, int roundLevel) throws InterruptedException {
@@ -34,15 +30,16 @@ public class WeArePlayingFootball {
     }
 
     private static Team playMatch(int round, Team teamA, Team teamB) throws InterruptedException {
-        final int teamAScore = RANDOM.nextInt(5);
-        final int teamBScore = RANDOM.nextInt(5);
+        final Random random = new Random();
+        final int teamAScore = random.nextInt(5);
+        final int teamBScore = random.nextInt(5);
         Team result = teamB;
         if (teamAScore > teamBScore) {
             result = teamA;
         } else if (teamAScore == teamBScore) {
-            result = RANDOM.nextBoolean() ? teamA : teamB;
+            result = random.nextBoolean() ? teamA : teamB;
         }
-        Thread.sleep(RANDOM.nextInt(2000));
+        Thread.sleep(random.nextInt(5000));
         System.out.printf("Round %d - %s %d : %d %s - Wins: %s \n", round, teamA, teamAScore, teamBScore, teamB, result);
         return result;
 
@@ -103,7 +100,6 @@ enum Team {
     COSTA_RICA,
     NORWAY,
     HUNGARY,
-    RUSSIA,
     EGYPT,
     ALGERIA,
     CANADA,

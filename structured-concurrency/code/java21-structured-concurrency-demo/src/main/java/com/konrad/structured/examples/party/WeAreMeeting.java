@@ -10,7 +10,8 @@ import java.util.stream.Collectors;
 
 public class WeAreMeeting {
 
-    private static final Set<String> NAMES = Set.of("Wojtek", "Michał", "Max", "Maciej", "Konrad");
+    private static final Set<String> NAMES =
+            Set.of("Wojtek", "Michał", "Max", "Maciej", "Konrad");
 
     private static final Set<MeetingTime> POSSIBILITIES = Set.of(
             new MeetingTime(DayOfWeek.FRIDAY, LocalTime.of(20, 0, 0)),
@@ -47,7 +48,7 @@ public class WeAreMeeting {
                 System.out.println("--------------------------");
                 if (meetingTimes.size() == 1) {
                     System.out.println("Meeting time chosen. Ending.");
-                    System.exit(0);
+                    break;
                 }
             }
         }
