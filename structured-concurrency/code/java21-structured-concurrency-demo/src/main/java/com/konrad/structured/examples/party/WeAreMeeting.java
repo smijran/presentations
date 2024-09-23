@@ -41,6 +41,7 @@ public class WeAreMeeting {
                 Set<MeetingTime> meetingTimes =
                         tasks
                                 .stream()
+                                .filter(t -> t.state() == StructuredTaskScope.Subtask.State.SUCCESS)
                                 .map(StructuredTaskScope.Subtask::get)
                                 .collect(Collectors.toUnmodifiableSet());
 
