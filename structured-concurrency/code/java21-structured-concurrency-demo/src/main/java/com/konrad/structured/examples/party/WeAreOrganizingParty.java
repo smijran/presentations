@@ -1,40 +1,19 @@
 package com.konrad.structured.examples.party;
 
-import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.StructuredTaskScope;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class WeAreOrganizingParty {
 
-    private static final Set<String> NAMES =
-            Set.of("Wojtek", "Michał", "Max", "Maciej", "Konrad");
-
-    private static final Set<ThingToDo> THINGS_TO_DO = Set.of(
-            new ThingToDo("buying chips"),
-            new ThingToDo("buying drinks"),
-            new ThingToDo("setting up PlayStation"),
-            new ThingToDo("buying sausages"),
-            new ThingToDo("lighting the barbecue")
-    );
-
-    private static Boolean doSomething(String name, ThingToDo toDo) {
-        arrangeThings();
-        if (haveFailed()) {
-            throw new RuntimeException(name + " failed!! " + name + " is not " + toDo.thing());
-        }
-        System.out.println(name + " is " + toDo.thing());
-        return true;
-    }
-
     public static void main(String[] ignoredArgs) throws InterruptedException {
         while (true) {
-            Map<String, ThingToDo> tasksPicked = assignThingsToDo();
 
             try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
-                tasksPicked
-                        .forEach((key, value) -> scope.fork(() -> doSomething(key, value)));
+                scope.fork(() -> buyChips("Maciej"));
+                scope.fork(() -> buyDrinks("Wojtek"));
+                scope.fork(() -> buySausages("Max"));
+                scope.fork(() -> setupPlaystation("Michał"));
+                scope.fork(() -> lightTheBBQ("Konrad"));
 
                 scope.join();
                 scope.throwIfFailed();
@@ -47,11 +26,24 @@ public class WeAreOrganizingParty {
         }
     }
 
-    private static Map<String, ThingToDo> assignThingsToDo() {
-        final LinkedList<ThingToDo> randomized = new LinkedList<>(THINGS_TO_DO);
-        Collections.shuffle(randomized);
-        return NAMES.stream()
-                .collect(Collectors.toMap(Function.identity(), _ -> randomized.pop()));
+    private static boolean buyChips(String name) {
+        return doSomething(name, "buying chips");
+    }
+
+    private static boolean buyDrinks(String name) {
+        return doSomething(name, "buying drinks");
+    }
+
+    private static boolean buySausages(String name) {
+        return doSomething(name, "buying sausages");
+    }
+
+    private static boolean setupPlaystation(String name) {
+        return doSomething(name, "setting up PlayStation");
+    }
+
+    private static boolean lightTheBBQ(String name) {
+        return doSomething(name, "lighting the barbecue");
     }
 
     private static boolean haveFailed() {
@@ -64,6 +56,15 @@ public class WeAreOrganizingParty {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Boolean doSomething(String name, String toDo) {
+        arrangeThings();
+        if (haveFailed()) {
+            throw new RuntimeException(name + " failed!! " + name + " is not " + toDo);
+        }
+        System.out.println(name + " is " + toDo);
+        return true;
     }
 }
 
