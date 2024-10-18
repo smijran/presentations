@@ -31,12 +31,34 @@
                 <img src="civ.gif" alt="Civiliation start"/>
             </section>
             <section>
-                <h2>First programming languages:</h2>
+                <div>
+                    <pre>
+                        <code data-trim>
+                        .data
+                        data1 db 11
+                        data2 db 22
+
+                        .code
+
+                        EXCHANGE:
+                        MOV AL, data1
+                        MOV AH, data2
+                        MOV data1, AH
+                        MOV data2, AL
+
+                        END:
+                        HLT
+                        </code>
+                    </pre>
+                </div>
+            </section>
+            <section>
+                <div>We wanted more</div>
                 <div>
                     <ul>
-                        <li>COBOL</li>
-                        <li>FORTRAN</li>
-                        <li>BASIC</li>
+                        <li class="fragment">COBOL</li>
+                        <li class="fragment">FORTRAN</li>
+                        <li class="fragment">BASIC</li>
                     </ul>
                 </div>
             </section>
@@ -432,6 +454,7 @@
             <section>
                 <h2>Useful links</h2>
                 <ul>
+                    <li><a href="https://en.wikipedia.org/wiki/Structured_programming">Structured programming</a></li>
                     <li><a href="https://docs.oracle.com/en/java/javase/21/core/scoped-values.html">Oracle Scoped
                         Values</a></li>
                     <li><a href="https://docs.oracle.com/en/java/javase/21/core/structured-concurrency.html">Oracle
