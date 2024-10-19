@@ -20,7 +20,7 @@ public class WeAreMeeting {
 
     private static MeetingTime chooseTime(String name) {
         think();
-        MeetingTime meetingTime = pickRandom(POSSIBILITIES);
+        MeetingTime meetingTime = pick(POSSIBILITIES);
         System.out.printf("%s found a time slot : %s ! %n", name, meetingTime);
         return meetingTime;
     }
@@ -64,7 +64,7 @@ public class WeAreMeeting {
         }
     }
 
-    private static <T> T pickRandom(Set<T> set) {
+    private static <T> T pick(Set<T> set) {
         return List.copyOf(set).get(new Random().nextInt(set.size()));
     }
 }

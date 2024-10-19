@@ -7,7 +7,6 @@ public class WeAreOrganizingParty {
 
     public static void main(String[] ignoredArgs) throws InterruptedException {
         while (true) {
-
             try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
                 scope.fork(() -> buyChips("Maciej"));
                 scope.fork(() -> buyDrinks("Wojtek"));
