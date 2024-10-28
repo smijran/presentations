@@ -18,6 +18,7 @@ public class WeAreOrganizingParty {
                 scope.throwIfFailed();
             } catch (ExecutionException e) {
                 System.out.println("Party has failed.... Because " + e.getMessage());
+                e.printStackTrace();
                 break;
             }
             System.out.println("Lets get party started!!!");
