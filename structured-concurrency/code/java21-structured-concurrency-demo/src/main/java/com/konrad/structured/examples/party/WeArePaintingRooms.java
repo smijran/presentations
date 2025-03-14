@@ -1,9 +1,12 @@
 package com.konrad.structured.examples.party;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
+@Log4j2
 public class WeArePaintingRooms {
     enum Paint {
         BLUE, GREEN, RED, YELLOW, WHITE, BLACK
@@ -42,7 +45,7 @@ public class WeArePaintingRooms {
     }
 
     private static void printPaintChange(List<String> address) {
-        System.out.println("Paint CHANGE at " + String.join("-", address) + " " + PAINT.get());
+        log.info("Paint CHANGE at {} {}", String.join("-", address), PAINT.get());
     }
 
     private static boolean shouldWeChangePaint() {
@@ -63,8 +66,7 @@ public class WeArePaintingRooms {
 
 
     private static void paintRoom(List<String> roomAddress) {
-        System.out.println(String.join("-", roomAddress) +
-                " painted " + PAINT.get());
+        log.info("{} painted {}" ,String.join("-", roomAddress), PAINT.get());
     }
 
 

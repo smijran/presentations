@@ -1,8 +1,14 @@
 package com.konrad.structured.examples.party;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.util.*;
 import java.util.concurrent.StructuredTaskScope;
+import java.util.concurrent.ThreadFactory;
 
+import static com.konrad.structured.examples.party.DemoThreadFactory.THREAD_FACTORY;
+
+@Log4j2
 public class WeArePlayingFootball {
 
     public static void main(String[] ignoredArgs) throws InterruptedException {
@@ -17,7 +23,7 @@ public class WeArePlayingFootball {
             return playMatch(roundLevel, teamA, teamB);
         }
 
-        try (var playSubFinals = new StructuredTaskScope<>()) {
+        try (var playSubFinals = new StructuredTaskScope<>("FootballGames", THREAD_FACTORY)) {
             StructuredTaskScope.Subtask<Team> teamA =
                     playSubFinals.fork(() -> playRound(atomicTeamPicker, roundLevel - 1));
             StructuredTaskScope.Subtask<Team> teamB =
@@ -40,7 +46,7 @@ public class WeArePlayingFootball {
             result = random.nextBoolean() ? teamA : teamB;
         }
         Thread.sleep(random.nextInt(5000));
-        System.out.printf("Round %d - %s %d : %d %s - Wins: %s \n", round, teamA, teamAScore, teamBScore, teamB, result);
+        log.info("Round {} - {} {} : {} {} - Wins: {}", round, teamA, teamAScore, teamBScore, teamB, result);
         return result;
 
     }

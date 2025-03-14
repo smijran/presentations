@@ -1,5 +1,7 @@
 package com.konrad.structured.examples.party;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
@@ -8,6 +10,9 @@ import java.util.Set;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.stream.Collectors;
 
+import static com.konrad.structured.examples.party.DemoThreadFactory.THREAD_FACTORY;
+
+@Log4j2
 public class WeAreMeeting {
 
     private static final Set<String> NAMES =
@@ -21,13 +26,13 @@ public class WeAreMeeting {
     private static MeetingTime chooseTime(String name) {
         think();
         MeetingTime meetingTime = pick(POSSIBILITIES);
-        System.out.printf("%s found a time slot : %s ! %n", name, meetingTime);
+        log.info("{} found a time slot : {} !", name, meetingTime);
         return meetingTime;
     }
 
     public static void main(String[] ignoredArgs) throws InterruptedException {
         while (true) {
-            try (var scope = new StructuredTaskScope<MeetingTime>()) {
+            try (var scope = new StructuredTaskScope<MeetingTime>("MeetingChase", THREAD_FACTORY)) {
 
                 var tasks =
                         NAMES.stream()
@@ -45,14 +50,14 @@ public class WeAreMeeting {
                                 .map(StructuredTaskScope.Subtask::get)
                                 .collect(Collectors.toUnmodifiableSet());
 
-                System.out.println(meetingTimes);
-                System.out.println("--------------------------");
+                log.info(meetingTimes);
+                log.info("-----");
                 if (meetingTimes.size() == 1) {
-                    System.out.println("Meeting time chosen. Ending.");
                     break;
                 }
             }
         }
+        log.info("Meeting time chosen. Ending.");
     }
 
     private static void think() {

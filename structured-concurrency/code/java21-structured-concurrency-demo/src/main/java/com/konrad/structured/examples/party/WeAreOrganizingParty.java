@@ -1,13 +1,19 @@
 package com.konrad.structured.examples.party;
 
+import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.StructuredTaskScope;
 
+import static com.konrad.structured.examples.party.DemoThreadFactory.THREAD_FACTORY;
+
+@Log4j2
 public class WeAreOrganizingParty {
 
     public static void main(String[] ignoredArgs) throws InterruptedException {
         while (true) {
-            try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+            try (var scope = new StructuredTaskScope.ShutdownOnFailure("PartyType", THREAD_FACTORY)) {
                 scope.fork(() -> buyChips("Maciej"));
                 scope.fork(() -> buyDrinks("Wojtek"));
                 scope.fork(() -> buySausages("Max"));
@@ -17,12 +23,11 @@ public class WeAreOrganizingParty {
                 scope.join();
                 scope.throwIfFailed();
             } catch (ExecutionException e) {
-                System.out.println("Party has failed.... Because " + e.getMessage());
-                e.printStackTrace();
+                log.error("Party has failed.... Because " + e.getMessage(), e);
                 break;
             }
-            System.out.println("Lets get party started!!!");
-            System.out.println("--------------");
+            log.info("Lets get party started!!!");
+            log.info("--------------");
         }
     }
 
@@ -63,7 +68,7 @@ public class WeAreOrganizingParty {
         if (haveFailed()) {
             throw new RuntimeException(name + " failed!! " + name + " is not " + toDo);
         }
-        System.out.println(name + " is " + toDo);
+        log.info(name + " is " + toDo);
         return true;
     }
 }
