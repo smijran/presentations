@@ -45,7 +45,7 @@ public class WeArePaintingRooms {
     }
 
     private static void printPaintChange(List<String> address) {
-        log.info("Paint CHANGE at {} {}", String.join("-", address), PAINT.get());
+        log.info("{} --> {}", String.format("%-10s", String.join("-", address)), PAINT.get());
     }
 
     private static boolean shouldWeChangePaint() {
@@ -66,7 +66,7 @@ public class WeArePaintingRooms {
 
 
     private static void paintRoom(List<String> roomAddress) {
-        log.info("{} painted {}" ,String.join("-", roomAddress), PAINT.get());
+        log.info("{} painted {}" , String.format("%-10s", String.join("-", roomAddress)), PAINT.get());
     }
 
 
