@@ -1,15 +1,16 @@
 package com.konrad.structured.examples.party;
 
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.StructuredTaskScope;
-import java.util.concurrent.ThreadFactory;
 
-import static com.konrad.structured.examples.party.DemoThreadFactory.THREAD_FACTORY;
+import static com.konrad.structured.examples.party.DemoThreadFactory.VT_THREAD_FACTORY;
 
-@Log4j2
 public class WeArePlayingFootball {
+
+    private static final Logger log = LogManager.getLogger(WeArePlayingFootball.class);
 
     public static void main(String[] ignoredArgs) throws InterruptedException {
         final AtomicTeamPicker atomicTeamPicker = new AtomicTeamPicker();
@@ -23,7 +24,7 @@ public class WeArePlayingFootball {
             return playMatch(roundLevel, teamA, teamB);
         }
 
-        try (var playSubFinals = new StructuredTaskScope<>("FootballGames", THREAD_FACTORY)) {
+        try (var playSubFinals = new StructuredTaskScope<>("FootballGames", VT_THREAD_FACTORY)) {
             StructuredTaskScope.Subtask<Team> teamA =
                     playSubFinals.fork(() -> playRound(atomicTeamPicker, roundLevel - 1));
             StructuredTaskScope.Subtask<Team> teamB =
@@ -45,7 +46,7 @@ public class WeArePlayingFootball {
         } else if (teamAScore == teamBScore) {
             result = random.nextBoolean() ? teamA : teamB;
         }
-        Thread.sleep(random.nextInt(5000));
+        Thread.sleep(random.nextInt(7000));
         log.info("Round {} - {} {} : {} {} - Wins: {}", round, teamA, teamAScore, teamBScore, teamB, result);
         return result;
 

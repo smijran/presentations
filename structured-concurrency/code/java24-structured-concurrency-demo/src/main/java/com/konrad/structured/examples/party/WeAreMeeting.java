@@ -1,6 +1,7 @@
 package com.konrad.structured.examples.party;
 
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -10,10 +11,11 @@ import java.util.Set;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.stream.Collectors;
 
-import static com.konrad.structured.examples.party.DemoThreadFactory.THREAD_FACTORY;
+import static com.konrad.structured.examples.party.DemoThreadFactory.VT_THREAD_FACTORY;
 
-@Log4j2
 public class WeAreMeeting {
+
+    private static final Logger log = LogManager.getLogger(WeAreMeeting.class);
 
     private static final Set<String> NAMES =
             Set.of("Wojtek", "Michał", "Max", "Maciej", "Konrad");
@@ -32,7 +34,7 @@ public class WeAreMeeting {
 
     public static void main(String[] ignoredArgs) throws InterruptedException {
         while (true) {
-            try (var scope = new StructuredTaskScope<MeetingTime>("MeetingChase", THREAD_FACTORY)) {
+            try (var scope = new StructuredTaskScope<MeetingTime>("MeetingChase", VT_THREAD_FACTORY)) {
 
                 var tasks =
                         NAMES.stream()

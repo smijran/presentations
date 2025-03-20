@@ -1,13 +1,16 @@
 package com.konrad.structured.examples.party;
 
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
-@Log4j2
 public class WeArePaintingRooms {
+
+    private static final Logger log = LogManager.getLogger(WeArePaintingRooms.class);
+
     enum Paint {
         BLUE, GREEN, RED, YELLOW, WHITE, BLACK
     }
@@ -29,8 +32,8 @@ public class WeArePaintingRooms {
 
         if (shouldWeChangePaint()) {
             ScopedValue
-                    .runWhere(PAINT, pickRandomPaint(),
-                            () -> {
+                    .where(PAINT, pickRandomPaint())
+                    .run(() -> {
                                 printPaintChange(address);
                                 paintRoomsDownlane(address);
                             });
