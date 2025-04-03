@@ -12,7 +12,7 @@ public class WeArePlayingFootball {
 
     private static final Logger log = LogManager.getLogger(WeArePlayingFootball.class);
 
-    public static void main(String[] ignoredArgs) throws InterruptedException {
+    void main() throws InterruptedException {
         final AtomicTeamPicker atomicTeamPicker = new AtomicTeamPicker();
         playRound(atomicTeamPicker, 5);
     }

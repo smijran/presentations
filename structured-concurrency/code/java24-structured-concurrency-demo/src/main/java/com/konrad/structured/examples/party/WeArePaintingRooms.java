@@ -19,7 +19,7 @@ public class WeArePaintingRooms {
 
     private final static ScopedValue<Paint> PAINT = ScopedValue.newInstance();
 
-    public static void main(String[] ignoredArgs) {
+    void main() {
         List<String> address = List.of("1");
         ScopedValue.where(PAINT, Paint.WHITE)
                 .run(() -> paintRoomStep(address));

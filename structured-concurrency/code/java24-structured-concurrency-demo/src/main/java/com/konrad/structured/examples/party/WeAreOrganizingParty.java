@@ -12,7 +12,7 @@ public class WeAreOrganizingParty {
 
     private static final Logger log = LogManager.getLogger(WeAreOrganizingParty.class);
 
-    public static void main(String[] ignoredArgs) throws InterruptedException {
+    void main() throws InterruptedException {
         while (true) {
             try (var scope = new StructuredTaskScope.ShutdownOnFailure("PartyType", VT_THREAD_FACTORY)) {
                 scope.fork(() -> buyChips("Maciej"));

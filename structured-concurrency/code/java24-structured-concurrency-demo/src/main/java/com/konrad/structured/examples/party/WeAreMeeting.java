@@ -32,7 +32,7 @@ public class WeAreMeeting {
         return meetingTime;
     }
 
-    public static void main(String[] ignoredArgs) throws InterruptedException {
+    void main() throws InterruptedException {
         while (true) {
             try (var scope = new StructuredTaskScope<MeetingTime>("MeetingChase", VT_THREAD_FACTORY)) {
 
