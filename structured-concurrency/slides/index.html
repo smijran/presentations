@@ -28,7 +28,7 @@
         </section>
         <section>
             <section>
-                <img src="civ.gif" alt="Civiliation start"/>
+                <img src="civ.gif" alt="Civilization start"/>
             </section>
             <section>
                 <div>
@@ -256,7 +256,7 @@
 						                .start(() -> evenMoreThingsNeedsToBeMade());
 							</code>
 						</pre>
-                <div class="fragment">Was it successful?</div>
+                <div class="fragment">What happened to computation?</div>
                 <div class="fragment">What was the result?</div>
             </section>
             <section>
@@ -285,26 +285,26 @@
             <section>
                 <div>Remedy:</div>
                 <div class="fragment" style="font-style:italic;">Structured Concurrency</div>
-                <small class="fragment">Put parralel tasks into structure/blocks to make reasoning about them
+                <small class="fragment">Put parallel tasks into structure/blocks to make reasoning about them
                     possible</small>
-            </section>
-            <section>
-                <div>Why?</div>
-                <ol>
-                    <li class="fragment">Ordering problems</li>
-                    <li class="fragment">Race conditions</li>
-                    <li class="fragment">Deadlocks</li>
-                    <li class="fragment">Starvations</li>
-                    <li class="fragment">...</li>
-                </ol>
             </section>
             <section>
                 <div>This allows you to answer:</div>
                 <ul>
-                    <li class="fragment">Has any of threads failed?</li>
-                    <li class="fragment">Was any of threads already successful?</li>
-                    <li class="fragment">And many more ...</li>
+                    <li class="fragment">What happened to my thread?</li>
+                    <li class="fragment">Has it finished?</li>
+                    <li class="fragment">What was the result?</li>
                 </ul>
+            </section>
+            <section>
+                <div>Why?</div>
+                <ol>
+                    <li class="fragment">Thread leaks</li>
+                    <li class="fragment">Cancellation delays</li>
+                    <li class="fragment">Thread ordering</li>
+                    <li class="fragment">Race conditions</li>
+                    <li class="fragment">...</li>
+                </ol>
             </section>
         </section>
         <section>
@@ -314,8 +314,8 @@
             <section>
                 <div>We are adults...</div>
                 <div class="fragment">We want to meet together...</div>
-                <div class="fragment">There are 5 of us...</div>
-                <div class="fragment">With Java... preview API...</div>
+                <div class="fragment">There are five of us...</div>
+                <div class="fragment">With Java... preview API - JEP 505.</div>
             </section>
             <section>
                 <div>Meeting time choosing simulation</div>
@@ -376,7 +376,7 @@
             <section>
                 <h2>Lifecycle</h2>
                 <div class="fragment">We have thread pools</div>
-                <div class="fragment">Who remebers to cleans after themselves in kitchen?</div>
+                <div class="fragment">Who remembers to clean after themselves in a kitchen?</div>
                 <div class="fragment">Always?</div>
                 <div class="fragment"><a
                         href="https://docs.oracle.com/javase/8/docs/api/java/lang/ThreadLocal.html#remove--">ThreadLocal#remove()</a>
