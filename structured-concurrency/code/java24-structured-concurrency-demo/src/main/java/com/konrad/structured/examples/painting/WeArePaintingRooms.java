@@ -1,4 +1,4 @@
-package com.konrad.structured.examples.party;
+package com.konrad.structured.examples.painting;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
