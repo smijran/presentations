@@ -3,10 +3,10 @@ package com.konrad.structured.examples.party;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.StructuredTaskScope;
 
 import static com.konrad.structured.examples.party.DemoThreadFactory.VT_THREAD_FACTORY;
+import static java.util.concurrent.StructuredTaskScope.Joiner.awaitAllSuccessfulOrThrow;
 
 public class WeAreOrganizingParty {
 
@@ -14,7 +14,11 @@ public class WeAreOrganizingParty {
 
     void main() throws InterruptedException {
         while (true) {
-            try (var scope = new StructuredTaskScope.ShutdownOnFailure("PartyType", VT_THREAD_FACTORY)) {
+            try (var scope = StructuredTaskScope.open(
+                    awaitAllSuccessfulOrThrow(),
+                    configuration -> configuration
+                            .withName("OrganizingParty")
+                            .withThreadFactory(VT_THREAD_FACTORY))) {
                 scope.fork(() -> buyChips("Maciej"));
                 scope.fork(() -> buyDrinks("Wojtek"));
                 scope.fork(() -> buySausages("Max"));
@@ -22,8 +26,7 @@ public class WeAreOrganizingParty {
                 scope.fork(() -> lightTheBBQ("Konrad"));
 
                 scope.join();
-                scope.throwIfFailed();
-            } catch (ExecutionException e) {
+            } catch (StructuredTaskScope.FailedException e) {
                 log.error("Party has failed.... Because " + e.getMessage(), e);
                 break;
             }

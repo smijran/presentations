@@ -34,7 +34,11 @@ public class WeAreMeeting {
 
     void main() throws InterruptedException {
         while (true) {
-            try (var scope = new StructuredTaskScope<MeetingTime>("MeetingChase", VT_THREAD_FACTORY)) {
+            try (var scope = StructuredTaskScope.open(
+                    StructuredTaskScope.Joiner.awaitAll(),
+                    conf -> conf.withName("MeetingChoosing")
+                            .withThreadFactory(VT_THREAD_FACTORY)
+            )) {
 
                 var tasks =
                         NAMES.stream()

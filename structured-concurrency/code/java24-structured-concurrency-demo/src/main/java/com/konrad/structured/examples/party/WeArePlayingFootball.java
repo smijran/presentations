@@ -24,7 +24,7 @@ public class WeArePlayingFootball {
             return playMatch(roundLevel, teamA, teamB);
         }
 
-        try (var playSubFinals = new StructuredTaskScope<>("FootballGames", VT_THREAD_FACTORY)) {
+        try (var playSubFinals = StructuredTaskScope.open()) {
             StructuredTaskScope.Subtask<Team> teamA =
                     playSubFinals.fork(() -> playRound(atomicTeamPicker, roundLevel - 1));
             StructuredTaskScope.Subtask<Team> teamB =
