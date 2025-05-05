@@ -16,14 +16,14 @@
 <div class="reveal">
     <div class="slides">
         <section>
-            <h1>Organizing chaos</h1>
+            <h1>Organizing Chaos</h1>
             <h3>Structured Concurrency</h3>
         </section>
         <section>
             <h2>Konrad Szałkowski</h2>
             <img src="simple_konrad_face.jpg" style="height:200px;" alt="Me"/>
             <div>Java explorer, performance tinkerer</div>
-            <div style="font-style: italic;">Dreams of marrying GPUs and Java</div>
+            <div style="font-style: italic;">Dreams of marrying Java and GPUs</div>
             <small>X: @smijran, LinkedIn: I am not hiding :)</small>
         </section>
         <section>
@@ -64,11 +64,11 @@
                 </div>
             </section>
             <section>
-                <div>And they were effective...</div>
-                <div class="fragment">But not efficient...</div>
+                <div>They were effective...</div>
+                <div class="fragment">But not efficient.</div>
             </section>
             <section>
-                <div>HIM showed up</div>
+                <div>He showed up</div>
                 <img src="Dijkstra_career.jpg" style="height:80%;" alt="Dijkstra"/>
             </section>
             <section>
@@ -126,12 +126,12 @@
             </section>
             <section>
                 <div>How to maintain control?</div>
-                <div class="fragment" style="font-style:italic;">Structured programing</div>
+                <div class="fragment" style="font-style:italic;">Structured programming</div>
             </section>
             <section>
-                <div>Code will flow</div>
+                <div>Code flows</div>
                 <div class="fragment">As a block</div>
-                <div class="fragment">Flow control will be achieved by</div>
+                <div class="fragment">Flow control is achieved through</div>
                 <figure class="fragment" style="display: inline-block; padding-right: 20px;">
                     <img src="if.svg" style="height:300px;" alt="conditional"/>
                     <figcaption>
@@ -158,8 +158,8 @@
             </section>
             <section>
                 <div>What about Java?</div>
-                <div class="fragment">GOTO is a keyword</div>
-                <div class="fragment">Causing compile error</div>
+                <div class="fragment">GOTO is a reserved keyword</div>
+                <div class="fragment">It causes a compilation error</div>
                 <div class="fragment">Ufff...</div>
                 <img class="fragment" src="stack_overflow.png" alt="Stack overflow sic!"/>
             </section>
@@ -192,7 +192,7 @@
             </section>
             <section>
                 <div>They are cumbersome</div>
-                <div class="fragment">But do not cause problems with reasoning</div>
+                <div class="fragment">but do not hinder reasoning</div>
             </section>
             <section>
                 <div>You are not having this</div>
@@ -215,13 +215,13 @@
             </section>
             <section>
                 <div>Memory:</div>
-                <div>From 8 MBs of RAM in my 1995's machine</div>
-                <div>To 32GB in this laptop</div>
+                <div>From 8 MB of RAM in my 1995's machine</div>
+                <div>To 32 GB in this laptop</div>
             </section>
             <section>
                 <div>CPUs:</div>
-                <div>From 1 core - 126.5 MIPS in 1995</div>
-                <div>To 16 cores - 70000 MIPS - this laptop</div>
+                <div>From single core (126.5 MIPS) in 1995</div>
+                <div>To 16 cores (70000 MIPS) this laptop</div>
             </section>
             <section>
                 <div>It was not easy to grasp</div>
@@ -253,7 +253,7 @@
 						                .start(() -> somethingNeedsToBeMade());
 
 						        Thread.ofVirtual().name("Chumbawamba")
-						                .start(() -> evenMoreThingsNeedsToBeMade());
+						                .start(() -> evenMoreThingsNeedToBeMade());
 							</code>
 						</pre>
                 <div class="fragment">What happened to computation?</div>
@@ -286,7 +286,7 @@
                 <div>Remedy:</div>
                 <div class="fragment" style="font-style:italic;">Structured Concurrency</div>
                 <small class="fragment">Put parallel tasks into structure/blocks to make reasoning about them
-                    possible</small>
+                    possible using already familiar mindset</small>
             </section>
             <section>
                 <div>This allows you to answer:</div>
@@ -315,17 +315,18 @@
                 <div>We are adults...</div>
                 <div class="fragment">We want to meet together...</div>
                 <div class="fragment">There are five of us...</div>
-                <div class="fragment">With Java... preview API - JEP 505.</div>
+                <div class="fragment">With Java - JEP 505</div>
+                <div class="fragment">Built from PR</div>
             </section>
             <section>
                 <div>Meeting time choosing simulation</div>
             </section>
             <section>
-                <div>Lets organize party</div>
+                <div>Let's organize a party</div>
             </section>
             <section>
-                <div>Scopes can form tree</div>
-                <div>Lets play football</div>
+                <div>Scopes can form a tree with parent child relationships</div>
+                <div>Let's play football</div>
             </section>
             <section>
                 <div>
@@ -335,10 +336,25 @@
             <section>
                 <div>Real life examples:</div>
                 <ol>
+                    <li>Aggregating elements for some computations</li>
                     <li>Downloading chunked files</li>
                     <li>Parallel transformation of elements</li>
-                    <li>Aggregating elements for some computations</li>
                 </ol>
+            </section>
+            <section>
+                <div>What is it for?</div>
+                <ul>
+                    <li class="fragment">Simplify concurrency control</li>
+                    <li class="fragment">Introduce parent-child relationship to tasks</li>
+                </ul>
+            </section>
+            <section>
+                <div>What is it not for?</div>
+                <ul>
+                    <li class="fragment">Replace concurrency constructs of Java</li>
+                    <li class="fragment">Replace Future/RxJava/you name it</li>
+                    <li class="fragment">Be the one and only SC approach (e.g. Jox)</li>
+                </ul>
             </section>
         </section>
         <section>
@@ -371,12 +387,12 @@
             </section>
             <section>
                 <h2>Inheritance</h2>
-                <div class="fragment">Each Thread has it own copy of value</div>
+                <div class="fragment">Each thread has its own copy of the value</div>
             </section>
             <section>
                 <h2>Lifecycle</h2>
                 <div class="fragment">We have thread pools</div>
-                <div class="fragment">Who remembers to clean after themselves in a kitchen?</div>
+                <div class="fragment">Who remembers to clean up after themselves in the kitchen?</div>
                 <div class="fragment">Always?</div>
                 <div class="fragment"><a
                         href="https://docs.oracle.com/javase/8/docs/api/java/lang/ThreadLocal.html#remove--">ThreadLocal#remove()</a>
