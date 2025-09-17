@@ -37,6 +37,7 @@ public class WeArePaintingRooms {
                                 printPaintChange(address);
                                 paintRoomsDownlane(address);
                             });
+            printPaintRestore(address);
         } else {
             paintRoomsDownlane(address);
         }
@@ -49,6 +50,10 @@ public class WeArePaintingRooms {
 
     private static void printPaintChange(List<String> address) {
         log.info("{} --> {}", String.format("%-10s", String.join("-", address)), PAINT.get());
+    }
+
+    private static void printPaintRestore(List<String> address) {
+        log.info("{} <-- {}", String.format("%-10s", String.join("-", address)), PAINT.get());
     }
 
     private static boolean shouldWeChangePaint() {
