@@ -2,8 +2,6 @@
 
 ## Free lunch?
 
-EgnyteDay 2025
-
 --
 
 ## About me
@@ -75,8 +73,6 @@ EgnyteDay 2025
 --
 
 ## Enterprise choice no.1
-
-Egnyte is no different
 
 --
 
@@ -215,19 +211,6 @@ JEP 450/519
 
 10-20% shrink in memory size  
 10% less CPU time
-
---
-
-## Egnyte
-
-We are using mostly on Java 17.  
-Current LTS version is Java 25.
-
---
-
-## Egnyte
-
-Lets go for -> Java 25.
 
 --
 
