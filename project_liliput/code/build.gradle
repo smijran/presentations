@@ -27,3 +27,28 @@ application {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// Run with Project Lilliput enabled and hashCode from memory address
+tasks.register('runWithLilliput', JavaExec) {
+    group = 'application'
+    description = 'Run the application with Project Lilliput enabled and hashCode from memory address'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'project.liliput.App'
+    jvmArgs = [
+        '-XX:+UnlockExperimentalVMOptions',
+        '-XX:+UseCompactObjectHeaders',
+        '-XX:hashCode=4'
+    ]
+}
+
+// Run without Project Lilliput but with hashCode from memory address
+tasks.register('runWithoutLilliput', JavaExec) {
+    group = 'application'
+    description = 'Run the application without Project Lilliput but with hashCode from memory address'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'project.liliput.App'
+    jvmArgs = [
+        '-XX:+UnlockExperimentalVMOptions',
+        '-XX:hashCode=4'
+    ]
+}

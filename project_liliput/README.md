@@ -19,9 +19,32 @@ cd code
 # Run the application
 ./gradlew run
 
+# Run with Project Lilliput enabled and hashCode from memory address
+./gradlew runWithLilliput
+
+# Run without Project Lilliput but with hashCode from memory address
+./gradlew runWithoutLilliput
+
 # Run tests
 ./gradlew test
 ```
+
+### Run Configurations
+
+Two Gradle tasks are available to compare performance with and without Project Lilliput:
+
+#### runWithLilliput
+Runs with Project Lilliput enabled and hashCode from memory address:
+- `-XX:+UnlockExperimentalVMOptions` - Unlocks experimental VM options
+- `-XX:+UseCompactObjectHeaders` - Enables Project Lilliput compact object headers (reduces object header size from 128 bits to 64 bits)
+- `-XX:hashCode=4` - Generates identity hashcode from memory address (experimental feature)
+
+#### runWithoutLilliput
+Runs without Project Lilliput but with hashCode from memory address:
+- `-XX:+UnlockExperimentalVMOptions` - Unlocks experimental VM options
+- `-XX:hashCode=4` - Generates identity hashcode from memory address (experimental feature)
+
+This allows you to compare the memory footprint and performance with and without compact object headers.
 
 ## Slides
 
