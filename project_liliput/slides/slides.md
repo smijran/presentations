@@ -8,7 +8,7 @@
 
 **Konrad Szałkowski**
 
-- Principal software engineer (CFS Omega)
+- Principal software engineer (Egnyte)
 - Java enthusiast & Poznań JUG leader
 - Dreams of marrying Java & GPUs
 
