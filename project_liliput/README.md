@@ -7,7 +7,7 @@ This presentation consists of two parts:
 Java project initialized with Gradle (with wrapper).
 
 ### Requirements
-- Java 24 or higher
+- Java 25 or higher
 
 ### Usage
 ```bash
