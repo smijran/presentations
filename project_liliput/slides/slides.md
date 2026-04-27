@@ -244,17 +244,45 @@ JEP 450/519
 ## Project Liliput
 ## Version 2 (hold my beer)
 
-128 bits -> 32 bits
+96 bits -> 32 bits
+
+--
+
+## How?
+
+Identity hash code is the problem — **31 bits** in every header
+
+2 state bits replace them:
+
+| State | Meaning |
+|-------|---------|
+| `00` | Never hashed — nothing stored |
+| `01` | Hashed, object not moved — recompute from address |
+| `10` | Hashed, GC moved it — 4 bytes appended to object |
+
+Most objects are never passed to `System.identityHashCode()` — why pay for all of them?
 
 ---
 
 ## Links
 
-https://www.baeldung.com/java-object-header-reduced-size-save-memory  
+**Project Lilliput**  
+https://wiki.openjdk.org/display/lilliput/Main  
+https://openjdk.org/jeps/450  
+https://openjdk.org/jeps/519  
+https://openjdk.org/jeps/8349069  
+
+**Object headers deep dive**  
 https://www.happycoders.eu/java/compact-object-headers/  
+https://www.baeldung.com/java-object-header-reduced-size-save-memory  
+
+**Talks**  
 https://www.youtube.com/watch?v=kHJ1moNLwao  
 https://www.youtube.com/watch?v=9ioh6kprnPE  
-https://wiki.openjdk.org/display/lilliput/Main  
+
+**Cloud pricing**  
+https://cloud.google.com/compute/vm-instance-pricing  
+https://instances.vantage.sh  
 
 --
 
