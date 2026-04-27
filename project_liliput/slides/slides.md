@@ -1,6 +1,6 @@
 	# Project Liliput
 
-## Free lunch?
+## First free lunch
 
 --
 
@@ -24,9 +24,9 @@
 
 ## Ingredients
 
+- Storage
 - CPU time
 - Memory
-- Storage
 
 --
 
@@ -34,12 +34,25 @@
 
 | vCPUs | C4-Standard (USD/hour) | C4-Highmem (USD/hour) |
 |-------|------------------------|-----------------------|
-| 2     | 0.06974352             | 0.0924264             |
-| 16    | 0.5692896              | 0.75075264            |
-| 48    | 1.7078688              | 2.25225792            |
-| 192   | 6.8314752              | 9.00903168            |
+| 2     | 0.061047               | 0.080892              |
+| 16    | 0.498141               | 0.656901              |
+| 48    | 1.494360               | 1.970703              |
+| 192   | 5.977566               | 7.882875              |
 
-~ +30% more expensive
+~ +32% more expensive
+
+--
+
+## AWS Reserved Instances (1yr)
+
+| vCPUs | M7i-Standard (USD/hour) | R7i-Highmem (USD/hour) |
+|-------|-------------------------|------------------------|
+| 2     | 0.067                   | 0.088                  |
+| 16    | 0.533                   | 0.700                  |
+| 48    | 1.600                   | 2.100                  |
+| 192   | 6.401                   | 8.402                  |
+
+~ +31% more expensive
 
 --
 
@@ -76,22 +89,13 @@
 
 --
 
-## Reasons
+## Sentenced to death
 
-- WORA (hardware independence) 
-- Backwards compatibility
-- Security 
-- Rich ecosystem
-- Battle proven
-
---
-
-## Why developers are (were) not so fond of java?
-
-- Legacy solutions
-- Bloat code
-- Nothing new for a long periods of time
-- JVM not efficient
+- Legacy code graveyards
+- Verbose, boilerplate code
+- Years without meaningful updates
+- Slow, bloated JVM
+- "Java is dead"
 
 --
 
@@ -101,33 +105,40 @@
 
 --
 
-## Change
+## Still in service
+
+- WORA (hardware independence)
+- Backwards compatibility
+- Security
+- Rich ecosystem
+- Battle proven
+
+--
+
+## Still getting upgrades
 
 Since 2017 Java is released twice a year.
 
 Every 4 releases 1 is marked as LTS.
 
---
-
-## Language evolution
-
 - New language constructs
-- Smaller code
-- Better code safety
-- ...
-
---
-
-## JVM is also evolving
-
 - Virtual Threads
 - Better JIT Compiler
 - Faster machine code
-- ...
 
 --
 
-## Evolution for better future in cloud driven world  
+## Java meets cloud
+
+- Container-aware JVM (CPU & memory limits respected)
+- Virtual Threads — millions of concurrent connections
+- GraalVM Native Image — instant startup, low memory footprint
+- Project CRaC — checkpoint/restore for near-native startup
+- Cloud-native frameworks: Quarkus, Micronaut, Helidon
+
+--
+
+## You cannot retire what works
 
 ---
 
@@ -145,6 +156,20 @@ JVM memory
 
 --
 
+## JVM is objects all the way down
+
+Not just your code — the runtime itself too
+
+- Loaded classes → `Class` objects
+- Threads → `Thread` objects
+- Arrays → objects (with headers!)
+- Strings → `String` objects
+- Exceptions → objects
+
+Every one of them carries an object header
+
+--
+
 ## Object header
 
 Handler of object  
@@ -157,10 +182,10 @@ Occupies memory
 
 - Mark Word (64 Bits)
   - Identity hash code (31 bits)
-  - GC Data (4 bits)
-  - Lock tag bits (3 bits)
-  - Reserved bits / biased locking bits (26 bits)
-- Class pointer (64 bits)
+  - GC Data / age (4 bits)
+  - Lock tag bits (2 bits)
+  - Reserved bits / biased locking bits (27 bits)
+- Class pointer (32 bits, compressed)
 
 --
 
@@ -173,33 +198,35 @@ JEP 450/519
 
 ## Version 1
 
-128 bits -> 64 bits
+96 bits -> 64 bits
 
 --
 
 ## Why was it possible?
 
-- JEP 374 - Remove biased locking
+- JEP 374 - Deprecate & remove biased locking
 
 - Mark Word (64 Bits)
   - Identity hash code (31 bits)
-  - GC Data (4 bits)
-  - Lock tag bits (3 bits)
-  - ~~Reserved bits / biased locking bits (26 bits)~~
-- Class pointer (64 bits)
+  - GC Data / age (4 bits)
+  - Lock tag bits (2 bits)
+  - ~~Reserved bits / biased locking bits (27 bits)~~
+- Class pointer (32 bits, compressed)
 
 --
 
 ## Why was it possible?
 
-- 2^64 =  18 446 744 073 709 551 616
+- Class metadata lives in a dedicated 4 GB space
+- JVM places each Klass at a 1 KB boundary
+- Store block index, not byte address: 4 GB / 1 KB = **2^22** blocks → 22 bits
 
-- Mark Word ~~(64 Bits)~~ -> 38 bits 
+- Mark Word ~~(64 Bits)~~ -> 37 bits
   - Identity hash code (31 bits)
-  - GC Data (4 bits)
-  - Lock tag bits (3 bits)
-  - ~~Reserved bits / biased locking bits (26 bits)~~
-- ~~Class pointer (64 bits)~~ -> (26 bits)
+  - GC Data / age (4 bits)
+  - Lock tag bits (2 bits)
+  - ~~Reserved bits / biased locking bits (27 bits)~~
+- ~~Class pointer (32 bits)~~ -> (22 bits)
 
 ---
 
