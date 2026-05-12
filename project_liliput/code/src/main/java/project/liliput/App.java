@@ -6,7 +6,7 @@ public class App {
 	//	private int test = 1;
 	}
 
-	private final static int NUM_OF_OBJECTS = 1000;
+	private final static int NUM_OF_OBJECTS = 100;
 
 	public static void main() {
 		int[] address = new int[NUM_OF_OBJECTS];

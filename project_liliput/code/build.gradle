@@ -36,8 +36,8 @@ tasks.register('runWithLilliput', JavaExec) {
     mainClass = 'project.liliput.App'
     jvmArgs = [
         '-XX:+UnlockExperimentalVMOptions',
-        '-XX:+UseCompactObjectHeaders',
-        '-XX:hashCode=4'
+	'-XX:hashCode=4',
+        '-XX:+UseCompactObjectHeaders'
     ]
 }
 
