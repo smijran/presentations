@@ -3,6 +3,7 @@ package project.liliput;
 public class App {
 
 	private final static class SomeObject {
+	//	private int test = 1;
 	}
 
 	private final static int NUM_OF_OBJECTS = 1000;

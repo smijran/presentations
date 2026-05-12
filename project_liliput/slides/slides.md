@@ -61,6 +61,11 @@
 </div>
 
 --
+<div>
+    <img src="cat.gif" style="width:auto; height:40vw;" />
+</div>
+
+--
 
 ## Memory is also cost driver
 
@@ -78,7 +83,7 @@
 
 --
 
-## Java as platform
+## Java is platform
 
 - Language
 - JVM
@@ -122,7 +127,7 @@ Since 2017 Java is released twice a year.
 Every 4 releases 1 is marked as LTS.
 
 - New language constructs
-- Virtual Threads
+- Better JVM
 - Better JIT Compiler
 - Faster machine code
 
@@ -204,9 +209,9 @@ JEP 450/519
 
 ## Why was it possible?
 
-- JEP 374 - Deprecate & remove biased locking
+- JEP 374 - Deprecate & remove biased locking (Java 15)
 
-- Mark Word (64 Bits)
+- Mark Word ~~(64 Bits)~~ -> 37 bits
   - Identity hash code (31 bits)
   - GC Data / age (4 bits)
   - Lock tag bits (2 bits)
@@ -288,3 +293,8 @@ https://instances.vantage.sh
 
 ## Q&A
 
+https://app.sli.do/
+
+<div align="center">
+    <img src="qrcode_app.sli.do.png"/>
+</div>
