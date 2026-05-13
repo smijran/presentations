@@ -198,6 +198,7 @@ Occupies memory
 
 Compact Object Headers  
 JEP 450/519
+(Java 25)
 
 --
 
