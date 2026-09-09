@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'strings.compaction'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_26
+    targetCompatibility = JavaVersion.VERSION_26
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+    mainClass = 'strings.compaction.App'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+def heapArgs = ['-Xms3g', '-Xmx3g']
+
+// Compact Strings (JEP 254, default since Java 9): ASCII/Latin-1 strings are
+// backed by byte[] instead of char[] — half the array memory per string.
+tasks.register('runWithCompactStrings', JavaExec) {
+    group = 'application'
+    description = 'Allocate a large ASCII string population with Compact Strings enabled (default)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'strings.compaction.App'
+    jvmArgs = heapArgs + ['-XX:+CompactStrings']
+}
+
+// Same workload, same heap, only the flag changes: every String falls back
+// to the pre-JEP-254 char[] backing, even though the content is pure ASCII.
+tasks.register('runWithoutCompactStrings', JavaExec) {
+    group = 'application'
+    description = 'Allocate the same ASCII string population with Compact Strings disabled'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'strings.compaction.App'
+    jvmArgs = heapArgs + ['-XX:-CompactStrings']
+}

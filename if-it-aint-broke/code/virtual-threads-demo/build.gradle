@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'virtual.threads.demo'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+    mainClass = 'virtual.threads.demo.ThroughputApp'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// Compiled for Java 21 (not 26, unlike the rest of this talk's demos) so the
+// exact same class files can run unmodified on both a pre-JEP-491 JDK (21)
+// and a post-JEP-491 JDK (24+) for the pinning comparison below.
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+}
+
+// Act 1: fixed platform thread pool vs virtual-thread-per-task executor,
+// same blocking workload at scale. Runs on whichever JDK Gradle is using.
+tasks.register('runThroughput', JavaExec) {
+    group = 'application'
+    description = 'Compare a fixed platform thread pool against virtual threads on the same blocking workload'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'virtual.threads.demo.ThroughputApp'
+}
+
+// Act 2: JEP 491 (Synchronize Virtual Threads without Pinning, Java 24).
+// Same class file, run on two different JDKs. Override with
+// -Pjava21Home=... / -Pjava26Home=... if your installs live elsewhere.
+def java21Home = findProperty('java21Home') ?: "${System.getProperty('user.home')}/.sdkman/candidates/java/21.0.12+1.1-tem"
+def java26Home = findProperty('java26Home') ?: "${System.getProperty('user.home')}/.sdkman/candidates/java/26.0.2-tem"
+
+tasks.register('runPinningPre491', JavaExec) {
+    group = 'application'
+    description = 'Pinning demo on Java 21 (pre-JEP-491): synchronized + a blocking call pins the carrier thread'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'virtual.threads.demo.PinningApp'
+    executable = "${java21Home}/bin/java"
+}
+
+tasks.register('runPinningPost491', JavaExec) {
+    group = 'application'
+    description = 'Pinning demo on Java 26 (post-JEP-491): no pinning'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'virtual.threads.demo.PinningApp'
+    executable = "${java26Home}/bin/java"
+}

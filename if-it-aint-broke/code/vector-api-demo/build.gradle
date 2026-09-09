@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'vector.demo'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_26
+    targetCompatibility = JavaVersion.VERSION_26
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+    mainClass = 'vector.demo.App'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// The Vector API is still incubating as of Java 26/27 (12th incubator
+// round and counting) — needs --add-modules at both compile and run time.
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['--add-modules', 'jdk.incubator.vector']
+}
+
+tasks.named('run', JavaExec) {
+    jvmArgs = ['--add-modules', 'jdk.incubator.vector', '-Xms1g', '-Xmx2g']
+}

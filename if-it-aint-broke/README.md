@@ -69,6 +69,12 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 #### 5.1 Garbage Collection
 
+> **Why `code/gc-comparison`'s workload actually shows a GC difference:** it's tempting to write a demo that just allocates garbage as fast as possible, but pure young-gen churn is exactly what *every* modern collector handles well — it wouldn't differentiate G1 from ZGC/Shenandoah. Four choices make the difference visible instead:
+> 1. **A growing retained set (~300MB of a 1GB heap), not just throwaway garbage.** Live data that survives into old gen forces real collection work (mixed/full GCs for G1; concurrent old-gen work for ZGC/Shenandoah) — this is where the collectors' strategies actually diverge.
+> 2. **A small, fixed heap (`-Xms1g -Xmx1g`).** Keeps the heap under real pressure within a live-demo-sized window (5–30s) instead of needing minutes to fill a large heap.
+> 3. **Latency is timed on the same thread doing the "work,"** not measured externally. A stop-the-world pause blocks *every* thread, including the one recording `System.nanoTime()` around each unit of work — so any pause shows up directly as a spike in that thread's own recorded latency, no separate profiler needed.
+> 4. **Reporting percentiles (p99, p99.9, max), not throughput or averages.** G1's pauses are rare but large; an average buries them. The `max` line is deliberately captioned "the worst pause a real request would have felt" because that's the number a pause-based collector can't hide and a concurrent collector doesn't produce.
+
 ##### G1 GC
 *Make the default GC faster, smarter, and less wasteful across all dimensions.*
 
@@ -129,7 +135,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Gains:** Latin-1/ASCII strings use `byte[]` instead of `char[]` — ~50% heap reduction for typical string-heavy workloads; proportionally less GC pressure. Indify concat replaces StringBuilder chains with invokedynamic — faster string building, smaller bytecode.
 > **Conditions:** Apps with predominantly ASCII/Latin-1 strings benefit most. Heavy multi-byte character workloads (CJK, emoji-heavy) see minimal Compact Strings benefit but still gain from faster concat.
-> **Demo idea:** Load a large ASCII/Latin-1 text corpus into `String[]` on Java 8 vs Java 9+. Compare per-object size with JOL (Java Object Layout) or `jmap -histo` — the `byte[]` vs `char[]` backing is a clean, visual before/after.
+> **Demo idea:** Reserve a lot of heap for ASCII strings, then measure what they cost with `-XX:+CompactStrings` vs `-XX:-CompactStrings` — cleaner than a Java 8 vs 9+ comparison since it isolates the one variable on a single JDK instead of also changing everything else about the runtime. **Built:** `code/compact-strings` (Java 26) — verified: 5,000,000 ASCII strings (40 chars each) cost 401.51 MB with Compact Strings on vs 592.25 MB off (84.2 vs 124.2 bytes/string) — a real ~32% heap reduction with zero application code changes.
 
 ##### Class Data Sharing
 *Pre-load class metadata once, share it across JVM instances via memory-mapped archive.*
@@ -192,7 +198,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Gains:** IO-bound throughput scales without tuning thread pool sizes. Eliminates the "thread per request" bottleneck — applications previously limited by OS thread count can handle orders of magnitude more concurrent requests. JEP 491 removes pinning on `synchronized` blocks — critical for Spring, JDBC, and most frameworks.
 > **Conditions:** IO-intensive workloads only (HTTP, DB, file IO). CPU-bound tasks see no improvement — virtual threads don't add CPU parallelism. JEP 491 (Java 24) is a prerequisite for most real-world frameworks; Java 21 virtual threads had pinning issues with `synchronized`.
-> **Demo idea:** Fire N concurrent IO-bound tasks (simulate a blocking call, e.g. `Thread.sleep` or a real HTTP/DB call) against a fixed-size platform thread pool (e.g. 200 threads) vs `Executors.newVirtualThreadPerTaskExecutor()`. Crank N into the tens of thousands — the platform pool queues and stalls while virtual threads complete near-linearly. Second act: reproduce the JEP 491 pinning fix live — wrap the blocking call in a `synchronized` block on Java 21 vs Java 24+, and show virtual-thread pinning events (JFR `jdk.VirtualThreadPinned`) appear pre-491 and disappear after.
+> **Demo idea:** Fire N concurrent IO-bound tasks (simulate a blocking call, e.g. `Thread.sleep` or a real HTTP/DB call) against a fixed-size platform thread pool (e.g. 200 threads) vs `Executors.newVirtualThreadPerTaskExecutor()`. Crank N into the tens of thousands — the platform pool queues and stalls while virtual threads complete near-linearly. Second act: reproduce the JEP 491 pinning fix live — wrap the blocking call in a `synchronized` block on Java 21 vs Java 24+, and show virtual-thread pinning events (JFR `jdk.VirtualThreadPinned`) appear pre-491 and disappear after. **Built:** `code/virtual-threads-demo`. Act 1 (`gradle runThroughput`, Java 26): 50,000 tasks × 50ms — platform pool (200 threads) 12,569ms vs virtual threads 278ms, a 45.2x speedup, tracking the pool's theoretical bound almost exactly. Act 2 turned out not to need JFR at all — timing alone proves JEP 491: same bytecode (compiled `--release 21`), each virtual thread `synchronized` on its own private lock then `Thread.sleep`s inside it; run on Java 21 (`gradle runPinningPre491`) takes 6,419ms (matches the pinned prediction of 6,400ms = 500 tasks ÷ 16 carrier threads × 200ms); the identical code on Java 26 (`gradle runPinningPost491`) takes 210ms. The ~30x gap between those two runs, nothing else changed, *is* the JEP.
 
 ##### Locking
 *Reduce overhead of monitor operations — from acquisition to edge-case safety.*
@@ -227,7 +233,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Gains:** 2–10x speedup for explicitly vectorized code vs scalar loops — ML inference, signal processing, image processing, crypto, numerical computation.
 > **Conditions:** Requires CPU with vector instruction support (x86 AVX2/AVX-512, ARM SVE/SVE2). Not general-purpose — only benefits code explicitly rewritten to use the API. Long incubation due to dependency on Project Valhalla (value types — see §5.5). Not stable API yet — cannot use in libraries shipped as dependencies.
-> **Demo idea:** A simple numeric kernel (dot product, array sum, or a small image-processing filter) over a large `float[]`/`int[]`, run three ways: a plain scalar loop, an auto-vectorization-friendly scalar loop, and an explicit `jdk.incubator.vector` version (`--add-modules jdk.incubator.vector --enable-preview` as needed). Benchmark with JMH to avoid JIT/warmup noise, and report ops/sec — the 2–10x gap over the scalar baseline is the whole point. Worth noting on slide: needs `--add-modules jdk.incubator.vector` since it's still incubating.
+> **Demo idea:** A simple numeric kernel (dot product, array sum, or a small image-processing filter) over a large `float[]`/`int[]`, run three ways: a plain scalar loop, an auto-vectorization-friendly scalar loop, and an explicit `jdk.incubator.vector` version (`--add-modules jdk.incubator.vector --enable-preview` as needed). Benchmark with JMH to avoid JIT/warmup noise, and report ops/sec — the 2–10x gap over the scalar baseline is the whole point. Worth noting on slide: needs `--add-modules jdk.incubator.vector` since it's still incubating. **Built:** `code/vector-api-demo` (Java 26) — dot product with `fma`, hand-rolled warm-up + timed loop instead of JMH (kept dependency-free like the other demos). Verified on this AVX-512 host (16 lanes/vector): 5.52x speedup at 5M elements, 4.53x at 50M (smaller at scale because it becomes memory-bandwidth-bound). An older, simpler sum-based demo also exists in this repo at `../vector-api/code/geecon2023` (Maven, Java 20) — this one is a fresh, self-contained version matching this talk's Java 26 baseline.
 
 ##### CPU Intrinsics
 *Route specific operations directly to hardware instruction equivalents.*
@@ -270,6 +276,23 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 ---
 
 ### 6. Closing Argument
+
+#### Cost Impact — Putting a $ Number on It
+
+Grounded in the demos above plus real GCP pricing (n2-standard-4: 4 vCPU/16GB, $0.19/hr ≈ $138.70/month at 730 hrs — the closer hardware match to what was measured, since it's the AVX-512 host the Vector API demo ran on). Baseline: **100 × n2-standard-4 ≈ $13,870/month ($166,440/year).**
+
+| Improvement | Measured | Applicability caveat | Realistic fleet reduction | $/month saved | $/year saved |
+|---|---|---|---|---|---|
+| **Compact Strings** | 32% less heap (401.5MB vs 592.3MB @ 5M strings) | Only helps if memory-bound, and only for the string-heavy fraction of live heap | ~13–24 machines | $1,800–$3,330 | $21,600–$39,950 |
+| **Vector API** | 4.53x on a pure vectorized kernel | Amdahl's law bites hard — if the vectorizable hot path is ~30% of total CPU time, whole-service speedup is only ~1.3x, not 4.53x | ~23 machines (mixed workload) up to 78 (kernel-only fleet) | $3,190–$10,820 | $38,280–$129,830 |
+| **Virtual Threads** | 45.2x on a thread-pool-bound IO workload | The 45x is a ceiling specific to services literally bottlenecked on platform-thread count; the real bottleneck (DB, downstream, CPU) caps it far lower in practice — 2–5x is a defensible real-world range | ~50–75 machines | $6,935–$10,400 | $83,220–$124,830 |
+| **GC (ZGC/Shenandoah vs G1)** | ~80% lower max pause (0.37–0.42ms vs 2.0ms) | Doesn't reduce machine count directly — the $ case is teams reclaiming capacity headroom they keep *purely* to protect p99 SLA from GC pauses (typically 15–30%, an assumption, not something the benchmark itself measures) | ~15–30 machines (illustrative) | $2,080–$4,160 | $24,970–$49,930 |
+
+**Not simply additive** — a given machine doesn't get all four benefits at once; they apply to different workload slices of a real fleet. A blended, non-double-counted estimate for a mixed 100-machine fleet: roughly **25–40 machines reclaimed → ~$3,500–$5,500/month, or ~$42,000–$66,000/year** — from opt-in features already sitting in the JDK, zero new hardware, and (for three of the four) zero app rewrites.
+
+Lead with **Virtual Threads** — "scaled out because platform threads ran out" is an extremely common real-world Java microservice pattern, making it the most defensible headline number. Vector API and Compact Strings are real but workload-specific — say so explicitly on the slide, don't let "4.53x" or "45x" get quoted out of context as a general fleet number. GC is the softest claim (reclaimed headroom, not measured savings) — flag it as an assumption, not a fact.
+
+*Sources: [e2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/e2-standard-4/), [n2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/n2-standard-4/), [Google Cloud Compute Engine Pricing Guide (2026)](https://www.cloudzero.com/blog/google-cloud-compute-engine-pricing-guide/)*
 
 > **Interlude — AhaSlides:** Poll slide, "Allow multiple answers" enabled — "Which of these free, opt-in wins are you actually using today?"
 > 1. G1 NUMA-aware allocation (`-XX:+UseNUMA`)
