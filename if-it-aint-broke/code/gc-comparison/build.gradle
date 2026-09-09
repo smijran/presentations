@@ -1,0 +1,83 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'gc.comparison'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_26
+    targetCompatibility = JavaVersion.VERSION_26
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+    mainClass = 'gc.comparison.App'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+def gcLogArgs = { String name ->
+    ["-Xlog:gc*:file=build/gc-logs/${name}.log:time,uptime,level,tags:filecount=0"]
+}
+
+def heapArgs = ['-Xms1g', '-Xmx1g']
+
+tasks.withType(JavaExec).configureEach {
+    doFirst {
+        file('build/gc-logs').mkdirs()
+    }
+}
+
+// Baseline: G1 (default GC since Java 9). Also the baseline for the ZGC and
+// Shenandoah comparisons below — same workload, only the GC flag changes.
+tasks.register('runG1', JavaExec) {
+    group = 'application'
+    description = 'Run the workload under G1 (baseline)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'gc.comparison.App'
+    jvmArgs = heapArgs + ['-XX:+UseG1GC'] + gcLogArgs('g1')
+}
+
+// G1 with NUMA-aware allocation (JEP 345, Java 14). Only shows a difference
+// on real multi-socket (NUMA) hardware — on a single-socket box this should
+// look statistically identical to runG1.
+tasks.register('runG1Numa', JavaExec) {
+    group = 'application'
+    description = 'Run the workload under G1 with NUMA-aware allocation enabled'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'gc.comparison.App'
+    jvmArgs = heapArgs + ['-XX:+UseG1GC', '-XX:+UseNUMA'] + gcLogArgs('g1-numa')
+}
+
+// ZGC (JEP 377, production since Java 15; generational by default since
+// Java 23). Compare its p99/max latency against runG1's.
+tasks.register('runZGC', JavaExec) {
+    group = 'application'
+    description = 'Run the workload under ZGC'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'gc.comparison.App'
+    jvmArgs = heapArgs + ['-XX:+UseZGC'] + gcLogArgs('zgc')
+}
+
+// Shenandoah (JEP 379, production since Java 15). NOT available on Oracle
+// JDK — this task will fail with "Unrecognized VM option" there. Use a
+// build from Red Hat, Eclipse Temurin, etc.
+tasks.register('runShenandoah', JavaExec) {
+    group = 'application'
+    description = 'Run the workload under Shenandoah (requires a non-Oracle JDK build)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'gc.comparison.App'
+    jvmArgs = heapArgs + ['-XX:+UseShenandoahGC'] + gcLogArgs('shenandoah')
+}

@@ -10,6 +10,8 @@ From there, we trace a decade of JVM evolution: from G1 to ZGC and Shenandoah, J
 
 The case is simple: staying on an old Java version isn't caution. It's a tax.
 
+**AhaSlides:** [Interlude polls](https://presenter.ahaslides.com/presentation/10026566) — the three live interludes below (Java version survey, support True/False, closing "which wins are you using" poll).
+
 ---
 
 ## Outline
@@ -80,7 +82,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Gains:** Better pause-time predictability; OS memory returned proactively (lower container footprint); NUMA-aware allocation improves throughput on multi-socket servers; region pinning eliminates JNI-triggered stop-the-world stalls.
 > **Conditions:** NUMA gains only on multi-socket hardware. JNI pinning fix only relevant if native code called frequently.
-> **Demo idea:** Run the same allocation-heavy workload on single-socket vs. multi-socket (NUMA) hardware, with and without `-XX:+UseNUMA`. Capture throughput and pause data via `-Xlog:gc*` and compare side by side.
+> **Demo idea:** Run the same allocation-heavy workload on single-socket vs. multi-socket (NUMA) hardware, with and without `-XX:+UseNUMA`. Capture throughput and pause data via `-Xlog:gc*` and compare side by side. **Built:** `code/gc-comparison` (`gradle runG1` vs `runG1Numa`, Java 26) — verified on this (single-socket) dev machine the two report near-identical `max` latency, exactly the "no NUMA hardware, no difference" caveat from Conditions above; re-run on real multi-socket hardware before the talk to get a real delta.
 
 ##### ZGC
 *Sub-millisecond GC pauses regardless of heap size — from gigabytes to terabytes.*
@@ -94,7 +96,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Gains:** Pause times <1ms at any heap size. Generational mode (Java 21+) adds throughput on top of low latency — most apps see 10–20% throughput improvement vs non-generational ZGC.
 > **Conditions:** Latency-sensitive workloads (APIs, trading, real-time). Higher memory overhead than G1 (~10–20%). Generational mode default from Java 23; non-generational removed in Java 24 — no opt-out.
-> **Demo idea:** Same allocation-heavy workload under `-XX:+UseG1GC` vs `-XX:+UseZGC`. Capture pause-time histograms via JFR or `-Xlog:gc` and plot them side by side — G1's pause spikes against ZGC's flat sub-millisecond line make the point without needing narration.
+> **Demo idea:** Same allocation-heavy workload under `-XX:+UseG1GC` vs `-XX:+UseZGC`. Capture pause-time histograms via JFR or `-Xlog:gc` and plot them side by side — G1's pause spikes against ZGC's flat sub-millisecond line make the point without needing narration. **Built:** `code/gc-comparison` (`gradle runG1` vs `runZGC`, Java 26) — smoke-tested locally: G1 `max` ~2.0ms vs ZGC `max` ~0.37ms on the same workload/heap.
 
 ##### Shenandoah
 *Concurrent compaction — low pauses without sacrificing heap compactness.*
@@ -106,7 +108,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Gains:** ~1ms pauses; competitive throughput with G1; generational mode improves throughput further. Unlike ZGC, compacts heap concurrently — avoids fragmentation under long-running workloads.
 > **Conditions:** Latency-sensitive apps. Red Hat-maintained; available in OpenJDK. Higher CPU overhead than G1 due to concurrent work. Not available in Oracle JDK.
-> **Demo idea:** Same setup as the ZGC demo, run under `-XX:+UseShenandoahGC`. Requires a non-Oracle build (Red Hat build of OpenJDK, Eclipse Temurin, etc.) — worth calling out live as a concrete, lived-in example of the vendor fragmentation from Section 3.
+> **Demo idea:** Same setup as the ZGC demo, run under `-XX:+UseShenandoahGC`. Requires a non-Oracle build (Red Hat build of OpenJDK, Eclipse Temurin, etc.) — worth calling out live as a concrete, lived-in example of the vendor fragmentation from Section 3. **Built:** `code/gc-comparison` (`gradle runShenandoah`, Java 26 Temurin) — smoke-tested locally: `max` ~0.42ms, comparable to ZGC and well under G1's ~2.0ms.
 
 ##### Other
 - JEP 363: Remove CMS Garbage Collector (Java 14)
@@ -162,6 +164,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache line evictions; less GC pressure. Benefit scales with object count, not object size — most impactful for apps with millions of small objects. From Java 27, this is on **by default** — the win requires no flag at all.
 > **Conditions:** Experimental (opt-in) in Java 24, production (opt-in) in Java 25, default in Java 27. Part of Project Lilliput. No application code changes needed — transparent JVM optimization.
+> **Demo idea:** Reuse/adapt the existing `project_liliput` demo already in this repo (`../project_liliput`) — its Gradle `runWithLilliput` / `runWithoutLilliput` tasks toggle `-XX:+UseCompactObjectHeaders` (plus `-XX:hashCode=4` to keep identity hashcode generation constant between runs) over a large object population. Compare heap footprint and object header size directly, e.g. via JOL or a heap histogram (`jmap -histo`), with and without the flag. On Java 27+, add a third run with no flags at all to show the same reduction now happens by default.
 
 ##### Other
 *Targeted JVM internals improvements — each eliminating a specific overhead.*
@@ -189,6 +192,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Gains:** IO-bound throughput scales without tuning thread pool sizes. Eliminates the "thread per request" bottleneck — applications previously limited by OS thread count can handle orders of magnitude more concurrent requests. JEP 491 removes pinning on `synchronized` blocks — critical for Spring, JDBC, and most frameworks.
 > **Conditions:** IO-intensive workloads only (HTTP, DB, file IO). CPU-bound tasks see no improvement — virtual threads don't add CPU parallelism. JEP 491 (Java 24) is a prerequisite for most real-world frameworks; Java 21 virtual threads had pinning issues with `synchronized`.
+> **Demo idea:** Fire N concurrent IO-bound tasks (simulate a blocking call, e.g. `Thread.sleep` or a real HTTP/DB call) against a fixed-size platform thread pool (e.g. 200 threads) vs `Executors.newVirtualThreadPerTaskExecutor()`. Crank N into the tens of thousands — the platform pool queues and stalls while virtual threads complete near-linearly. Second act: reproduce the JEP 491 pinning fix live — wrap the blocking call in a `synchronized` block on Java 21 vs Java 24+, and show virtual-thread pinning events (JFR `jdk.VirtualThreadPinned`) appear pre-491 and disappear after.
 
 ##### Locking
 *Reduce overhead of monitor operations — from acquisition to edge-case safety.*
@@ -223,6 +227,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Gains:** 2–10x speedup for explicitly vectorized code vs scalar loops — ML inference, signal processing, image processing, crypto, numerical computation.
 > **Conditions:** Requires CPU with vector instruction support (x86 AVX2/AVX-512, ARM SVE/SVE2). Not general-purpose — only benefits code explicitly rewritten to use the API. Long incubation due to dependency on Project Valhalla (value types — see §5.5). Not stable API yet — cannot use in libraries shipped as dependencies.
+> **Demo idea:** A simple numeric kernel (dot product, array sum, or a small image-processing filter) over a large `float[]`/`int[]`, run three ways: a plain scalar loop, an auto-vectorization-friendly scalar loop, and an explicit `jdk.incubator.vector` version (`--add-modules jdk.incubator.vector --enable-preview` as needed). Benchmark with JMH to avoid JIT/warmup noise, and report ops/sec — the 2–10x gap over the scalar baseline is the whole point. Worth noting on slide: needs `--add-modules jdk.incubator.vector` since it's still incubating.
 
 ##### CPU Intrinsics
 *Route specific operations directly to hardware instruction equivalents.*
