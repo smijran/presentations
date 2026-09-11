@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'cds.demo'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_26
+    targetCompatibility = JavaVersion.VERSION_26
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // A real dependency with a sizeable class graph -- a trivial app with
+    // only a handful of classes barely gives CDS anything to share. Jackson
+    // is a common, realistic stand-in for "a microservice's framework
+    // classes."
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+}
+
+application {
+    mainClass = 'cds.demo.App'
+}
+
+tasks.register('copyRuntimeLibs', Copy) {
+    from(configurations.runtimeClasspath)
+    from(tasks.jar)
+    into layout.buildDirectory.dir('cds-libs')
+}
+
