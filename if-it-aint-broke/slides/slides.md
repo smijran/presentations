@@ -51,7 +51,7 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 
 Oracle · Red Hat · Azul · Microsoft · Amazon Corretto
 
-1. **Extended security patches** — once free updates end, CVE fixes only keep shipping to paying customers
+1. **Extended security patches** — Java 8's last free update was **8u202** (Jan 2019); Oracle's shipped paying customers all the way to **8u503** since. That gap is CVE fixes free users never got.
 2. **SLA-backed support** — an engineer on the hook, not a mailing list
 3. **TCK-certified builds** — a real guarantee of Java SE spec compliance
 4. **Fleet management tooling** — patching/inventory across your whole JVM estate
