@@ -69,6 +69,8 @@ Paying gets you patched and covered. Staying current gets you fast — for free.
 
 --
 
+<!-- .slide: data-visibility="hidden" -->
+
 ## The Clue in Your Build Tool
 
 A C compiler has two distinct concerns:
@@ -79,6 +81,8 @@ A C compiler has two distinct concerns:
 Java conflates them in one confusing set of flags.
 
 --
+
+<!-- .slide: data-visibility="hidden" -->
 
 ## `--source` vs `--target` vs `--release`
 
@@ -92,6 +96,8 @@ Targeting old bytecode is **not** a compatibility guarantee.
 
 --
 
+<!-- .slide: data-visibility="hidden" -->
+
 ## The runtime surprise
 
 Compiling for Java 19 bytecode, running on a Java 19 *JVM* —
@@ -99,6 +105,8 @@ Compiling for Java 19 bytecode, running on a Java 19 *JVM* —
 what could still go wrong?
 
 --
+
+<!-- .slide: data-visibility="hidden" -->
 
 ## The runtime surprise — Demo
 
@@ -114,6 +122,8 @@ javac --release 19 Hello.java
 Same file. Two ways to "target Java 19."
 
 --
+
+<!-- .slide: data-visibility="hidden" -->
 
 ## The runtime surprise — Results
 

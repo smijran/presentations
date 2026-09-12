@@ -59,6 +59,8 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ### 3. The Clue in Your Build Tool
 
+> **PARKED — hidden in the deck for now** (matching `data-visibility="hidden"` on the corresponding slides in `slides.md`). Kept here rather than deleted since the underlying demo is real and verified; revisit if this angle earns a place in the talk later.
+
 - A brief analogy: C compilers, `-std`, and `-march` — two distinct concerns
 - `--source` vs `--target` vs `--release` in javac, Maven, Gradle
 - Why targeting an old bytecode version is not a compatibility guarantee
@@ -160,7 +162,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Gains:** ~1ms pauses; competitive throughput with G1; generational mode improves throughput further. Unlike ZGC, compacts heap concurrently — avoids fragmentation under long-running workloads.
 > **Conditions:** Latency-sensitive apps. Red Hat-maintained; available in OpenJDK. Higher CPU overhead than G1 due to concurrent work. Not available in Oracle JDK.
-> **Demo idea:** Same setup as the ZGC demo, run under `-XX:+UseShenandoahGC`. Requires a non-Oracle build (Red Hat build of OpenJDK, Eclipse Temurin, etc.) — worth calling out live as a concrete, lived-in example of the vendor fragmentation from Section 3. **Built:** `code/gc-comparison` (`gradle runShenandoah`, Java 26 Temurin) — smoke-tested locally: `max` ~0.42ms, comparable to ZGC and well under G1's ~2.0ms.
+> **Demo idea:** Same setup as the ZGC demo, run under `-XX:+UseShenandoahGC`. Requires a non-Oracle build (Red Hat build of OpenJDK, Eclipse Temurin, etc.) — worth calling out live as a concrete, lived-in example of the vendor fragmentation from Section 2. **Built:** `code/gc-comparison` (`gradle runShenandoah`, Java 26 Temurin) — smoke-tested locally: `max` ~0.42ms, comparable to ZGC and well under G1's ~2.0ms.
 
 ##### Other
 - JEP 363: Remove CMS Garbage Collector (Java 14)
