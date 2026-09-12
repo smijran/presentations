@@ -104,6 +104,45 @@ what could still go wrong?
 
 ---
 
+## Compact Strings
+*Store ASCII strings as bytes, not chars*
+
+- JEP 254 — Compact Strings (Java 9)
+- JEP 280 — Indify String Concatenation (Java 9)
+
+--
+
+## Compact Strings — Demo
+
+```
+cd code/compact-strings
+gradle runWithCompactStrings
+gradle runWithoutCompactStrings
+```
+
+5,000,000 ASCII strings, 40 chars each — one flag changes.
+
+--
+
+## Compact Strings — Results
+
+| | Heap used | Bytes/string |
+|---|---|---|
+| `-XX:+CompactStrings` (default) | 401.51 MB | 84.2 |
+| `-XX:-CompactStrings` | 592.25 MB | 124.2 |
+
+**~32% less heap.** Zero application code changes.
+
+--
+
+## Compact Strings — Gains & Conditions
+
+**Gains:** ~50% smaller backing array for Latin-1/ASCII content; less GC pressure. Indify concat: faster string building, smaller bytecode.
+
+**Conditions:** apps with predominantly ASCII/Latin-1 content benefit most. Heavy CJK/emoji content sees far less array saving (but still gains from concat).
+
+---
+
 ## Garbage Collection
 
 G1 · ZGC · Shenandoah — one decade, three very different answers to the same problem.
@@ -226,45 +265,6 @@ Not available in Oracle JDK — needs Red Hat build of OpenJDK, Eclipse Temurin,
 - JEP 387 — Elastic Metaspace (Java 16)
 
 **Gains (Elastic Metaspace):** class-metadata memory returned to the OS promptly after unloading — matters most for app servers, OSGi, plugin systems.
-
----
-
-## Compact Strings
-*Store ASCII strings as bytes, not chars*
-
-- JEP 254 — Compact Strings (Java 9)
-- JEP 280 — Indify String Concatenation (Java 9)
-
---
-
-## Compact Strings — Demo
-
-```
-cd code/compact-strings
-gradle runWithCompactStrings
-gradle runWithoutCompactStrings
-```
-
-5,000,000 ASCII strings, 40 chars each — one flag changes.
-
---
-
-## Compact Strings — Results
-
-| | Heap used | Bytes/string |
-|---|---|---|
-| `-XX:+CompactStrings` (default) | 401.51 MB | 84.2 |
-| `-XX:-CompactStrings` | 592.25 MB | 124.2 |
-
-**~32% less heap.** Zero application code changes.
-
---
-
-## Compact Strings — Gains & Conditions
-
-**Gains:** ~50% smaller backing array for Latin-1/ASCII content; less GC pressure. Indify concat: faster string building, smaller bytecode.
-
-**Conditions:** apps with predominantly ASCII/Latin-1 content benefit most. Heavy CJK/emoji content sees far less array saving (but still gains from concat).
 
 ---
 

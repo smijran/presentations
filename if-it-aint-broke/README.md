@@ -67,7 +67,21 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ### 5. A Decade of JVM Performance — What You're Leaving Behind
 
-#### 5.1 Garbage Collection
+#### 5.1 Compact Strings
+
+##### Compact Strings
+*Store ASCII strings as bytes, not chars — halve their memory footprint.*
+
+- JEP 254: Compact Strings (Java 9)
+- JEP 280: Indify String Concatenation (Java 9)
+
+> **Gains:** Latin-1/ASCII strings use `byte[]` instead of `char[]` — ~50% heap reduction for typical string-heavy workloads; proportionally less GC pressure. Indify concat replaces StringBuilder chains with invokedynamic — faster string building, smaller bytecode.
+> **Conditions:** Apps with predominantly ASCII/Latin-1 strings benefit most. Heavy multi-byte character workloads (CJK, emoji-heavy) see minimal Compact Strings benefit but still gain from faster concat.
+> **Demo idea:** Reserve a lot of heap for ASCII strings, then measure what they cost with `-XX:+CompactStrings` vs `-XX:-CompactStrings` — cleaner than a Java 8 vs 9+ comparison since it isolates the one variable on a single JDK instead of also changing everything else about the runtime. **Built:** `code/compact-strings` (Java 26) — verified: 5,000,000 ASCII strings (40 chars each) cost 401.51 MB with Compact Strings on vs 592.25 MB off (84.2 vs 124.2 bytes/string) — a real ~32% heap reduction with zero application code changes.
+
+---
+
+#### 5.2 Garbage Collection
 
 > **Why `code/gc-comparison`'s workload actually shows a GC difference:** it's tempting to write a demo that just allocates garbage as fast as possible, but pure young-gen churn is exactly what *every* modern collector handles well — it wouldn't differentiate G1 from ZGC/Shenandoah. Four choices make the difference visible instead:
 > 1. **A growing retained set (~300MB of a 1GB heap), not just throwaway garbage.** Live data that survives into old gen forces real collection work (mixed/full GCs for G1; concurrent old-gen work for ZGC/Shenandoah) — this is where the collectors' strategies actually diverge.
@@ -125,17 +139,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.2 JIT & Runtime
-
-##### Compact Strings
-*Store ASCII strings as bytes, not chars — halve their memory footprint.*
-
-- JEP 254: Compact Strings (Java 9)
-- JEP 280: Indify String Concatenation (Java 9)
-
-> **Gains:** Latin-1/ASCII strings use `byte[]` instead of `char[]` — ~50% heap reduction for typical string-heavy workloads; proportionally less GC pressure. Indify concat replaces StringBuilder chains with invokedynamic — faster string building, smaller bytecode.
-> **Conditions:** Apps with predominantly ASCII/Latin-1 strings benefit most. Heavy multi-byte character workloads (CJK, emoji-heavy) see minimal Compact Strings benefit but still gain from faster concat.
-> **Demo idea:** Reserve a lot of heap for ASCII strings, then measure what they cost with `-XX:+CompactStrings` vs `-XX:-CompactStrings` — cleaner than a Java 8 vs 9+ comparison since it isolates the one variable on a single JDK instead of also changing everything else about the runtime. **Built:** `code/compact-strings` (Java 26) — verified: 5,000,000 ASCII strings (40 chars each) cost 401.51 MB with Compact Strings on vs 592.25 MB off (84.2 vs 124.2 bytes/string) — a real ~32% heap reduction with zero application code changes.
+#### 5.3 JIT & Runtime
 
 ##### Class Data Sharing
 *Pre-load class metadata once, share it across JVM instances via memory-mapped archive.*
@@ -186,7 +190,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.3 Concurrency
+#### 5.4 Concurrency
 
 ##### Virtual Threads (Project Loom)
 *M:N threading — millions of cheap virtual threads multiplexed onto a small OS thread pool.*
@@ -213,7 +217,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.4 Vector & CPU Intrinsics
+#### 5.5 Vector & CPU Intrinsics
 
 ##### Vector API
 *Explicit SIMD — express data-parallel operations that map directly to CPU vector instructions.*
@@ -232,7 +236,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - JEP 537: Vector API — 12th Incubator (Java 27) ← still not final after 11 years
 
 > **Gains:** 2–10x speedup for explicitly vectorized code vs scalar loops — ML inference, signal processing, image processing, crypto, numerical computation.
-> **Conditions:** Requires CPU with vector instruction support (x86 AVX2/AVX-512, ARM SVE/SVE2). Not general-purpose — only benefits code explicitly rewritten to use the API. Long incubation due to dependency on Project Valhalla (value types — see §5.5). Not stable API yet — cannot use in libraries shipped as dependencies.
+> **Conditions:** Requires CPU with vector instruction support (x86 AVX2/AVX-512, ARM SVE/SVE2). Not general-purpose — only benefits code explicitly rewritten to use the API. Long incubation due to dependency on Project Valhalla (value types — see §5.6). Not stable API yet — cannot use in libraries shipped as dependencies.
 > **Demo idea:** A simple numeric kernel (dot product, array sum, or a small image-processing filter) over a large `float[]`/`int[]`, run three ways: a plain scalar loop, an auto-vectorization-friendly scalar loop, and an explicit `jdk.incubator.vector` version (`--add-modules jdk.incubator.vector --enable-preview` as needed). Benchmark with JMH to avoid JIT/warmup noise, and report ops/sec — the 2–10x gap over the scalar baseline is the whole point. Worth noting on slide: needs `--add-modules jdk.incubator.vector` since it's still incubating. **Built:** `code/vector-api-demo` (Java 26) — dot product with `fma`, hand-rolled warm-up + timed loop instead of JMH (kept dependency-free like the other demos). Verified on this AVX-512 host (16 lanes/vector): 5.52x speedup at 5M elements, 4.53x at 50M (smaller at scale because it becomes memory-bandwidth-bound). An older, simpler sum-based demo also exists in this repo at `../vector-api/code/geecon2023` (Maven, Java 20) — this one is a fresh, self-contained version matching this talk's Java 26 baseline.
 
 ##### CPU Intrinsics
@@ -245,7 +249,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.5 Value Types — What's Coming Next (Project Valhalla)
+#### 5.6 Value Types — What's Coming Next (Project Valhalla)
 
 ##### Value Classes and Objects
 *Give up object identity to gain a flat, header-free memory layout — the JVM's biggest data-layout change in a decade.*
@@ -254,7 +258,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - JEP 539: Strict Field Initialization in the JVM — Preview (targeted for Java 28, March 2027)
 
 > **Gains:** Value objects can be flattened directly into arrays and fields instead of stored as heap pointers — no object header, no identity, no pointer-chasing for simple data carriers (`Point`, `Complex`, wrapper-like types). The JDK is eating its own dog food: 30 platform classes — `Integer`, `LocalDate`, `Optional`, and others — are already declared as value classes under `--enable-preview`, so the standard library gets leaner with zero app code changes.
-> **Conditions:** First preview targets JDK 28 (March 2027) — **not in Java 27**. Opt-in only via the `value` modifier plus `--enable-preview`; existing classes are unaffected until migrated. Brian Goetz has called it "optimistic" to expect this out of preview by JDK 29 (the Sept 2027 LTS) — budget a 12–18 month evaluation runway before production use. This is also the blocker that's kept the Vector API (§5.4) in incubation for 12 rounds and counting: Valhalla ships first, then Vector API can stabilize on top of it.
+> **Conditions:** First preview targets JDK 28 (March 2027) — **not in Java 27**. Opt-in only via the `value` modifier plus `--enable-preview`; existing classes are unaffected until migrated. Brian Goetz has called it "optimistic" to expect this out of preview by JDK 29 (the Sept 2027 LTS) — budget a 12–18 month evaluation runway before production use. This is also the blocker that's kept the Vector API (§5.5) in incubation for 12 rounds and counting: Valhalla ships first, then Vector API can stabilize on top of it.
 
 ---
 
