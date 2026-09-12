@@ -442,6 +442,17 @@ A toy app first only showed 1.4% — too few classes to matter. Adding a real de
 
 **Conditions:** it's an **OS page-cache sharing effect between processes on the same host** — not inherently a Kubernetes feature. Only holds for same-node co-location sharing the archive file, never across nodes.
 
+--
+
+## CDS — $ Math
+
+100.7 MB saved *across 8 co-located instances/host* (12.6 MB/instance) × **$2.87/GB/month**
+
+**$0.28/host/month → $28/mo, $339/yr across 100 hosts** (800 JVM instances, 8/host)
+
+:notes:
+Unlike Compact Strings/Compact Object Headers, this does NOT scale with machine count alone — CDS only pays off with co-located instances sharing one archive. Denser co-location scales it up fast: 20 instances/host → ~$71/mo ($848/yr); 50/host → ~$177/mo ($2,120/yr), same 100 hosts. Say this distinction out loud — it's easy to misapply the other two features' "per machine" framing here.
+
 ---
 
 ## Ahead-of-Time Compilation
