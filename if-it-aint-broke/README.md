@@ -18,8 +18,6 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ### 1. Welcome & Introduction to Myself
 
-- "Why Now" beat: AI is eating every spare CPU cycle, GPU, and gigabyte on the planet — compute and memory aren't getting cheaper, the "just add more machines" era is ending. A mood-setter, not a cited claim; ties forward to the Cost Impact section later where the same scarcity story gets real GCP numbers.
-
 > **Interlude — AhaSlides:** Survey which Java version attendees run in production. Consider keeping this cumulative across every run of this talk.
 >
 > AhaSlides' Poll slide supports up to 30 answer options — enough headroom to list every version 8–27 individually (20 options) if you'd rather skip bucketing. Grouped version kept below for readability; single-select:
@@ -37,18 +35,9 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-### 2. Opening — The Comfort Zone Trap
-
-- The psychology of "it works, don't touch it"
-- How Java version decisions get made (or avoided) in organizations
-- The real cost of staying put: CPU time, memory bills, missed concurrency improvements
-- Framing: this isn't a migration talk — it's an economics talk
+### 2. Who Actually Has Your Back?
 
 > **Interlude — AhaSlides:** True/False — "My organization pays for Java support (Oracle, Red Hat, Azul, etc.) on the version we run in production."
-
----
-
-### 3. Who Actually Has Your Back?
 
 - What "supported" really means: Oracle, Red Hat, Azul, Microsoft, Amazon Corretto
 - Free builds vs. paid support — what you get and what you don't
@@ -57,7 +46,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-### 4. The Clue in Your Build Tool
+### 3. The Clue in Your Build Tool
 
 - A brief analogy: C compilers, `-std`, and `-march` — two distinct concerns
 - `--source` vs `--target` vs `--release` in javac, Maven, Gradle
@@ -66,6 +55,19 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - The runtime surprise: compiling for an old bytecode version but running on that same old JVM — what can go wrong
 
 > **Demo — verified on Java 26 (Temurin):** `javac -source 19 -target 25 Hello.java` compiles clean with only a warning (`--release 19 is recommended instead...`). Add `int x = Math.clamp(15, 0, 10);` (`Math.clamp` — added standard, non-preview, in Java 21) to that file and it *still* compiles clean under `-source 19 -target 25` — a `NoSuchMethodError` waiting to happen on a real Java 19 JVM. Swap to `javac --release 19 Hello.java` and it fails immediately: `error: cannot find symbol — method clamp(int,int,int) — location: class Math`. `-source`/`-target` control language syntax and bytecode version only; `--release` is the only flag that also restricts the API surface to match. (`Thread.ofVirtual()` also works for this if a Project Loom tie-in is preferred, but it needs `--enable-preview` since it was preview in 19–21 — an extra variable that muddies the demo; `Math.clamp` is cleaner.)
+
+---
+
+### 4. Opening — The Comfort Zone Trap
+
+*Positioned right before the JVM performance tour, not at the top of the talk — it's the pivot from "here's the landscape" to "here's what it's costing you."*
+
+- The psychology of "it works, don't touch it"
+- How Java version decisions get made (or avoided) in organizations
+- The real cost of staying put: CPU time, memory bills, missed concurrency improvements
+- Framing: this isn't a migration talk — it's an economics talk
+- "The case, in one sentence" beat: staying on an old Java version isn't caution — it's a tax
+- "Why Now" beat: AI is eating every spare CPU cycle, GPU, and gigabyte on the planet — compute and memory aren't getting cheaper, the "just add more machines" era is ending. A mood-setter, not a cited claim; ties forward to the Cost Impact section where the same scarcity story gets real GCP numbers.
 
 ---
 

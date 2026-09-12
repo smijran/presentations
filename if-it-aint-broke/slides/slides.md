@@ -11,30 +11,6 @@
 - Java enthusiast & Poznań JUG leader
 - Java performance freak
 
---
-
-## Why Now
-
-AI is eating every spare CPU cycle, GPU, and gigabyte on the planet.
-
-Compute isn't getting cheaper. Memory isn't getting cheaper.
-
-The "just add more machines" era is ending.
-
-:notes:
-Sets up the economics framing before it's stated explicitly on the next slide. Ties forward to the Cost Impact section later — the same scarcity story, with real GCP numbers instead of vibes. Keep this slide short and punchy; it's a mood-setter, not a claim that needs a citation.
-
---
-
-## The case, in one sentence
-
-Staying on an old Java version isn't caution.
-
-It's a tax.
-
-:notes:
-This isn't a migration talk — it's an economics talk. Every release since 8 is free performance sitting on the table.
-
 ---
 
 ## 🔴 Live Poll
@@ -49,15 +25,6 @@ Consider keeping this poll cumulative across every run of this talk to build a r
 Options shown to the audience (single-select, 11 bucketed options): 8 · 9–10 · 11 (LTS) · 12–16 · 17 (LTS) · 18–20 · 21 (LTS) · 22–24 · 25 (LTS) · 26–27 · Not on Java / other.
 
 ---
-
-## The Comfort Zone Trap
-
-- "It works, don't touch it"
-- Version decisions get made by *not* deciding
-- Real cost: CPU time, memory bills, missed concurrency gains
-- This isn't a migration talk — it's an economics talk
-
---
 
 ## 🔴 Live Poll
 
@@ -141,6 +108,39 @@ error: cannot find symbol
 
 :notes:
 Verified on Java 26 (Temurin). Math.clamp is a clean, non-preview example (added JEP-standard in Java 21, no --enable-preview complications) — Thread.ofVirtual() also works for this if you want a Loom tie-in instead, but it needs --enable-preview since it was preview in 19/20/21, which adds a confusing extra variable to the demo.
+
+---
+
+## The Comfort Zone Trap
+
+- "It works, don't touch it"
+- Version decisions get made by *not* deciding
+- Real cost: CPU time, memory bills, missed concurrency gains
+- This isn't a migration talk — it's an economics talk
+
+--
+
+## The case, in one sentence
+
+Staying on an old Java version isn't caution.
+
+It's a tax.
+
+:notes:
+This isn't a migration talk — it's an economics talk. Every release since 8 is free performance sitting on the table.
+
+--
+
+## Why Now
+
+AI is eating every spare CPU cycle, GPU, and gigabyte on the planet.
+
+Compute isn't getting cheaper. Memory isn't getting cheaper.
+
+The "just add more machines" era is ending.
+
+:notes:
+Sets up the economics framing right before we dive into the enhancement tour. Ties forward to the Cost Impact section later — the same scarcity story, with real GCP numbers instead of vibes. Keep this slide short and punchy; it's a mood-setter, not a claim that needs a citation.
 
 ---
 
