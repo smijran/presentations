@@ -302,6 +302,28 @@ Grounded in the demos above plus real GCP pricing (n2-standard-4: 4 vCPU/16GB, $
 
 Lead with **Virtual Threads** — "scaled out because platform threads ran out" is an extremely common real-world Java microservice pattern, making it the most defensible headline number. Vector API and Compact Strings are real but workload-specific — say so explicitly on the slide, don't let "4.53x" or "45x" get quoted out of context as a general fleet number. GC is the softest claim (reclaimed headroom, not measured savings) — flag it as an assumption, not a fact.
 
+##### The Price of Memory, Isolated — GCP C4, Standard vs Highmem
+
+The Cost Impact numbers above bury memory inside "machines reclaimed." Here's memory priced on its own: same vCPU count, same CPU class, only the RAM differs — the cleanest way to extract "what does a GB of RAM actually cost" from GCP's own catalog rather than estimating it.
+
+| | vCPUs | Memory | $/hr (on-demand, us-central1) |
+|---|---|---|---|
+| `c4-standard-16` | 16 | 60 GB | $0.7907 |
+| `c4-highmem-16` | 16 | 124 GB | $1.0427 |
+
+That's **64 GB extra for $0.2520/hr** → **$2.87 per GB, per machine, per month** (730 hrs) — a clean, sourced unit price for memory alone.
+
+**100 machines, Standard vs Highmem, for a month:**
+- Standard: 100 × $0.7907 × 730 = **$57,721/month**
+- Highmem: 100 × $1.0427 × 730 = **$76,117/month**
+- **Delta: $18,396/month ($220,752/year)** — the price of needing the bigger memory tier, nothing else changed.
+
+**What this means for the memory-saving JEPs already in this talk:** Compact Strings (~32% heap reduction on ASCII-heavy content), Compact Object Headers (~10–20%), and CDS (~22% lower PSS) are exactly the kind of savings that decide whether a fleet needs Highmem at all. If those savings are what let a 100-machine fleet stay on Standard instead of stepping up a memory tier, that's the full $18,396/month — real, GCP-catalog-priced, not a hypothetical percentage.
+
+**Caveat — this is a tier-boundary argument, not a linear one:** a workload already comfortably inside Standard's 60GB gets $0 from this framing no matter how much heap it saves; the value only shows up for a fleet sized right at the boundary, where the saving is the difference between fitting and not. Worth stating explicitly so "~32% less heap" doesn't get misread as "~32% cheaper machines" — it's the tier jump that's worth money, not the percentage itself.
+
+*Sources: [c4-standard-16 pricing](https://cloudprice.net/gcp/compute/instances/c4-standard-16), [c4-highmem-16 pricing](https://cloudprice.net/gcp/compute/instances/c4-highmem-16) (both us-central1, on-demand).*
+
 *Sources: [e2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/e2-standard-4/), [n2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/n2-standard-4/), [Google Cloud Compute Engine Pricing Guide (2026)](https://www.cloudzero.com/blog/google-cloud-compute-engine-pricing-guide/)*
 
 > **Interlude — AhaSlides:** Poll slide, "Allow multiple answers" enabled — "Which of these free, opt-in wins are you actually using today?"
