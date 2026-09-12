@@ -44,6 +44,17 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - Security patches, bug fixes, and who delivers them on your version
 - The uncomfortable truth: most teams on "old stable" are running unsupported builds
 
+> **What paying for support actually buys you** (verified against current Oracle/Red Hat/Azul offerings):
+> 1. **Extended/backported security patches** — once free public updates end for a version (e.g. Oracle JDK 8/11/17 past their public window), CVE fixes only keep shipping to paying customers: Oracle's quarterly Critical Patch Updates (CPUs) plus out-of-cycle Bundled Patch Releases (BPRs) for urgent issues. This is the real teeth behind "unsupported build" — nobody is patching known CVEs against it anymore.
+> 2. **SLA-backed vendor support** — an actual engineer on a response-time SLA for production incidents, instead of a mailing list or Stack Overflow.
+> 3. **TCK-certified builds** — Azul and Red Hat license Oracle's OpenJDK Technology Compatibility Kit and certify their builds pass it, a real guarantee of Java SE spec compliance (matters for regulated industries and audits).
+> 4. **Fleet management tooling** — e.g. Oracle's Fleet Automation & Lifecycle Management: inventory, automated patching, and scanning across an entire JVM estate. Arguably worth more than the patches themselves at scale.
+> 5. **Legal/licensing cover** (Oracle-specific) — clarity on usage terms and audit protection, which matters given Oracle's increasingly aggressive licensing enforcement since the 2023 employee-count-based pricing change.
+>
+> **The free tier isn't nothing:** Red Hat's and Azul's *free* OpenJDK builds are fully open source and unrestricted for production use — you only pay for support/patches/tooling layered on top. Oracle's model ties more value to license compliance itself, a real difference from the other two.
+>
+> **The punchline:** none of this buys the *performance* wins covered later in this talk (ZGC, Virtual Threads, Compact Strings, etc.) — those ship free in every JDK distribution regardless of support tier. Paying for support gets you patched and legally covered; it doesn't get you fast. Staying current gets you fast for free.
+
 ---
 
 ### 3. The Clue in Your Build Tool

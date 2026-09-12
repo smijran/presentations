@@ -46,6 +46,29 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 
 --
 
+## What Paying Actually Buys You
+
+1. **Extended security patches** — once free updates end, CVE fixes only keep shipping to paying customers
+2. **SLA-backed support** — an engineer on the hook, not a mailing list
+3. **TCK-certified builds** — a real guarantee of Java SE spec compliance
+4. **Fleet management tooling** — patching/inventory across your whole JVM estate
+5. **Legal/licensing cover** *(Oracle-specific)*
+
+:notes:
+Red Hat's and Azul's free OpenJDK builds are fully open source, unrestricted for production — you only pay for support/tooling on top. Oracle ties more value to license compliance itself.
+
+--
+
+## The Punchline
+
+None of this buys you **performance**.
+
+ZGC, Virtual Threads, Compact Strings — all free, in every distribution, regardless of support tier.
+
+Paying gets you patched and covered. Staying current gets you fast — for free.
+
+--
+
 ## The Clue in Your Build Tool
 
 A C compiler has two distinct concerns:
