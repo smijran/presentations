@@ -30,7 +30,7 @@ Options shown to the audience (single-select, 11 bucketed options): 8 · 9–10 
 
 ### True or False
 
-"My organization pays for Java support (Oracle, Red Hat, Azul, etc.) on the version we run in production."
+"My organization pays for Java support"
 
 :notes:
 Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False" or "I don't know" — that's the setup for the next section.

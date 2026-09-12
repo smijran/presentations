@@ -37,7 +37,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ### 2. Who Actually Has Your Back?
 
-> **Interlude — AhaSlides:** True/False — "My organization pays for Java support (Oracle, Red Hat, Azul, etc.) on the version we run in production."
+> **Interlude — AhaSlides:** True/False — "My organization pays for Java support"
 
 - What "supported" really means: Oracle, Red Hat, Azul, Microsoft, Amazon Corretto
 - Free builds vs. paid support — what you get and what you don't
