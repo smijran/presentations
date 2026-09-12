@@ -39,12 +39,12 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Interlude — AhaSlides:** True/False — "My organization pays for Java support"
 
-- What "supported" really means: Oracle, Red Hat, Azul, Microsoft, Amazon Corretto
-- Free builds vs. paid support — what you get and what you don't
-- Security patches, bug fixes, and who delivers them on your version
-- The uncomfortable truth: most teams on "old stable" are running unsupported builds
+> **PARKED — hidden in the deck for now** (matching `data-visibility="hidden"` on the "Who Actually Has Your Back?" slide in `slides.md`). Superseded by the "What paying for support actually buys you" callout below, which covers the same ground in more depth.
+> - Free builds vs. paid support — what you get and what you don't
+> - Security patches, bug fixes, and who delivers them on your version
+> - The uncomfortable truth: most teams on "old stable" are running unsupported builds
 
-> **What paying for support actually buys you** (verified against current Oracle/Red Hat/Azul offerings):
+> **What paying for support actually buys you** (verified against current Oracle/Red Hat/Azul offerings). The vendors selling it: **Oracle, Red Hat, Azul, Microsoft, Amazon Corretto**.
 > 1. **Extended/backported security patches** — once free public updates end for a version (e.g. Oracle JDK 8/11/17 past their public window), CVE fixes only keep shipping to paying customers: Oracle's quarterly Critical Patch Updates (CPUs) plus out-of-cycle Bundled Patch Releases (BPRs) for urgent issues. This is the real teeth behind "unsupported build" — nobody is patching known CVEs against it anymore.
 > 2. **SLA-backed vendor support** — an actual engineer on a response-time SLA for production incidents, instead of a mailing list or Stack Overflow.
 > 3. **TCK-certified builds** — Azul and Red Hat license Oracle's OpenJDK Technology Compatibility Kit and certify their builds pass it, a real guarantee of Java SE spec compliance (matters for regulated industries and audits).

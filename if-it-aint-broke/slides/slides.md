@@ -37,9 +37,10 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 
 --
 
+<!-- .slide: data-visibility="hidden" -->
+
 ## Who Actually Has Your Back?
 
-- Oracle · Red Hat · Azul · Microsoft · Amazon Corretto
 - Free builds vs. paid support: what you get, what you don't
 - Security patches and bug fixes — who actually ships them for *your* version
 - The uncomfortable truth: most teams on "old stable" are running **unsupported** builds
@@ -47,6 +48,8 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 --
 
 ## What Paying Actually Buys You
+
+Oracle · Red Hat · Azul · Microsoft · Amazon Corretto
 
 1. **Extended security patches** — once free updates end, CVE fixes only keep shipping to paying customers
 2. **SLA-backed support** — an engineer on the hook, not a mailing list
