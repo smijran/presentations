@@ -222,6 +222,17 @@ gradle runWithoutCompactStrings
 
 **Conditions:** apps with predominantly ASCII/Latin-1 content benefit most. Heavy CJK/emoji content sees far less array saving (but still gains from concat).
 
+--
+
+## Compact Strings — $ Math
+
+190.74 MB saved (this benchmark) × **$2.87/GB/month** *(GCP C4's isolated cost of RAM)*
+
+**$0.54/machine/month → $53.53/mo, $642/yr across 100 machines**
+
+:notes:
+$2.87/GB/month comes from c4-standard-16 ($0.7907/hr, 60GB) vs c4-highmem-16 ($1.0427/hr, 124GB) — same vCPUs, only memory differs, so the price delta isolates the cost of RAM alone. This figure is tied to this exact 5M-string benchmark; a real service's number scales with how much ASCII string data it actually holds in heap.
+
 ---
 
 ## Compact Object Headers
@@ -253,6 +264,17 @@ On Java 27+, add a third run with no flags at all to show the same reduction now
 **Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure; **~5–10% CPU time**. Scales with object *count*, not size.
 
 **Conditions:** experimental in 24, production (opt-in) in 25, **default in 27**. Transparent — no app code changes.
+
+--
+
+## Compact Object Headers — $ Math
+
+4–8 bytes/object saved × 100M live objects *(illustrative)* = 0.37–0.75 GB/machine
+
+At **$2.87/GB/month**: **$1.07–$2.14/machine/month → $107–$214/mo, $1,285–$2,570/yr across 100 machines**
+
+:notes:
+Object count is an assumption, not a measured number — say so explicitly. Scales with live object count: 500M objects sees ~5x these figures. Same $2.87/GB/month unit price as the Compact Strings slide, derived from c4-standard-16 vs c4-highmem-16.
 
 ---
 
@@ -670,35 +692,6 @@ Zero new hardware. Zero app rewrites for three of the four.
 
 :notes:
 Lead with Virtual Threads — "scaled out because platform threads ran out" is an extremely common real pattern, the most defensible headline number. Vector API and Compact Strings are workload-specific — say so explicitly, don't let 4.53x/45x get quoted as a general fleet number. GC is the softest claim (reclaimed headroom, not measured) — flag as assumption, not fact.
-
---
-
-## The Price of Memory, Isolated
-
-Same vCPUs, same CPU class — only memory differs. GCP's own catalog prices RAM directly.
-
-| | vCPUs | Memory | $/hr |
-|---|---|---|---|
-| `c4-standard-16` | 16 | 60 GB | $0.7907 |
-| `c4-highmem-16` | 16 | 124 GB | $1.0427 |
-
-**64 GB extra for $0.2520/hr → $2.87 / GB / machine / month.**
-
---
-
-## The Price of Memory — 100 Machines
-
-| | $/month |
-|---|---|
-| Standard | $57,721 |
-| Highmem | $76,117 |
-| **Delta** | **$18,396/mo ($220,752/yr)** |
-
-Compact Strings, Compact Object Headers, and CDS are exactly the savings that decide whether a fleet needs that jump at all.
-
-:notes:
-This is a tier-boundary argument, not a linear one — a workload already comfortably inside Standard's 60GB gets $0 from this framing no matter how much heap it saves. The value only shows up for a fleet sized right at the boundary. Don't let "~32% less heap" get misread as "~32% cheaper machines" — it's the tier jump that's worth money.
-Sources: cloudprice.net c4-standard-16 / c4-highmem-16, us-central1, on-demand.
 Sources: GCP e2/n2-standard-4 pricing pages, CloudZero Compute Engine Pricing Guide (2026).
 
 ---

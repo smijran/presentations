@@ -97,6 +97,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 > **Gains:** Latin-1/ASCII strings use `byte[]` instead of `char[]` — ~50% heap reduction for typical string-heavy workloads; proportionally less GC pressure. Indify concat replaces StringBuilder chains with invokedynamic — faster string building, smaller bytecode.
 > **Conditions:** Apps with predominantly ASCII/Latin-1 strings benefit most. Heavy multi-byte character workloads (CJK, emoji-heavy) see minimal Compact Strings benefit but still gain from faster concat.
 > **Demo idea:** Reserve a lot of heap for ASCII strings, then measure what they cost with `-XX:+CompactStrings` vs `-XX:-CompactStrings` — cleaner than a Java 8 vs 9+ comparison since it isolates the one variable on a single JDK instead of also changing everything else about the runtime. **Built:** `code/compact-strings` (Java 26) — verified: 5,000,000 ASCII strings (40 chars each) cost 401.51 MB with Compact Strings on vs 592.25 MB off (84.2 vs 124.2 bytes/string) — a real ~32% heap reduction with zero application code changes.
+> **$ math:** 190.74 MB saved, at this exact benchmark's scale. Using $2.87/GB/month (the isolated cost of RAM on GCP C4 — same vCPUs, only memory differs between `c4-standard-16` and `c4-highmem-16`): **$0.54/machine/month → $53.53/month ($642/year) across 100 machines**, for this specific 5M-string population. Scales linearly with how much string data a real service actually holds in heap — a service with 10x the ASCII string footprint sees roughly 10x this figure.
 
 ---
 
@@ -112,6 +113,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 > **Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache line evictions; less GC pressure; ~5–10% CPU time reduction (fewer cache-line evictions and less GC work translate into real CPU savings, not just a memory-footprint number). Benefit scales with object count, not object size — most impactful for apps with millions of small objects. From Java 27, this is on **by default** — the win requires no flag at all.
 > **Conditions:** Experimental (opt-in) in Java 24, production (opt-in) in Java 25, default in Java 27. Part of Project Lilliput. No application code changes needed — transparent JVM optimization.
 > **Demo idea:** `../project_liliput`'s Gradle `runWithLilliput` / `runWithoutLilliput` tasks toggle `-XX:+UseCompactObjectHeaders` (plus `-XX:hashCode=4` to keep identity hashcode generation constant between runs) over a large object population. Compare heap footprint and object header size directly, e.g. via JOL or a heap histogram (`jmap -histo`), with and without the flag. On Java 27+, add a third run with no flags at all to show the same reduction now happens by default.
+> **$ math:** the header shrink (96–128 bits → 64 bits) saves 4–8 bytes per object, depending on the pre-Lilliput baseline. For an illustrative 100 million live objects (a plausible mid-size heap population — not a measured number, stated as an assumption): 0.37–0.75 GB saved per machine. At $2.87/GB/month (GCP C4's isolated cost of RAM): **$1.07–$2.14/machine/month → $107–$214/month ($1,285–$2,570/year) across 100 machines.** Scales with object count: a heap with 500M live objects sees ~5x these figures.
 
 ---
 
@@ -301,28 +303,6 @@ Grounded in the demos above plus real GCP pricing (n2-standard-4: 4 vCPU/16GB, $
 **Not simply additive** — a given machine doesn't get all four benefits at once; they apply to different workload slices of a real fleet. A blended, non-double-counted estimate for a mixed 100-machine fleet: roughly **25–40 machines reclaimed → ~$3,500–$5,500/month, or ~$42,000–$66,000/year** — from opt-in features already sitting in the JDK, zero new hardware, and (for three of the four) zero app rewrites.
 
 Lead with **Virtual Threads** — "scaled out because platform threads ran out" is an extremely common real-world Java microservice pattern, making it the most defensible headline number. Vector API and Compact Strings are real but workload-specific — say so explicitly on the slide, don't let "4.53x" or "45x" get quoted out of context as a general fleet number. GC is the softest claim (reclaimed headroom, not measured savings) — flag it as an assumption, not a fact.
-
-##### The Price of Memory, Isolated — GCP C4, Standard vs Highmem
-
-The Cost Impact numbers above bury memory inside "machines reclaimed." Here's memory priced on its own: same vCPU count, same CPU class, only the RAM differs — the cleanest way to extract "what does a GB of RAM actually cost" from GCP's own catalog rather than estimating it.
-
-| | vCPUs | Memory | $/hr (on-demand, us-central1) |
-|---|---|---|---|
-| `c4-standard-16` | 16 | 60 GB | $0.7907 |
-| `c4-highmem-16` | 16 | 124 GB | $1.0427 |
-
-That's **64 GB extra for $0.2520/hr** → **$2.87 per GB, per machine, per month** (730 hrs) — a clean, sourced unit price for memory alone.
-
-**100 machines, Standard vs Highmem, for a month:**
-- Standard: 100 × $0.7907 × 730 = **$57,721/month**
-- Highmem: 100 × $1.0427 × 730 = **$76,117/month**
-- **Delta: $18,396/month ($220,752/year)** — the price of needing the bigger memory tier, nothing else changed.
-
-**What this means for the memory-saving JEPs already in this talk:** Compact Strings (~32% heap reduction on ASCII-heavy content), Compact Object Headers (~10–20%), and CDS (~22% lower PSS) are exactly the kind of savings that decide whether a fleet needs Highmem at all. If those savings are what let a 100-machine fleet stay on Standard instead of stepping up a memory tier, that's the full $18,396/month — real, GCP-catalog-priced, not a hypothetical percentage.
-
-**Caveat — this is a tier-boundary argument, not a linear one:** a workload already comfortably inside Standard's 60GB gets $0 from this framing no matter how much heap it saves; the value only shows up for a fleet sized right at the boundary, where the saving is the difference between fitting and not. Worth stating explicitly so "~32% less heap" doesn't get misread as "~32% cheaper machines" — it's the tier jump that's worth money, not the percentage itself.
-
-*Sources: [c4-standard-16 pricing](https://cloudprice.net/gcp/compute/instances/c4-standard-16), [c4-highmem-16 pricing](https://cloudprice.net/gcp/compute/instances/c4-highmem-16) (both us-central1, on-demand).*
 
 *Sources: [e2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/e2-standard-4/), [n2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/n2-standard-4/), [Google Cloud Compute Engine Pricing Guide (2026)](https://www.cloudzero.com/blog/google-cloud-compute-engine-pricing-guide/)*
 
