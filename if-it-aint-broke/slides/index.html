@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>If It Ain't Broke — Slides</title>
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css" />
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/white.css" id="theme" />
+    <link rel="stylesheet" href="node_modules/reveal.js/plugin/highlight/monokai.css" />
+    <style>
+      :root {
+        --r-main-font-size: 32px;
+      }
+      .reveal table {
+        font-size: 0.7em;
+      }
+      .reveal .slides section .fragment.demo-note {
+        font-size: 0.6em;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section data-markdown="slides.md"
+                 data-separator="^---$"
+                 data-separator-vertical="^--$"
+                 data-separator-notes="^:notes:$">
+        </section>
+      </div>
+    </div>
+
+    <script src="node_modules/reveal.js/dist/reveal.js"></script>
+    <script src="node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+    <script src="node_modules/reveal.js/plugin/highlight/highlight.js"></script>
+    <script src="node_modules/reveal.js/plugin/notes/notes.js"></script>
+    <script>
+      const deck = new Reveal({
+        hash: true,
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ],
+      });
+      deck.initialize();
+    </script>
+  </body>
+</html>

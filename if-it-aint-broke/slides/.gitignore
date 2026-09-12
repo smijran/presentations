@@ -1,0 +1,4 @@
+# Ignore local dependencies and OS cruft
+node_modules/
+*.log
+.DS_Store

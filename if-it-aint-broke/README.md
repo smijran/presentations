@@ -258,23 +258,6 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.6 Observability & Profiling
-
-##### Java Flight Recorder
-*Always-on, production-safe profiling and diagnostics built into the JVM.*
-
-- JEP 328: Flight Recorder (Java 11)
-- JEP 331: Low-Overhead Heap Profiling (Java 11)
-- JEP 349: JFR Event Streaming (Java 14)
-- JEP 509: JFR CPU-Time Profiling — Experimental (Java 25)
-- JEP 518: JFR Cooperative Sampling (Java 25)
-- JEP 520: JFR Method Timing & Tracing (Java 25)
-
-> **Gains:** <1% overhead in production; continuous recording catches intermittent issues. Streaming (Java 14) enables real-time dashboards without post-hoc dump analysis. CPU-time profiling (Java 25) gives accurate per-method CPU attribution. Method timing enables pinpointing hot paths without external agents.
-> **Conditions:** Available as open-source since Java 11 (was Oracle-commercial in Java 8 — a common blocker). CPU-time profiling requires OS support for CPU-time clocks. Streaming requires consumer code; not zero-config out of the box.
-
----
-
 ### 6. Closing Argument
 
 #### Cost Impact — Putting a $ Number on It
@@ -303,10 +286,9 @@ Lead with **Virtual Threads** — "scaled out because platform threads ran out" 
 > 6. Compact Object Headers pre-Java 27 (`-XX:+UseCompactObjectHeaders`)
 > 7. Virtual Threads (Project Loom)
 > 8. Vector API (`--add-modules jdk.incubator.vector`)
-> 9. JFR continuous recording (`-XX:StartFlightRecording`)
-> 10. None of the above
+> 9. None of the above
 >
-> All nine are things covered in this talk, all free, all opt-in — none of them are the default. The likely result (mostly "none of the above") *is* the closing punchline: the money is already sitting there, unclaimed.
+> All eight are things covered in this talk, all free, all opt-in — none of them are the default. The likely result (mostly "none of the above") *is* the closing punchline: the money is already sitting there, unclaimed.
 
 - Every release since Java 8 is free performance — you just have to show up
 - The upgrade path is manageable: `--release`, multi-release JARs, incremental rollout
