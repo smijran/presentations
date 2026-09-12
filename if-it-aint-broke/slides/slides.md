@@ -143,6 +143,38 @@ gradle runWithoutCompactStrings
 
 ---
 
+## Compact Object Headers
+*Shrink every object's header from 96–128 bits to 64*
+
+- JEP 450 — Experimental (Java 24)
+- JEP 519 — Production (Java 25)
+- JEP 534 — **On by default** (Java 27)
+
+--
+
+## Compact Object Headers — Demo
+
+```
+cd ../project_liliput/code
+./gradlew runWithLilliput
+./gradlew runWithoutLilliput
+```
+
+Reuses this repo's existing Project Lilliput demo — `-XX:+UseCompactObjectHeaders` over a large object population.
+
+:notes:
+On Java 27+, add a third run with no flags at all to show the same reduction now happens with zero configuration.
+
+--
+
+## Compact Object Headers — Gains & Conditions
+
+**Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure. Scales with object *count*, not size.
+
+**Conditions:** experimental in 24, production (opt-in) in 25, **default in 27**. Transparent — no app code changes.
+
+---
+
 ## Garbage Collection
 
 G1 · ZGC · Shenandoah — one decade, three very different answers to the same problem.
@@ -350,38 +382,6 @@ This app only loads a few hundred classes — a heavier real app (Spring Boot, l
 **Gains:** faster time-to-peak performance, reduced warmup latency — most impactful for containerized/serverless cold starts.
 
 **Conditions:** needs a training run on a representative workload. Initially x64 Linux only.
-
----
-
-## Compact Object Headers
-*Shrink every object's header from 96–128 bits to 64*
-
-- JEP 450 — Experimental (Java 24)
-- JEP 519 — Production (Java 25)
-- JEP 534 — **On by default** (Java 27)
-
---
-
-## Compact Object Headers — Demo
-
-```
-cd ../project_liliput/code
-./gradlew runWithLilliput
-./gradlew runWithoutLilliput
-```
-
-Reuses this repo's existing Project Lilliput demo — `-XX:+UseCompactObjectHeaders` over a large object population.
-
-:notes:
-On Java 27+, add a third run with no flags at all to show the same reduction now happens with zero configuration.
-
---
-
-## Compact Object Headers — Gains & Conditions
-
-**Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure. Scales with object *count*, not size.
-
-**Conditions:** experimental in 24, production (opt-in) in 25, **default in 27**. Transparent — no app code changes.
 
 ---
 

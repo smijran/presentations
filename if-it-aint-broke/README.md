@@ -81,7 +81,22 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.2 Garbage Collection
+#### 5.2 Compact Object Headers
+
+##### Compact Object Headers
+*Shrink every object's header from 96–128 bits down to 64 bits.*
+
+- JEP 450: Compact Object Headers — Experimental (Java 24)
+- JEP 519: Compact Object Headers — Production (Java 25)
+- JEP 534: Compact Object Headers by Default (Java 27)
+
+> **Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache line evictions; less GC pressure. Benefit scales with object count, not object size — most impactful for apps with millions of small objects. From Java 27, this is on **by default** — the win requires no flag at all.
+> **Conditions:** Experimental (opt-in) in Java 24, production (opt-in) in Java 25, default in Java 27. Part of Project Lilliput. No application code changes needed — transparent JVM optimization.
+> **Demo idea:** Reuse/adapt the existing `project_liliput` demo already in this repo (`../project_liliput`) — its Gradle `runWithLilliput` / `runWithoutLilliput` tasks toggle `-XX:+UseCompactObjectHeaders` (plus `-XX:hashCode=4` to keep identity hashcode generation constant between runs) over a large object population. Compare heap footprint and object header size directly, e.g. via JOL or a heap histogram (`jmap -histo`), with and without the flag. On Java 27+, add a third run with no flags at all to show the same reduction now happens by default.
+
+---
+
+#### 5.3 Garbage Collection
 
 > **Why `code/gc-comparison`'s workload actually shows a GC difference:** it's tempting to write a demo that just allocates garbage as fast as possible, but pure young-gen churn is exactly what *every* modern collector handles well — it wouldn't differentiate G1 from ZGC/Shenandoah. Four choices make the difference visible instead:
 > 1. **A growing retained set (~300MB of a 1GB heap), not just throwaway garbage.** Live data that survives into old gen forces real collection work (mixed/full GCs for G1; concurrent old-gen work for ZGC/Shenandoah) — this is where the collectors' strategies actually diverge.
@@ -139,7 +154,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.3 JIT & Runtime
+#### 5.4 JIT & Runtime
 
 ##### Class Data Sharing
 *Pre-load class metadata once, share it across JVM instances via memory-mapped archive.*
@@ -165,17 +180,6 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 > **Conditions:** Requires a training/profiling run on representative workload. Platform-specific (initially x64 Linux). Most impactful for containerized/serverless workloads where cold-start matters. JEP 295 approach was abandoned; JEP 483+ is an entirely different mechanism.
 > **Demo idea:** Measure time-to-first-request for a Spring Boot (or similar) app: cold JVM startup vs. `-XX:AOTMode=record` training run followed by `-XX:AOTMode=use`. Directly relevant to the serverless/pod cold-start pain most of the audience will already recognize. **Built:** `code/aot-demo` (Java 26) — used JDK-builtin `HttpServer`/`HttpClient` instead of Spring Boot to stay dependency-free, and the simpler one-step `-XX:AOTCacheOutput`/`-XX:AOTCache` ergonomics (JEP 514) instead of the older record/create split. Verified over 10 runs each: 913ms cold vs 757ms with AOT cache — a real but modest **1.21x** (~17%), consistent across every run (no overlap in the two ranges). Caveat worth stating on slide: this app only loads a few hundred classes; a heavier real app has far more startup linking to skip and would show a bigger win — this demo undersells AOT if shown without that context.
 
-##### Compact Object Headers
-*Shrink every object's header from 96–128 bits down to 64 bits.*
-
-- JEP 450: Compact Object Headers — Experimental (Java 24)
-- JEP 519: Compact Object Headers — Production (Java 25)
-- JEP 534: Compact Object Headers by Default (Java 27)
-
-> **Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache line evictions; less GC pressure. Benefit scales with object count, not object size — most impactful for apps with millions of small objects. From Java 27, this is on **by default** — the win requires no flag at all.
-> **Conditions:** Experimental (opt-in) in Java 24, production (opt-in) in Java 25, default in Java 27. Part of Project Lilliput. No application code changes needed — transparent JVM optimization.
-> **Demo idea:** Reuse/adapt the existing `project_liliput` demo already in this repo (`../project_liliput`) — its Gradle `runWithLilliput` / `runWithoutLilliput` tasks toggle `-XX:+UseCompactObjectHeaders` (plus `-XX:hashCode=4` to keep identity hashcode generation constant between runs) over a large object population. Compare heap footprint and object header size directly, e.g. via JOL or a heap histogram (`jmap -histo`), with and without the flag. On Java 27+, add a third run with no flags at all to show the same reduction now happens by default.
-
 ##### Other
 *Targeted JVM internals improvements — each eliminating a specific overhead.*
 
@@ -190,7 +194,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.4 Concurrency
+#### 5.5 Concurrency
 
 ##### Virtual Threads (Project Loom)
 *M:N threading — millions of cheap virtual threads multiplexed onto a small OS thread pool.*
@@ -217,7 +221,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.5 Vector & CPU Intrinsics
+#### 5.6 Vector & CPU Intrinsics
 
 ##### Vector API
 *Explicit SIMD — express data-parallel operations that map directly to CPU vector instructions.*
@@ -236,7 +240,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - JEP 537: Vector API — 12th Incubator (Java 27) ← still not final after 11 years
 
 > **Gains:** 2–10x speedup for explicitly vectorized code vs scalar loops — ML inference, signal processing, image processing, crypto, numerical computation.
-> **Conditions:** Requires CPU with vector instruction support (x86 AVX2/AVX-512, ARM SVE/SVE2). Not general-purpose — only benefits code explicitly rewritten to use the API. Long incubation due to dependency on Project Valhalla (value types — see §5.6). Not stable API yet — cannot use in libraries shipped as dependencies.
+> **Conditions:** Requires CPU with vector instruction support (x86 AVX2/AVX-512, ARM SVE/SVE2). Not general-purpose — only benefits code explicitly rewritten to use the API. Long incubation due to dependency on Project Valhalla (value types — see §5.7). Not stable API yet — cannot use in libraries shipped as dependencies.
 > **Demo idea:** A simple numeric kernel (dot product, array sum, or a small image-processing filter) over a large `float[]`/`int[]`, run three ways: a plain scalar loop, an auto-vectorization-friendly scalar loop, and an explicit `jdk.incubator.vector` version (`--add-modules jdk.incubator.vector --enable-preview` as needed). Benchmark with JMH to avoid JIT/warmup noise, and report ops/sec — the 2–10x gap over the scalar baseline is the whole point. Worth noting on slide: needs `--add-modules jdk.incubator.vector` since it's still incubating. **Built:** `code/vector-api-demo` (Java 26) — dot product with `fma`, hand-rolled warm-up + timed loop instead of JMH (kept dependency-free like the other demos). Verified on this AVX-512 host (16 lanes/vector): 5.52x speedup at 5M elements, 4.53x at 50M (smaller at scale because it becomes memory-bandwidth-bound). An older, simpler sum-based demo also exists in this repo at `../vector-api/code/geecon2023` (Maven, Java 20) — this one is a fresh, self-contained version matching this talk's Java 26 baseline.
 
 ##### CPU Intrinsics
@@ -249,7 +253,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.6 Value Types — What's Coming Next (Project Valhalla)
+#### 5.7 Value Types — What's Coming Next (Project Valhalla)
 
 ##### Value Classes and Objects
 *Give up object identity to gain a flat, header-free memory layout — the JVM's biggest data-layout change in a decade.*
@@ -258,7 +262,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - JEP 539: Strict Field Initialization in the JVM — Preview (targeted for Java 28, March 2027)
 
 > **Gains:** Value objects can be flattened directly into arrays and fields instead of stored as heap pointers — no object header, no identity, no pointer-chasing for simple data carriers (`Point`, `Complex`, wrapper-like types). The JDK is eating its own dog food: 30 platform classes — `Integer`, `LocalDate`, `Optional`, and others — are already declared as value classes under `--enable-preview`, so the standard library gets leaner with zero app code changes.
-> **Conditions:** First preview targets JDK 28 (March 2027) — **not in Java 27**. Opt-in only via the `value` modifier plus `--enable-preview`; existing classes are unaffected until migrated. Brian Goetz has called it "optimistic" to expect this out of preview by JDK 29 (the Sept 2027 LTS) — budget a 12–18 month evaluation runway before production use. This is also the blocker that's kept the Vector API (§5.5) in incubation for 12 rounds and counting: Valhalla ships first, then Vector API can stabilize on top of it.
+> **Conditions:** First preview targets JDK 28 (March 2027) — **not in Java 27**. Opt-in only via the `value` modifier plus `--enable-preview`; existing classes are unaffected until migrated. Brian Goetz has called it "optimistic" to expect this out of preview by JDK 29 (the Sept 2027 LTS) — budget a 12–18 month evaluation runway before production use. This is also the blocker that's kept the Vector API (§5.6) in incubation for 12 rounds and counting: Valhalla ships first, then Vector API can stabilize on top of it.
 
 ---
 
