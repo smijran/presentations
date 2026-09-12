@@ -117,7 +117,23 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.3 Garbage Collection
+#### 5.3 Class Data Sharing
+
+##### Class Data Sharing
+*Pre-load class metadata once, share it across JVM instances via memory-mapped archive.*
+
+- JEP 310: Application Class-Data Sharing (Java 10)
+- JEP 341: Default CDS Archives (Java 12)
+- JEP 350: Dynamic CDS Archives (Java 13)
+
+> **Gains:** Faster startup (skip class loading from disk); lower memory when multiple JVM instances run the same app (shared read-only archive). AppCDS extends this to application classes, not just JDK core.
+> **Conditions:** Greatest impact on microservices and containers with many JVM processes. Short-lived processes (CLI tools, lambdas) see the most startup benefit. Requires archive generation step; dynamic archives (Java 13) remove the need for a separate dump run.
+> **Demo idea:** The memory saving is an OS page-cache sharing effect between JVM processes reading the same archive file — it isn't inherently a Kubernetes feature, and a k8s demo risks implying otherwise. **Build the base case first without k8s**: run several plain JVM processes on a single host sharing one `-XX:SharedArchiveFile`, and compare per-process RSS (`ps`/`smem`) against the same processes without CDS. That isolates the actual mechanism cleanly. Only after that, optionally layer on a k8s example for relatability — co-locate replica pods on the *same node*, measure with `kubectl top pod` and pod start time, and caption explicitly that the win only holds for same-node co-location sharing the archive, not across the cluster. **Built:** `code/cds-demo` (Java 26, 8 concurrent instances, PSS from `/proc/<pid>/smaps_rollup`). First attempt with a toy app only showed 1.4% — too few classes for CDS to matter. Added a real dependency (Jackson) for a realistic class graph: verified **21.9% lower PSS** (459.2MB → 358.5MB total) and a **1.85x faster startup** (434ms → 234ms) with a Dynamic CDS archive vs `-Xshare:off`, same workload.
+> **$ math:** 100.7 MB saved *across the 8 co-located instances on one host* (12.6 MB/instance) — at $2.87/GB/month (GCP C4's isolated cost of RAM): **$0.28/host/month → $28/month ($339/year) across 100 such hosts** (800 JVM instances total, 8/host, matching this demo's setup). Unlike Compact Strings/Compact Object Headers, this does **not** scale with machine count alone — CDS only pays off with co-located instances sharing one archive. Denser co-location scales it up fast: 20 instances/host → ~$71/mo ($848/yr); 50/host → ~$177/mo ($2,120/yr) across the same 100 hosts.
+
+---
+
+#### 5.4 Garbage Collection
 
 > **Why `code/gc-comparison`'s workload actually shows a GC difference:** it's tempting to write a demo that just allocates garbage as fast as possible, but pure young-gen churn is exactly what *every* modern collector handles well — it wouldn't differentiate G1 from ZGC/Shenandoah. Four choices make the difference visible instead:
 > 1. **A growing retained set (~300MB of a 1GB heap), not just throwaway garbage.** Live data that survives into old gen forces real collection work (mixed/full GCs for G1; concurrent old-gen work for ZGC/Shenandoah) — this is where the collectors' strategies actually diverge.
@@ -175,19 +191,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.4 JIT & Runtime
-
-##### Class Data Sharing
-*Pre-load class metadata once, share it across JVM instances via memory-mapped archive.*
-
-- JEP 310: Application Class-Data Sharing (Java 10)
-- JEP 341: Default CDS Archives (Java 12)
-- JEP 350: Dynamic CDS Archives (Java 13)
-
-> **Gains:** Faster startup (skip class loading from disk); lower memory when multiple JVM instances run the same app (shared read-only archive). AppCDS extends this to application classes, not just JDK core.
-> **Conditions:** Greatest impact on microservices and containers with many JVM processes. Short-lived processes (CLI tools, lambdas) see the most startup benefit. Requires archive generation step; dynamic archives (Java 13) remove the need for a separate dump run.
-> **Demo idea:** The memory saving is an OS page-cache sharing effect between JVM processes reading the same archive file — it isn't inherently a Kubernetes feature, and a k8s demo risks implying otherwise. **Build the base case first without k8s**: run several plain JVM processes on a single host sharing one `-XX:SharedArchiveFile`, and compare per-process RSS (`ps`/`smem`) against the same processes without CDS. That isolates the actual mechanism cleanly. Only after that, optionally layer on a k8s example for relatability — co-locate replica pods on the *same node*, measure with `kubectl top pod` and pod start time, and caption explicitly that the win only holds for same-node co-location sharing the archive, not across the cluster. **Built:** `code/cds-demo` (Java 26, 8 concurrent instances, PSS from `/proc/<pid>/smaps_rollup`). First attempt with a toy app only showed 1.4% — too few classes for CDS to matter. Added a real dependency (Jackson) for a realistic class graph: verified **21.9% lower PSS** (459.2MB → 358.5MB total) and a **1.85x faster startup** (434ms → 234ms) with a Dynamic CDS archive vs `-Xshare:off`, same workload.
-> **$ math:** 100.7 MB saved *across the 8 co-located instances on one host* (12.6 MB/instance) — at $2.87/GB/month (GCP C4's isolated cost of RAM): **$0.28/host/month → $28/month ($339/year) across 100 such hosts** (800 JVM instances total, 8/host, matching this demo's setup). Unlike Compact Strings/Compact Object Headers, this does **not** scale with machine count alone — CDS only pays off with co-located instances sharing one archive. Denser co-location scales it up fast: 20 instances/host → ~$71/mo ($848/yr); 50/host → ~$177/mo ($2,120/yr) across the same 100 hosts.
+#### 5.5 JIT & Runtime
 
 ##### Ahead-of-Time Compilation
 *Eliminate JIT warmup by pre-compiling code — or at minimum, pre-loading its profile.*
@@ -216,7 +220,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.5 Concurrency
+#### 5.6 Concurrency
 
 ##### Virtual Threads (Project Loom)
 *M:N threading — millions of cheap virtual threads multiplexed onto a small OS thread pool.*
@@ -243,7 +247,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.6 Vector & CPU Intrinsics
+#### 5.7 Vector & CPU Intrinsics
 
 ##### Vector API
 *Explicit SIMD — express data-parallel operations that map directly to CPU vector instructions.*
@@ -262,7 +266,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - JEP 537: Vector API — 12th Incubator (Java 27) ← still not final after 11 years
 
 > **Gains:** 2–10x speedup for explicitly vectorized code vs scalar loops — ML inference, signal processing, image processing, crypto, numerical computation.
-> **Conditions:** Requires CPU with vector instruction support (x86 AVX2/AVX-512, ARM SVE/SVE2). Not general-purpose — only benefits code explicitly rewritten to use the API. Long incubation due to dependency on Project Valhalla (value types — see §5.7). Not stable API yet — cannot use in libraries shipped as dependencies.
+> **Conditions:** Requires CPU with vector instruction support (x86 AVX2/AVX-512, ARM SVE/SVE2). Not general-purpose — only benefits code explicitly rewritten to use the API. Long incubation due to dependency on Project Valhalla (value types — see §5.8). Not stable API yet — cannot use in libraries shipped as dependencies.
 > **Demo idea:** A simple numeric kernel (dot product, array sum, or a small image-processing filter) over a large `float[]`/`int[]`, run three ways: a plain scalar loop, an auto-vectorization-friendly scalar loop, and an explicit `jdk.incubator.vector` version (`--add-modules jdk.incubator.vector --enable-preview` as needed). Benchmark with JMH to avoid JIT/warmup noise, and report ops/sec — the 2–10x gap over the scalar baseline is the whole point. Worth noting on slide: needs `--add-modules jdk.incubator.vector` since it's still incubating. **Built:** `code/vector-api-demo` (Java 26) — dot product with `fma`, hand-rolled warm-up + timed loop instead of JMH (kept dependency-free like the other demos). Verified on this AVX-512 host (16 lanes/vector): 5.52x speedup at 5M elements, 4.53x at 50M (smaller at scale because it becomes memory-bandwidth-bound). An older, simpler sum-based demo also exists in this repo at `../vector-api/code/geecon2023` (Maven, Java 20) — this one is a fresh, self-contained version matching this talk's Java 26 baseline.
 
 ##### CPU Intrinsics
@@ -275,7 +279,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ---
 
-#### 5.7 Value Types — What's Coming Next (Project Valhalla)
+#### 5.8 Value Types — What's Coming Next (Project Valhalla)
 
 ##### Value Classes and Objects
 *Give up object identity to gain a flat, header-free memory layout — the JVM's biggest data-layout change in a decade.*
@@ -284,7 +288,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - JEP 539: Strict Field Initialization in the JVM — Preview (targeted for Java 28, March 2027)
 
 > **Gains:** Value objects can be flattened directly into arrays and fields instead of stored as heap pointers — no object header, no identity, no pointer-chasing for simple data carriers (`Point`, `Complex`, wrapper-like types). The JDK is eating its own dog food: 30 platform classes — `Integer`, `LocalDate`, `Optional`, and others — are already declared as value classes under `--enable-preview`, so the standard library gets leaner with zero app code changes.
-> **Conditions:** First preview targets JDK 28 (March 2027) — **not in Java 27**. Opt-in only via the `value` modifier plus `--enable-preview`; existing classes are unaffected until migrated. Brian Goetz has called it "optimistic" to expect this out of preview by JDK 29 (the Sept 2027 LTS) — budget a 12–18 month evaluation runway before production use. This is also the blocker that's kept the Vector API (§5.6) in incubation for 12 rounds and counting: Valhalla ships first, then Vector API can stabilize on top of it.
+> **Conditions:** First preview targets JDK 28 (March 2027) — **not in Java 27**. Opt-in only via the `value` modifier plus `--enable-preview`; existing classes are unaffected until migrated. Brian Goetz has called it "optimistic" to expect this out of preview by JDK 29 (the Sept 2027 LTS) — budget a 12–18 month evaluation runway before production use. This is also the blocker that's kept the Vector API (§5.7) in incubation for 12 rounds and counting: Valhalla ships first, then Vector API can stabilize on top of it.
 
 ---
 

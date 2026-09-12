@@ -261,7 +261,7 @@ On Java 27+, add a third run with no flags at all to show the same reduction now
 
 ## Compact Object Headers — Gains & Conditions
 
-**Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure; **~5–10% CPU time**. Scales with object *count*, not size.
+**Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure; ~5–10% CPU time. Scales with object *count*, not size.
 
 **Conditions:** experimental in 24, production (opt-in) in 25, **default in 27**. Transparent — no app code changes.
 
@@ -275,6 +275,58 @@ At **$2.87/GB/month**: **$1.07–$2.14/machine/month → $107–$214/mo, $1,285�
 
 :notes:
 Object count is an assumption, not a measured number — say so explicitly. Scales with live object count: 500M objects sees ~5x these figures. Same $2.87/GB/month unit price as the Compact Strings slide, derived from c4-standard-16 vs c4-highmem-16.
+
+---
+
+## Class Data Sharing
+*Pre-load class metadata once, share it across JVM instances*
+
+- JEP 310 — Application CDS (Java 10)
+- JEP 341 — Default CDS Archives (Java 12)
+- JEP 350 — Dynamic CDS Archives (Java 13)
+
+--
+
+## CDS — Demo
+
+```
+cd code/cds-demo
+./compare-cds.sh 8
+```
+
+8 concurrent JVM instances, real Jackson dependency for a realistic class graph, PSS measured from `/proc/<pid>/smaps_rollup`.
+
+:notes:
+A toy app first only showed 1.4% — too few classes to matter. Adding a real dependency is what made the effect real. Worth explaining if asked.
+
+--
+
+## CDS — Results
+
+| | Total PSS (8 instances) | Startup |
+|---|---|---|
+| Without CDS | 459.2 MB | 434.1 ms |
+| With Dynamic CDS | 358.5 MB | 234.2 ms |
+| **Delta** | **−21.9%** | **1.85x faster** |
+
+--
+
+## CDS — Gains & Conditions
+
+**Gains:** faster startup, lower memory across multiple JVM instances of the same app sharing one archive.
+
+**Conditions:** it's an **OS page-cache sharing effect between processes on the same host** — not inherently a Kubernetes feature. Only holds for same-node co-location sharing the archive file, never across nodes.
+
+--
+
+## CDS — $ Math
+
+100.7 MB saved *across 8 co-located instances/host* (12.6 MB/instance) × **$2.87/GB/month**
+
+**$0.28/host/month → $28/mo, $339/yr across 100 hosts** (800 JVM instances, 8/host)
+
+:notes:
+Unlike Compact Strings/Compact Object Headers, this does NOT scale with machine count alone — CDS only pays off with co-located instances sharing one archive. Denser co-location scales it up fast: 20 instances/host → ~$71/mo ($848/yr); 50/host → ~$177/mo ($2,120/yr), same 100 hosts. Say this distinction out loud — it's easy to misapply the other two features' "per machine" framing here.
 
 ---
 
@@ -400,58 +452,6 @@ Not available in Oracle JDK — needs Red Hat build of OpenJDK, Eclipse Temurin,
 - JEP 387 — Elastic Metaspace (Java 16)
 
 **Gains (Elastic Metaspace):** class-metadata memory returned to the OS promptly after unloading — matters most for app servers, OSGi, plugin systems.
-
----
-
-## Class Data Sharing
-*Pre-load class metadata once, share it across JVM instances*
-
-- JEP 310 — Application CDS (Java 10)
-- JEP 341 — Default CDS Archives (Java 12)
-- JEP 350 — Dynamic CDS Archives (Java 13)
-
---
-
-## CDS — Demo
-
-```
-cd code/cds-demo
-./compare-cds.sh 8
-```
-
-8 concurrent JVM instances, real Jackson dependency for a realistic class graph, PSS measured from `/proc/<pid>/smaps_rollup`.
-
-:notes:
-A toy app first only showed 1.4% — too few classes to matter. Adding a real dependency is what made the effect real. Worth explaining if asked.
-
---
-
-## CDS — Results
-
-| | Total PSS (8 instances) | Startup |
-|---|---|---|
-| Without CDS | 459.2 MB | 434.1 ms |
-| With Dynamic CDS | 358.5 MB | 234.2 ms |
-| **Delta** | **−21.9%** | **1.85x faster** |
-
---
-
-## CDS — Gains & Conditions
-
-**Gains:** faster startup, lower memory across multiple JVM instances of the same app sharing one archive.
-
-**Conditions:** it's an **OS page-cache sharing effect between processes on the same host** — not inherently a Kubernetes feature. Only holds for same-node co-location sharing the archive file, never across nodes.
-
---
-
-## CDS — $ Math
-
-100.7 MB saved *across 8 co-located instances/host* (12.6 MB/instance) × **$2.87/GB/month**
-
-**$0.28/host/month → $28/mo, $339/yr across 100 hosts** (800 JVM instances, 8/host)
-
-:notes:
-Unlike Compact Strings/Compact Object Headers, this does NOT scale with machine count alone — CDS only pays off with co-located instances sharing one archive. Denser co-location scales it up fast: 20 instances/host → ~$71/mo ($848/yr); 50/host → ~$177/mo ($2,120/yr), same 100 hosts. Say this distinction out loud — it's easy to misapply the other two features' "per machine" framing here.
 
 ---
 
