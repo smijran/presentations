@@ -13,6 +13,19 @@
 
 --
 
+## Why Now
+
+AI is eating every spare CPU cycle, GPU, and gigabyte on the planet.
+
+Compute isn't getting cheaper. Memory isn't getting cheaper.
+
+The "just add more machines" era is ending.
+
+:notes:
+Sets up the economics framing before it's stated explicitly on the next slide. Ties forward to the Cost Impact section later — the same scarcity story, with real GCP numbers instead of vibes. Keep this slide short and punchy; it's a mood-setter, not a claim that needs a citation.
+
+--
+
 ## The case, in one sentence
 
 Staying on an old Java version isn't caution.

@@ -18,6 +18,8 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ### 1. Welcome & Introduction to Myself
 
+- "Why Now" beat: AI is eating every spare CPU cycle, GPU, and gigabyte on the planet — compute and memory aren't getting cheaper, the "just add more machines" era is ending. A mood-setter, not a cited claim; ties forward to the Cost Impact section later where the same scarcity story gets real GCP numbers.
+
 > **Interlude — AhaSlides:** Survey which Java version attendees run in production. Consider keeping this cumulative across every run of this talk.
 >
 > AhaSlides' Poll slide supports up to 30 answer options — enough headroom to list every version 8–27 individually (20 options) if you'd rather skip bucketing. Grouped version kept below for readability; single-select:
