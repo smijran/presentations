@@ -61,7 +61,9 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - `--source` vs `--target` vs `--release` in javac, Maven, Gradle
 - Why targeting an old bytecode version is not a compatibility guarantee
 - `--release` as the only flag that gives you a real contract
-- The runtime surprise: compiling for Java 8 bytecode but running on Java 8 JVM — what can go wrong
+- The runtime surprise: compiling for an old bytecode version but running on that same old JVM — what can go wrong
+
+> **Demo — verified on Java 26 (Temurin):** `javac -source 19 -target 25 Hello.java` compiles clean with only a warning (`--release 19 is recommended instead...`). Add `int x = Math.clamp(15, 0, 10);` (`Math.clamp` — added standard, non-preview, in Java 21) to that file and it *still* compiles clean under `-source 19 -target 25` — a `NoSuchMethodError` waiting to happen on a real Java 19 JVM. Swap to `javac --release 19 Hello.java` and it fails immediately: `error: cannot find symbol — method clamp(int,int,int) — location: class Math`. `-source`/`-target` control language syntax and bytecode version only; `--release` is the only flag that also restricts the API surface to match. (`Thread.ofVirtual()` also works for this if a Project Loom tie-in is preferred, but it needs `--enable-preview` since it was preview in 19–21 — an extra variable that muddies the demo; `Math.clamp` is cleaner.)
 
 ---
 
@@ -90,9 +92,9 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - JEP 519: Compact Object Headers — Production (Java 25)
 - JEP 534: Compact Object Headers by Default (Java 27)
 
-> **Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache line evictions; less GC pressure. Benefit scales with object count, not object size — most impactful for apps with millions of small objects. From Java 27, this is on **by default** — the win requires no flag at all.
+> **Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache line evictions; less GC pressure; ~5–10% CPU time reduction (fewer cache-line evictions and less GC work translate into real CPU savings, not just a memory-footprint number). Benefit scales with object count, not object size — most impactful for apps with millions of small objects. From Java 27, this is on **by default** — the win requires no flag at all.
 > **Conditions:** Experimental (opt-in) in Java 24, production (opt-in) in Java 25, default in Java 27. Part of Project Lilliput. No application code changes needed — transparent JVM optimization.
-> **Demo idea:** Reuse/adapt the existing `project_liliput` demo already in this repo (`../project_liliput`) — its Gradle `runWithLilliput` / `runWithoutLilliput` tasks toggle `-XX:+UseCompactObjectHeaders` (plus `-XX:hashCode=4` to keep identity hashcode generation constant between runs) over a large object population. Compare heap footprint and object header size directly, e.g. via JOL or a heap histogram (`jmap -histo`), with and without the flag. On Java 27+, add a third run with no flags at all to show the same reduction now happens by default.
+> **Demo idea:** `../project_liliput`'s Gradle `runWithLilliput` / `runWithoutLilliput` tasks toggle `-XX:+UseCompactObjectHeaders` (plus `-XX:hashCode=4` to keep identity hashcode generation constant between runs) over a large object population. Compare heap footprint and object header size directly, e.g. via JOL or a heap histogram (`jmap -histo`), with and without the flag. On Java 27+, add a third run with no flags at all to show the same reduction now happens by default.
 
 ---
 

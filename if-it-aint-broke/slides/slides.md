@@ -9,7 +9,7 @@
 
 - Principal software engineer (Egnyte)
 - Java enthusiast & Poznań JUG leader
-- Dreams of marrying Java & GPUs
+- Java performance freak
 
 --
 
@@ -91,11 +91,43 @@ Targeting old bytecode is **not** a compatibility guarantee.
 
 ## The runtime surprise
 
-Compiling for Java 8 bytecode, running on a Java 8 *JVM* —
+Compiling for Java 19 bytecode, running on a Java 19 *JVM* —
 
 what could still go wrong?
 
-`--release` is the only flag that gives you a real contract.
+--
+
+## The runtime surprise — Demo
+
+```java
+int x = Math.clamp(15, 0, 10);   // Math.clamp — added in Java 21
+```
+
+```
+javac -source 19 -target 25 Hello.java
+javac --release 19 Hello.java
+```
+
+Same file. Two ways to "target Java 19."
+
+--
+
+## The runtime surprise — Results
+
+**`-source 19 -target 25`** — compiles clean, one warning:
+`--release 19 is recommended instead...`
+
+**`--release 19`** —
+```
+error: cannot find symbol
+  symbol:   method clamp(int,int,int)
+  location: class Math
+```
+
+`-source`/`-target` don't restrict the API surface — only `--release` does. That silent compile is a `NoSuchMethodError` waiting to happen on a real Java 19 JVM.
+
+:notes:
+Verified on Java 26 (Temurin). Math.clamp is a clean, non-preview example (added JEP-standard in Java 21, no --enable-preview complications) — Thread.ofVirtual() also works for this if you want a Loom tie-in instead, but it needs --enable-preview since it was preview in 19/20/21, which adds a confusing extra variable to the demo.
 
 ---
 
@@ -160,7 +192,7 @@ cd ../project_liliput/code
 ./gradlew runWithoutLilliput
 ```
 
-Reuses this repo's existing Project Lilliput demo — `-XX:+UseCompactObjectHeaders` over a large object population.
+`-XX:+UseCompactObjectHeaders` toggled over a large object population.
 
 :notes:
 On Java 27+, add a third run with no flags at all to show the same reduction now happens with zero configuration.
@@ -169,7 +201,7 @@ On Java 27+, add a third run with no flags at all to show the same reduction now
 
 ## Compact Object Headers — Gains & Conditions
 
-**Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure. Scales with object *count*, not size.
+**Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure; **~5–10% CPU time**. Scales with object *count*, not size.
 
 **Conditions:** experimental in 24, production (opt-in) in 25, **default in 27**. Transparent — no app code changes.
 
