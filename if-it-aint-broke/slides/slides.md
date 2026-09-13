@@ -17,10 +17,10 @@
 
 ### Which Java version do you run in production?
 
-Join at **AhaSlides** — see below
+https://presenter.ahaslides.com/presentation/10026566
 
 :notes:
-Switch to the live AhaSlides session (presentation 10026566, slide 1) — do not embed this as an iframe, the presenter URL requires login and isn't the audience join view. Pull the actual audience join link/QR before the talk and paste it here.
+That's the presenter link — switch to it live (do not embed as an iframe: it requires login and isn't the audience join view). AhaSlides displays the audience join code/QR automatically once you start presenting there; it's generated per live session, so there's nothing to pre-print here.
 Consider keeping this poll cumulative across every run of this talk to build a running dataset.
 Options shown to the audience (single-select, 11 bucketed options): 8 · 9–10 · 11 (LTS) · 12–16 · 17 (LTS) · 18–20 · 21 (LTS) · 22–24 · 25 (LTS) · 26–27 · Not on Java / other.
 
@@ -31,6 +31,8 @@ Options shown to the audience (single-select, 11 bucketed options): 8 · 9–10 
 ### True or False
 
 "My organization pays for Java support"
+
+https://presenter.ahaslides.com/presentation/10026566
 
 :notes:
 Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False" or "I don't know" — that's the setup for the next section.
@@ -770,6 +772,8 @@ Sources: GCP e2/n2-standard-4 pricing pages, CloudZero Compute Engine Pricing Gu
 ### Which of these free, opt-in wins are you actually using today?
 
 Multi-select — pick all that apply
+
+https://presenter.ahaslides.com/presentation/10026566
 
 :notes:
 Switch to AhaSlides slide 3 (multi-select poll). Options: G1 NUMA-aware allocation · ZGC · Shenandoah · AppCDS/Dynamic CDS · AOT cache · Compact Object Headers pre-27 · Virtual Threads · Vector API · None of the above.
