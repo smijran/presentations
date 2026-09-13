@@ -216,6 +216,9 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 > **Demo idea:** Same setup as the ZGC demo, run under `-XX:+UseShenandoahGC`. Requires a non-Oracle build (Red Hat build of OpenJDK, Eclipse Temurin, etc.) — worth calling out live as a concrete, lived-in example of the vendor fragmentation from Section 2. **Built:** `code/gc-comparison` (`gradle runShenandoah`, Java 26 Temurin) — smoke-tested locally: `max` ~0.42ms, comparable to ZGC and well under G1's ~2.0ms.
 
 ##### Other
+
+> **PARKED — hidden in the deck for now** (matching `data-visibility="hidden"` on the "GC — Other notable JEPs" slide in `slides.md`).
+
 - JEP 363: Remove CMS Garbage Collector (Java 14)
 - JEP 387: Elastic Metaspace (Java 16)
 

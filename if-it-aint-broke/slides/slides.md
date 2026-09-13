@@ -535,6 +535,8 @@ Not available in Oracle JDK — needs Red Hat build of OpenJDK, Eclipse Temurin,
 
 --
 
+<!-- .slide: data-visibility="hidden" -->
+
 ## GC — Other notable JEPs
 
 - JEP 363 — Remove CMS Garbage Collector (Java 14)
