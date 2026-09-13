@@ -80,7 +80,11 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - The real cost of staying put: CPU time, memory bills, missed concurrency improvements
 - Framing: this isn't a migration talk — it's an economics talk
 - "The case, in one sentence" beat: staying on an old Java version isn't caution — it's a tax
-- "Why Now" beat: AI is eating every spare CPU cycle, GPU, and gigabyte on the planet — compute and memory aren't getting cheaper, the "just add more machines" era is ending. A mood-setter, not a cited claim; ties forward to the Cost Impact section where the same scarcity story gets real GCP numbers.
+- "Why Now" beat: AI is eating every spare CPU cycle, GPU, and gigabyte on the planet — compute and memory aren't getting cheaper, the "just add more machines" era is ending. Ties forward to the Cost Impact section where the same scarcity story gets real GCP numbers.
+
+> **The Receipts — 32GB DDR5 kit price, verified:** Sep 2025: $90 → Nov 2025: $269.99 → Dec 2025: $349.99 → Sep 2026 (now): $375–400. **~4.2x in 12 months**, same component tier. Sourced from Tom's Hardware's RAM price tracking (Sept 2026 update) cross-referenced with a Consumer Reports-cited price series for the same class of component. Root cause cited by every source: AI datacenter demand for HBM has pulled fab capacity away from consumer DDR5 — Nvidia, AMD, and hyperscalers (AWS, Microsoft, Google) placing multi-year AI memory orders.
+>
+> **Not just consumer RAM:** Server DDR5 RDIMM (what's actually in cloud provider racks) is projected to **double** by end of 2026 vs. early 2025 (Network World, citing TrendForce/Counterpoint — DRAM contract prices +55–60% in Q1 2026 vs Q4 2025 alone, on top of ~50% already booked year-to-date by late 2025). Laptop makers (Lenovo, Dell, HP, Acer, ASUS) have confirmed **15–20%** price increases, **up to 30%** on high-end models (Consumer Reports, BGR, Tom's Guide). Same root cause as the RAM chart, same hardware class behind every $/machine number in the Cost Impact section later.
 
 ---
 

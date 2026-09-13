@@ -178,7 +178,34 @@ Compute isn't getting cheaper. Memory isn't getting cheaper.
 The "just add more machines" era is ending.
 
 :notes:
-Sets up the economics framing right before we dive into the enhancement tour. Ties forward to the Cost Impact section later — the same scarcity story, with real GCP numbers instead of vibes. Keep this slide short and punchy; it's a mood-setter, not a claim that needs a citation.
+Sets up the economics framing right before we dive into the enhancement tour. Ties forward to the Cost Impact section later — the same scarcity story, with real GCP numbers instead of vibes. The next two slides back this up with receipts instead of leaving it as a vibe.
+
+--
+
+## The Receipts: 32GB DDR5 Kit Price
+
+<div class="barchart">
+  <div class="bar-row"><div class="bar-label">Sep 2025</div><div class="bar-track"><div class="bar-fill" style="width:23%"></div></div><div class="bar-value">$90</div></div>
+  <div class="bar-row"><div class="bar-label">Nov 2025</div><div class="bar-track"><div class="bar-fill" style="width:68%"></div></div><div class="bar-value">$270</div></div>
+  <div class="bar-row"><div class="bar-label">Dec 2025</div><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><div class="bar-value">$350</div></div>
+  <div class="bar-row"><div class="bar-label">Sep 2026 (now)</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-value">$375–400</div></div>
+</div>
+
+**~4.2x in 12 months.** Same 32GB DDR5 kit tier. Just time passing.
+
+:notes:
+Sourced: Tom's Hardware's RAM price tracking (Sept 2026 update — basic 32GB DDR5-6000 kits at $375-400, up from ~$90-191 a year earlier) cross-referenced with a Consumer Reports-cited price series for the same component class (Sep 11 2025: $90 → Nov 21 2025: $269.99 → Dec 2025: $349.99). Root cause cited across every source: AI datacenter demand for HBM has pulled fab capacity away from consumer DDR5 — Nvidia, AMD, and hyperscalers (AWS, Microsoft, Google) placing multi-year AI memory orders.
+
+--
+
+## It's Not Just Consumer RAM
+
+- **Server DDR5 RDIMM** (what's actually in your cloud provider's racks): projected to **double** by end of 2026 vs. early 2025
+- **Laptop makers** (Lenovo, Dell, HP, Acer, ASUS) have confirmed **15–20%** price increases; **up to 30%** on high-end models
+- Same hardware class behind every $/machine number later in this talk
+
+:notes:
+Server RDIMM doubling: Network World, citing TrendForce/Counterpoint research — DRAM contract prices up 55-60% in Q1 2026 vs Q4 2025 alone, on top of a ~50% year-to-date rise already booked by late 2025. Laptop price increases: Consumer Reports / BGR / Tom's Guide, all citing the same manufacturers directly. Root cause is identical to the RAM chart on the previous slide: AI compute buildout diverting memory fab capacity away from everything else.
 
 ---
 
