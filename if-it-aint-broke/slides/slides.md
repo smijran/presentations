@@ -242,6 +242,34 @@ Source: inside.java's "Performance Improvements in JDK 25" roundup — the OpenJ
 :notes:
 Flag this one honestly as an outlier, same rigor as the caveats elsewhere in this deck (Amdahl's law for Vector API, tier-boundary framing for memory $, etc.). It's a real number from a real ticket, but it's a compiler-eliminated-a-check case, not "your app gets 10,000x faster." Included because it's a fun, true, and honestly-caveated capstone to the "unseen work" point.
 
+--
+
+## Not Just LTS — JDK 24 Examples
+
+| Ticket | What Changed | Gain |
+|---|---|---|
+| `JDK-8333867` | SHA3 digest optimization (fewer byte↔long conversions) | up to 27% |
+| `JDK-8338542` | ClassFile API startup overhead reduction | 40–50% on `ClassfileBenchmark.parse` |
+| `JDK-8320448` | `String::indexOf` rewritten for AVX2 instructions | ~1.3x |
+
+All three: plain enhancement tickets, no JEP, verified Fix Version = **24** — a **non-LTS** release (March 2025).
+
+:notes:
+Checked a fourth candidate and discarded it for accuracy: JDK-8336856 (hidden-classes string concat, 40% startup gain) turned out to be tied to JEP 280 on inspection — excluded since it doesn't fit the "no JEP" claim cleanly. These three verified clean. Source: inside.java's "Performance Improvements in JDK 24" roundup, cross-checked against each ticket's actual Fix Version field on bugs.openjdk.org.
+
+--
+
+## Does It Go Back Further? — Java 16 (2021)
+
+`JDK-8236926` — moved G1's heap-uncommit operation off the safepoint into a concurrent phase, cutting GC pause time for large heap shrinks.
+
+Confirmed: no JEP, Fix Version **16** — non-LTS, March 2021.
+
+*No benchmark percentage was published for this one.* Real and verified, but I can't hand you a clean multiplier — said honestly rather than invented.
+
+:notes:
+Went looking for a crisper quantified JDK 16 example first. Claes Redestad's "Towards OpenJDK 17" post shows Hello World startup dropping from ~45ms (JDK 8) to ~25ms (JDK 16), but that's a cumulative JDK 8-through-16 story spanning several releases (partly CDS/module-archiving work tracing back to earlier JEPs like 341/350), not a single clean JDK-16-only unseen ticket. This slide is intentionally the thinner-evidence one, in honest contrast to JDK 24/25's crisp multipliers — the annual "performance roundup" format inside.java uses now didn't exist back in 2021, so finding this vintage of example is harder by construction, not because the work wasn't happening.
+
 ---
 
 ## Compact Strings

@@ -104,6 +104,18 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 > Each gain is a targeted-benchmark, version-to-version comparison — the JDK 25 build with the fix vs. the build just before it. None of these have a JEP. This is one release; every release ships a list this long.
 >
 > **Outlier worth a dedicated callout, honestly caveated:** `JDK-8346664` (a mask-check optimization enabling dead-code elimination) measured **10,000x** — narrow, targeted-benchmark, not representative of typical gains, but real. Same rigor as the other caveats in this deck (Amdahl's law for Vector API, tier-boundary framing for memory $): flag it as an outlier, not a general claim.
+>
+> **Not just LTS — JDK 24 examples** (non-LTS, March 2025):
+>
+> | Ticket | What Changed | Gain |
+> |---|---|---|
+> | `JDK-8333867` | SHA3 digest optimization (fewer byte↔long conversions) | up to 27% |
+> | `JDK-8338542` | ClassFile API startup overhead reduction | 40–50% on `ClassfileBenchmark.parse` |
+> | `JDK-8320448` | `String::indexOf` rewritten for AVX2 instructions | ~1.3x |
+>
+> All three verified: plain enhancement tickets, no JEP, Fix Version = 24. One candidate was checked and discarded — `JDK-8336856` (hidden-classes string concat, 40% startup gain) turned out to be tied to JEP 280, so it doesn't fit the "no JEP" claim cleanly and was excluded.
+>
+> **Does it go back further? Java 16 (2021), the honest version:** `JDK-8236926` — moved G1's heap-uncommit operation off the safepoint into a concurrent phase, cutting GC pause time for large heap shrinks. Confirmed: no JEP, Fix Version 16, non-LTS. **No benchmark percentage was published for this one** — real and verified, but no clean multiplier to quote, said honestly rather than invented. The annual "performance roundup" format inside.java uses now didn't exist in 2021, so a crisply-quantified example from that era is genuinely harder to find — not evidence the work wasn't happening, just evidence the public reporting habit is newer than the practice.
 
 #### 5.1 Compact Strings
 
