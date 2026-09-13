@@ -86,6 +86,25 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ### 5. A Decade of JVM Performance — What You're Leaving Behind
 
+> **Two Streams of Work.** Everything below this point is **seen** work — JEPs: headline features with a public proposal, a design doc, community consensus. There's a second, **unseen** stream: plain JBS tickets (`JDK-XXXXXXX`, bugs.openjdk.org) — routine enhancement/bug fixes with no proposal, no JEP number, that just quietly ship. Per JEP 1's own criteria, a JEP is only needed for changes requiring 2+ weeks of engineering effort, a significant JDK change, or high developer demand — everything smaller ships as a plain ticket instead.
+>
+> **The unseen work, JDK 25 examples** (source: inside.java's "Performance Improvements in JDK 25" roundup — the OpenJDK performance team's own annual aggregation, itself an informal process, not a JEP-style one):
+>
+> | Ticket | What Changed | Gain |
+> |---|---|---|
+> | `JDK-8354300` | Mark `String.hash` field `@Stable` — constant-folds `String.hashCode()` | 8x |
+> | `JDK-8343685` | C2 SuperWord auto-vectorization refactor | 33x |
+> | `JDK-8350748` | Vector API inlining | 14x |
+> | `JDK-8356709` | `BigDecimal.valueOf` optimization | 6–9x |
+> | `JDK-8307513` | `Math.max`/`min` intrinsification | 3–5x |
+> | `JDK-8353686` | `Math.cbrt` x86 intrinsic | 3x |
+> | `JDK-8354674` | AArch64 intrinsic for `Unsafe::setMemory` | ~2.5x |
+> | `JDK-8345687` | Panama FFM native memory segment allocation | up to 2x |
+>
+> Each gain is a targeted-benchmark, version-to-version comparison — the JDK 25 build with the fix vs. the build just before it. None of these have a JEP. This is one release; every release ships a list this long.
+>
+> **Outlier worth a dedicated callout, honestly caveated:** `JDK-8346664` (a mask-check optimization enabling dead-code elimination) measured **10,000x** — narrow, targeted-benchmark, not representative of typical gains, but real. Same rigor as the other caveats in this deck (Amdahl's law for Vector API, tier-boundary framing for memory $): flag it as an outlier, not a general claim.
+
 #### 5.1 Compact Strings
 
 ##### Compact Strings

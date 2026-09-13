@@ -183,6 +183,65 @@ Sets up the economics framing right before we dive into the enhancement tour. Ti
 # A Decade of JVM Performance
 ## What You're Leaving Behind
 
+--
+
+## Two Streams of Work
+
+**Seen** — JEPs: headline features, public proposals, design docs, community consensus. Everything in this talk so far.
+
+**Unseen** — JBS tickets: routine enhancement/bug tickets (`JDK-XXXXXXX`). No proposal, no public design doc, no JEP number. They just quietly ship — hundreds of them, every release.
+
+:notes:
+JEP 1's own criteria for needing a JEP: 2+ weeks of engineering effort, a significant change to the JDK, or high developer/customer demand. Everything smaller ships as a plain JBS enhancement instead — tracked at bugs.openjdk.org, never announced. Both streams are "free performance you didn't have to ask for" — the unseen stream is just easy to miss because nobody writes a talk about a single JBS ticket.
+
+--
+
+## The Unseen Work — JDK 25 Examples
+
+| Ticket | What Changed | Gain |
+|---|---|---|
+| `JDK-8354300` | Mark `String.hash` field `@Stable` — constant-folds `String.hashCode()` | 8x |
+| `JDK-8343685` | C2 SuperWord auto-vectorization refactor | 33x |
+| `JDK-8350748` | Vector API inlining | 14x |
+| `JDK-8356709` | `BigDecimal.valueOf` optimization | 6–9x |
+| `JDK-8307513` | `Math.max`/`min` intrinsification | 3–5x |
+| `JDK-8353686` | `Math.cbrt` x86 intrinsic | 3x |
+| `JDK-8354674` | AArch64 intrinsic for `Unsafe::setMemory` | ~2.5x |
+| `JDK-8345687` | Panama FFM native memory segment allocation | up to 2x |
+
+No JEP for any of these. Each number is a targeted-benchmark, version-to-version comparison — the JDK 25 build with the fix vs. the JDK build just before it.
+
+:notes:
+Source: inside.java's "Performance Improvements in JDK 25" roundup — the OpenJDK performance team's own annual aggregation, itself not an official/formal process, just a team publishing a summary. This is one release; every release has its own list this long.
+
+--
+
+## The Unseen Work — By the Numbers
+
+<div class="barchart">
+  <div class="bar-row"><div class="bar-label">C2 SuperWord auto-vectorization</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-value">33x</div></div>
+  <div class="bar-row"><div class="bar-label">Vector API inlining</div><div class="bar-track"><div class="bar-fill" style="width:42%"></div></div><div class="bar-value">14x</div></div>
+  <div class="bar-row"><div class="bar-label"><code>String.hash</code> @Stable</div><div class="bar-track"><div class="bar-fill" style="width:24%"></div></div><div class="bar-value">8x</div></div>
+  <div class="bar-row"><div class="bar-label"><code>BigDecimal.valueOf</code></div><div class="bar-track"><div class="bar-fill" style="width:23%"></div></div><div class="bar-value">6–9x</div></div>
+  <div class="bar-row"><div class="bar-label"><code>Math.max</code>/<code>min</code> intrinsic</div><div class="bar-track"><div class="bar-fill" style="width:12%"></div></div><div class="bar-value">3–5x</div></div>
+  <div class="bar-row"><div class="bar-label"><code>Math.cbrt</code> x86 intrinsic</div><div class="bar-track"><div class="bar-fill" style="width:9%"></div></div><div class="bar-value">3x</div></div>
+  <div class="bar-row"><div class="bar-label">AArch64 <code>Unsafe::setMemory</code></div><div class="bar-track"><div class="bar-fill" style="width:8%"></div></div><div class="bar-value">2.5x</div></div>
+  <div class="bar-row"><div class="bar-label">Panama FFM alloc</div><div class="bar-track"><div class="bar-fill" style="width:6%"></div></div><div class="bar-value">2x</div></div>
+</div>
+
+--
+
+## ...And Then There's This One
+
+`JDK-8346664` — a mask-check optimization enabling dead-code elimination:
+
+# 10,000x
+
+*(narrow, targeted benchmark — not representative of typical gains, but real)*
+
+:notes:
+Flag this one honestly as an outlier, same rigor as the caveats elsewhere in this deck (Amdahl's law for Vector API, tier-boundary framing for memory $, etc.). It's a real number from a real ticket, but it's a compiler-eliminated-a-check case, not "your app gets 10,000x faster." Included because it's a fun, true, and honestly-caveated capstone to the "unseen work" point.
+
 ---
 
 ## Compact Strings
