@@ -269,6 +269,7 @@ Source: inside.java's "Performance Improvements in JDK 25" roundup — the OpenJ
 *(narrow, targeted benchmark — not representative of typical gains, but real)*
 
 :notes:
+What the ticket actually is: "C2: Optimize mask check with constant offset." C2 already knew how to simplify `(base + offset) & mask` when offset was a left-shift expression, but missed the simpler case where offset is just a constant — this fix closes that gap. Relevant to Panama FFI-style pointer arithmetic with masking. Once C2 recognizes the pattern, it can fold the whole check away at compile time instead of computing it at runtime — that's why a narrow, targeted micro-benchmark isolating exactly this pattern shows 10,000x: the "after" case is doing zero work where the "before" case was doing a real (if cheap) runtime check every time. Resolved in JDK 25 build b11.
 Flag this one honestly as an outlier, same rigor as the caveats elsewhere in this deck (Amdahl's law for Vector API, tier-boundary framing for memory $, etc.). It's a real number from a real ticket, but it's a compiler-eliminated-a-check case, not "your app gets 10,000x faster." Included because it's a fun, true, and honestly-caveated capstone to the "unseen work" point.
 
 --
