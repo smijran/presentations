@@ -259,6 +259,8 @@ Checked a fourth candidate and discarded it for accuracy: JDK-8336856 (hidden-cl
 
 --
 
+<!-- .slide: data-visibility="hidden" -->
+
 ## Does It Go Back Further? — Java 16 (2021)
 
 `JDK-8236926` — moved G1's heap-uncommit operation off the safepoint into a concurrent phase, cutting GC pause time for large heap shrinks.
