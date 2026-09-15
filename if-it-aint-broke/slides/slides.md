@@ -836,4 +836,3 @@ https://instances.vantage.sh
 
 ## Q&A
 
-https://app.sli.do/
