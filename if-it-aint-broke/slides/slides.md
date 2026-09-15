@@ -39,16 +39,6 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 
 --
 
-<!-- .slide: data-visibility="hidden" -->
-
-## Who Actually Has Your Back?
-
-- Free builds vs. paid support: what you get, what you don't
-- Security patches and bug fixes — who actually ships them for *your* version
-- The uncomfortable truth: most teams on "old stable" are running **unsupported** builds
-
---
-
 ## What Paying Actually Buys You
 
 Oracle · Red Hat · Azul · Microsoft · Amazon Corretto
@@ -74,93 +64,17 @@ Paying gets you patched and covered. Staying current gets you fast — for free.
 
 --
 
-<!-- .slide: data-visibility="hidden" -->
-
-## The Clue in Your Build Tool
-
-A C compiler has two distinct concerns:
-
-- `-std` — *language* version
-- `-march` — *target CPU*
-
-Java conflates them in one confusing set of flags.
-
---
-
-<!-- .slide: data-visibility="hidden" -->
-
-## `--source` vs `--target` vs `--release`
-
-| Flag | Controls |
-|---|---|
-| `--source` | Language features the compiler accepts |
-| `--target` | Bytecode version emitted |
-| `--release` | Both, **plus** the correct JDK API signatures |
-
-Targeting old bytecode is **not** a compatibility guarantee.
-
---
-
-<!-- .slide: data-visibility="hidden" -->
-
-## The runtime surprise
-
-Compiling for Java 19 bytecode, running on a Java 19 *JVM* —
-
-what could still go wrong?
-
---
-
-<!-- .slide: data-visibility="hidden" -->
-
-## The runtime surprise — Demo
-
-```java
-int x = Math.clamp(15, 0, 10);   // Math.clamp — added in Java 21
-```
-
-```
-javac -source 19 -target 25 Hello.java
-javac --release 19 Hello.java
-```
-
-Same file. Two ways to "target Java 19."
-
---
-
-<!-- .slide: data-visibility="hidden" -->
-
-## The runtime surprise — Results
-
-**`-source 19 -target 25`** — compiles clean, one warning:
-`--release 19 is recommended instead...`
-
-**`--release 19`** —
-```
-error: cannot find symbol
-  symbol:   method clamp(int,int,int)
-  location: class Math
-```
-
-`-source`/`-target` don't restrict the API surface — only `--release` does. That silent compile is a `NoSuchMethodError` waiting to happen on a real Java 19 JVM.
-
-:notes:
-Verified on Java 26 (Temurin). Math.clamp is a clean, non-preview example (added JEP-standard in Java 21, no --enable-preview complications) — Thread.ofVirtual() also works for this if you want a Loom tie-in instead, but it needs --enable-preview since it was preview in 19/20/21, which adds a confusing extra variable to the demo.
-
----
-
 ## The Comfort Zone Trap
 
 - "It works, don't touch it"
 - Version decisions get made by *not* deciding
 - Real cost: CPU time, memory bills, missed concurrency gains
-- This isn't a migration talk — it's an economics talk
 
 --
 
 ## The case, in one sentence
 
-Staying on an old Java version isn't caution.
+Staying on an old/LTS Java version isn't caution.
 
 It's a tax.
 
@@ -191,7 +105,7 @@ Sets up the economics framing right before we dive into the enhancement tour. Ti
   <div class="bar-row"><div class="bar-label">Sep 2026 (now)</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-value">$375–400</div></div>
 </div>
 
-**~4.2x in 12 months.** Same 32GB DDR5 kit tier. Just time passing.
+**~4.2x in 12 months.**
 
 :notes:
 Sourced: Tom's Hardware's RAM price tracking (Sept 2026 update — basic 32GB DDR5-6000 kits at $375-400, up from ~$90-191 a year earlier) cross-referenced with a Consumer Reports-cited price series for the same component class (Sep 11 2025: $90 → Nov 21 2025: $269.99 → Dec 2025: $349.99). Root cause cited across every source: AI datacenter demand for HBM has pulled fab capacity away from consumer DDR5 — Nvidia, AMD, and hyperscalers (AWS, Microsoft, Google) placing multi-year AI memory orders.
@@ -212,7 +126,7 @@ Server RDIMM doubling: Network World, citing TrendForce/Counterpoint research �
 # A Decade of JVM Performance
 ## What You're Leaving Behind
 
---
+---
 
 ## Two Streams of Work
 
@@ -287,6 +201,33 @@ All three: plain enhancement tickets, no JEP, verified Fix Version = **24** — 
 
 :notes:
 Checked a fourth candidate and discarded it for accuracy: JDK-8336856 (hidden-classes string concat, 40% startup gain) turned out to be tied to JEP 280 on inspection — excluded since it doesn't fit the "no JEP" claim cleanly. These three verified clean. Source: inside.java's "Performance Improvements in JDK 24" roundup, cross-checked against each ticket's actual Fix Version field on bugs.openjdk.org.
+
+--
+
+## The Scalability Cliff — JDK 23
+
+`JDK-8180450` — a 20-year-old HotSpot design flaw, fixed. No JEP.
+
+Under thread contention, `instanceof`/`checkcast` against interfaces hammers a single shared cache field — cache-line ping-ponging across cores.
+
+Hit **Netty, Vert.x, Mutiny, Hibernate, Quarkus** — anything doing heavy interface type-checks in hot paths.
+
+:notes:
+Ticket title: "secondary_super_cache does not scale well." HotSpot caches instanceof/checkcast results against interfaces (secondary supertypes) in one shared field per class. Under multi-threaded contention with varied interface types, concurrent updates to that one cache slot cause false sharing / cache-line ping-ponging between CPU cores — worse on many-core/NUMA hardware, but Red Hat's own writeup showed it was still dramatic on just 2 cores. Netty even filed it as its own GitHub issue (netty/netty#12708) for HttpObjectEncoder. Fix: an update-count counter — if contention is detected, skip the cache update and fall back to a linear scan instead of fighting over the cache line. Confirmed: Fix Version = 23, no JEP.
+
+--
+
+## The Scalability Cliff — By the Numbers
+
+| Benchmark | Before | After | Speedup |
+|---|---|---|---|
+| InterContention | 1873.5 ns/op | 8.2 ns/op | **~228x** |
+| IntraContention | ~2780 ns/op | ~8 ns/op | **~347x** |
+
+**Caveat:** general-purpose benchmarks (Renaissance, SPECjvm) showed no broad change — this fixes a *scalability cliff under contention*, not a universal speedup.
+
+:notes:
+Numbers verified from actual JMH output in a later platform-port PR (#22341, s390x) that reuses the same SecondarySuperCache* benchmark this fix family introduced — the original JDK 23 PR (#18309, C2/x86/aarch64) itself only gives qualitative notes ("immeasurably small... down in the noise" on Renaissance/SPECjvm, meaning normal code isn't affected either way) rather than a clean before/after table, so the concrete multiplier is sourced from the platform-port validation using the identical benchmark. Companion tickets extending the same fix to other tiers/platforms: JDK-8331341 (C1/interpreter, JDK 24), plus PPC64/s390x/RISC-V ports (also JDK 24) — this is why the JDK 24 "unseen work" story two slides back mentions platform ports landing for all OpenJDK platforms.
 
 --
 
