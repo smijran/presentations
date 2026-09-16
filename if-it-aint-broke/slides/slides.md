@@ -627,6 +627,19 @@ Dot product of two large `float[]` arrays — scalar loop vs. `jdk.incubator.vec
 
 --
 
+## Real-World Proof: Apache Lucene
+
+Elastic rewrote Lucene's vector-similarity dot product with the Vector API — the same idea as this demo, shipped in production.
+
+Their own nightly benchmark jumped so much overnight that the benchmarking team messaged the engineer on Slack: **"did we break something?"**
+
+They hadn't. It just got faster.
+
+:notes:
+Source: Ben Trent (Elastic), "Java Must Be Faster: Time for the Vector API," Carolina Code Conference 2023 — Trent worked directly on integrating the Vector API into Lucene's similarity functions. He cites an ~8x throughput speedup on a 256-bit-vector micro-benchmark, and notes the result beat some native (non-Java) implementations on a public vector-search benchmark.
+
+--
+
 ## Vector API — Gains & Conditions
 
 **Gains:** 2–10x speedup for explicitly vectorized code — ML inference, signal/image processing, crypto, numerics.
