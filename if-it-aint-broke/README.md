@@ -170,6 +170,15 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 #### 5.4 Garbage Collection
 
+> **GC Models** — three fundamentally different approaches to reclaiming memory:
+> | GC | Approach |
+> |---|---|
+> | **G1** | Regional heap, incremental "mostly-STW" collection — clears the garbage-heaviest regions first |
+> | **ZGC** | Concurrent, colored pointers — pauses stay sub-ms regardless of heap size |
+> | **Shenandoah** | Concurrent, Brooks pointers — same latency goal as ZGC, different mechanism |
+>
+> **Default since Java 9 (JEP 248): G1.** As of **Java 27** (JEP 523, GA'd Sept 15 2026 — one day before this was written): G1 is default in *every* environment, closing the last exception where JVM ergonomics could still pick Serial GC on tiny heaps/single-core boxes. This deck's own demos target Java 26, the day before that changed — genuinely current news, not something read off a slide from months ago.
+
 > **Why `code/gc-comparison`'s workload actually shows a GC difference:** it's tempting to write a demo that just allocates garbage as fast as possible, but pure young-gen churn is exactly what *every* modern collector handles well — it wouldn't differentiate G1 from ZGC/Shenandoah. Four choices make the difference visible instead:
 > 1. **A growing retained set (~300MB of a 1GB heap), not just throwaway garbage.** Live data that survives into old gen forces real collection work (mixed/full GCs for G1; concurrent old-gen work for ZGC/Shenandoah) — this is where the collectors' strategies actually diverge.
 > 2. **A small, fixed heap (`-Xms1g -Xmx1g`).** Keeps the heap under real pressure within a live-demo-sized window (5–30s) instead of needing minutes to fill a large heap.

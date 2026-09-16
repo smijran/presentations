@@ -156,25 +156,8 @@ JEP 1's own criteria for needing a JEP: 2+ weeks of engineering effort, a signif
 | `JDK-8354674` | AArch64 intrinsic for `Unsafe::setMemory` | ~2.5x |
 | `JDK-8345687` | Panama FFM native memory segment allocation | up to 2x |
 
-No JEP for any of these. Each number is a targeted-benchmark, version-to-version comparison — the JDK 25 build with the fix vs. the JDK build just before it.
-
 :notes:
 Source: inside.java's "Performance Improvements in JDK 25" roundup — the OpenJDK performance team's own annual aggregation, itself not an official/formal process, just a team publishing a summary. This is one release; every release has its own list this long.
-
---
-
-## The Unseen Work — By the Numbers
-
-<div class="barchart">
-  <div class="bar-row"><div class="bar-label">C2 SuperWord auto-vectorization</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-value">33x</div></div>
-  <div class="bar-row"><div class="bar-label">Vector API inlining</div><div class="bar-track"><div class="bar-fill" style="width:42%"></div></div><div class="bar-value">14x</div></div>
-  <div class="bar-row"><div class="bar-label"><code>String.hash</code> @Stable</div><div class="bar-track"><div class="bar-fill" style="width:24%"></div></div><div class="bar-value">8x</div></div>
-  <div class="bar-row"><div class="bar-label"><code>BigDecimal.valueOf</code></div><div class="bar-track"><div class="bar-fill" style="width:23%"></div></div><div class="bar-value">6–9x</div></div>
-  <div class="bar-row"><div class="bar-label"><code>Math.max</code>/<code>min</code> intrinsic</div><div class="bar-track"><div class="bar-fill" style="width:12%"></div></div><div class="bar-value">3–5x</div></div>
-  <div class="bar-row"><div class="bar-label"><code>Math.cbrt</code> x86 intrinsic</div><div class="bar-track"><div class="bar-fill" style="width:9%"></div></div><div class="bar-value">3x</div></div>
-  <div class="bar-row"><div class="bar-label">AArch64 <code>Unsafe::setMemory</code></div><div class="bar-track"><div class="bar-fill" style="width:8%"></div></div><div class="bar-value">2.5x</div></div>
-  <div class="bar-row"><div class="bar-label">Panama FFM alloc</div><div class="bar-track"><div class="bar-fill" style="width:6%"></div></div><div class="bar-value">2x</div></div>
-</div>
 
 --
 
@@ -182,7 +165,7 @@ Source: inside.java's "Performance Improvements in JDK 25" roundup — the OpenJ
 
 `JDK-8346664` — a mask-check optimization enabling dead-code elimination:
 
-# 10,000x
+# 10 000 x
 
 *(narrow, targeted benchmark — not representative of typical gains, but real)*
 
@@ -201,7 +184,6 @@ Flag this one honestly as an outlier, same rigor as the caveats elsewhere in thi
 | `JDK-8338542` | ClassFile API startup overhead reduction | 40–50% on `ClassfileBenchmark.parse` |
 | `JDK-8320448` | `String::indexOf` rewritten for AVX2 instructions | ~1.3x |
 
-All three: plain enhancement tickets, no JEP, verified Fix Version = **24** — a **non-LTS** release (March 2025).
 
 :notes:
 Checked a fourth candidate and discarded it for accuracy: JDK-8336856 (hidden-classes string concat, 40% startup gain) turned out to be tied to JEP 280 on inspection — excluded since it doesn't fit the "no JEP" claim cleanly. These three verified clean. Source: inside.java's "Performance Improvements in JDK 24" roundup, cross-checked against each ticket's actual Fix Version field on bugs.openjdk.org.
@@ -210,7 +192,7 @@ Checked a fourth candidate and discarded it for accuracy: JDK-8336856 (hidden-cl
 
 ## The Scalability Cliff — JDK 23
 
-`JDK-8180450` — a 20-year-old HotSpot design flaw, fixed. No JEP.
+`JDK-8180450` — a 20-year-old HotSpot design flaw, fixed.
 
 Under thread contention, `instanceof`/`checkcast` against interfaces hammers a single shared cache field — cache-line ping-ponging across cores.
 
@@ -235,23 +217,27 @@ Numbers verified from actual JMH output in a later platform-port PR (#22341, s39
 
 --
 
-<!-- .slide: data-visibility="hidden" -->
+...
 
-## Does It Go Back Further? — Java 16 (2021)
+--
 
-`JDK-8236926` — moved G1's heap-uncommit operation off the safepoint into a concurrent phase, cutting GC pause time for large heap shrinks.
-
-Confirmed: no JEP, Fix Version **16** — non-LTS, March 2021.
-
-*No benchmark percentage was published for this one.* Real and verified, but I can't hand you a clean multiplier — said honestly rather than invented.
-
-:notes:
-Went looking for a crisper quantified JDK 16 example first. Claes Redestad's "Towards OpenJDK 17" post shows Hello World startup dropping from ~45ms (JDK 8) to ~25ms (JDK 16), but that's a cumulative JDK 8-through-16 story spanning several releases (partly CDS/module-archiving work tracing back to earlier JEPs like 341/350), not a single clean JDK-16-only unseen ticket. This slide is intentionally the thinner-evidence one, in honest contrast to JDK 24/25's crisp multipliers — the annual "performance roundup" format inside.java uses now didn't exist back in 2021, so finding this vintage of example is harder by construction, not because the work wasn't happening.
+These are simple fixes boosting your performance.
 
 ---
 
+## JEPs
+
+JEPs cover more massive changes that may influence user of Java.
+ 
+*And I can actually demo them*
+
+---
+
+
 ## Compact Strings
 *Store ASCII strings as bytes, not chars*
+
+<img src="https://64.media.tumblr.com/5b083307646a29eb2033d7cc27b8fde4/tumblr_p49f52dx4a1s3jwrdo1_500.gif"/>
 
 - JEP 254 — Compact Strings (Java 9)
 - JEP 280 — Indify String Concatenation (Java 9)
@@ -365,6 +351,21 @@ A toy app first only showed 1.4% — too few classes to matter. Adding a real de
 ## Garbage Collection
 
 G1 · ZGC · Shenandoah — one decade, three very different answers to the same problem.
+
+--
+
+## GC Models
+
+| GC | Approach |
+|---|---|
+| **G1** | Regional heap, incremental "mostly-STW" collection — clears the garbage-heaviest regions first |
+| **ZGC** | Concurrent, colored pointers — pauses stay sub-ms regardless of heap size |
+| **Shenandoah** | Concurrent, Brooks pointers — same latency goal as ZGC, different mechanism |
+
+**Default since Java 9 (JEP 248): G1.** As of **Java 27** (JEP 523, GA'd Sept 15 2026): G1 is default in *every* environment — no more ergonomic fallback to Serial GC on tiny heaps either.
+
+:notes:
+This deck's own demos target Java 26 (the day before this fact changed) — on very small heaps/single-core environments pre-27, JVM ergonomics could still pick Serial GC instead of G1 by default. JEP 523 closes that last exception. Worth saying live since it's one day old at time of writing — genuinely current news, not something read off a slide from months ago.
 
 --
 
