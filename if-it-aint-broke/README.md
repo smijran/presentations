@@ -222,7 +222,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 - JEP 404: Generational Shenandoah — Experimental (Java 24)
 - JEP 521: Generational Shenandoah (Java 25)
 
-> **Gains:** ~1ms pauses; competitive throughput with G1; generational mode improves throughput further. Unlike ZGC, compacts heap concurrently — avoids fragmentation under long-running workloads.
+> **Gains:** ~1ms pauses; competitive throughput with G1; generational mode improves throughput further. Compacts the heap concurrently via Brooks (forwarding) pointers — avoids the fragmentation older non-compacting concurrent collectors like CMS suffered from.
 > **Conditions:** Latency-sensitive apps. Red Hat-maintained; available in OpenJDK. Higher CPU overhead than G1 due to concurrent work. Not available in Oracle JDK.
 > **Demo idea:** Same setup as the ZGC demo, run under `-XX:+UseShenandoahGC`. Requires a non-Oracle build (Red Hat build of OpenJDK, Eclipse Temurin, etc.) — worth calling out live as a concrete, lived-in example of the vendor fragmentation from Section 2. **Built:** `code/gc-comparison` (`gradle runShenandoah`, Java 26 Temurin) — smoke-tested locally: `max` ~0.42ms, comparable to ZGC and well under G1's ~2.0ms.
 
