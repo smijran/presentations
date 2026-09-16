@@ -655,8 +655,6 @@ Source: Ben Trent (Elastic), "Java Must Be Faster: Time for the Vector API," Car
 
 **Gains:** 2–10x throughput for AES-GCM and RSA — directly relevant for TLS-heavy services.
 
-**Conditions:** x86 only, needs AES-NI/PCLMULQDQ. Transparent — zero code changes.
-
 ---
 
 ## Value Types — What's Coming Next
@@ -732,6 +730,7 @@ Baseline: 100 × GCP `n2-standard-4` ≈ **$13,870/month** ($166,440/year)
 | Improvement | Measured | Realistic fleet reduction |
 |---|---|---|
 | Compact Strings | 32% less heap | ~13–24 machines |
+| Compact Object Headers | ~10–20% less heap (JEP estimate, not demo-measured) | ~5–15 machines |
 | Vector API | 4.53x (pure kernel) | ~23–78 machines |
 | Virtual Threads | 45.2x (pool-bound) | ~50–75 machines |
 | GC (ZGC/Shenandoah vs G1) | ~80% lower max pause | ~15–30 machines (headroom) |
@@ -746,10 +745,10 @@ A blended, non-double-counted estimate:
 
 **~25–40 machines reclaimed → ~$3,500–$5,500/month, ~$42,000–$66,000/year**
 
-Zero new hardware. Zero app rewrites for three of the four.
+Zero new hardware. Zero app rewrites for four of the five.
 
 :notes:
-Lead with Virtual Threads — "scaled out because platform threads ran out" is an extremely common real pattern, the most defensible headline number. Vector API and Compact Strings are workload-specific — say so explicitly, don't let 4.53x/45x get quoted as a general fleet number. GC is the softest claim (reclaimed headroom, not measured) — flag as assumption, not fact.
+Lead with Virtual Threads — "scaled out because platform threads ran out" is an extremely common real pattern, the most defensible headline number. Vector API and Compact Strings are workload-specific — say so explicitly, don't let 4.53x/45x get quoted as a general fleet number. GC and Compact Object Headers are the softest claims (reclaimed headroom / literature estimate, not demo-measured) — flag both as assumptions, not facts.
 Sources: GCP e2/n2-standard-4 pricing pages, CloudZero Compute Engine Pricing Guide (2026).
 
 ---
