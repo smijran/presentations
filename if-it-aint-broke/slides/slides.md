@@ -408,10 +408,8 @@ cd code/gc-comparison
 gradle runG1           # baseline
 gradle runG1Numa       # + -XX:+UseNUMA
 gradle runZGC
-gradle runShenandoah   # needs a non-Oracle JDK build!
+gradle runShenandoah   
 ```
-
-Same allocation-heavy workload every time — only the GC flag changes.
 
 :notes:
 Shenandoah needs a Red Hat build of OpenJDK, Eclipse Temurin, etc. — not available in Oracle JDK. Worth calling out live: "notice I had to switch JDK vendors for this one" — a lived-in example of the vendor fragmentation from the earlier section.
@@ -478,30 +476,6 @@ Only matters on multi-socket hardware — a single-socket dev laptop or small cl
 
 **Conditions:** higher CPU overhead than G1 (concurrent work). Not in Oracle JDK.
 
---
-
-## Why the GC Demo Actually Shows a Difference
-
-Pure allocation churn is exactly what *every* modern collector handles well — it wouldn't tell G1 apart from ZGC.
-
-Four choices make the difference real:
-
-1. A **retained set** (~300MB of a 1GB heap), not just throwaway garbage
-2. A **small, fixed heap** — real pressure in a live-demo window
-3. Latency timed **on the working thread itself** — a stop-the-world pause shows up directly
-4. Reporting **percentiles (p99, max)**, not averages — averages bury rare, large pauses
-
---
-
-<!-- .slide: data-visibility="hidden" -->
-
-## GC — Other notable JEPs
-
-- JEP 363 — Remove CMS Garbage Collector (Java 14)
-- JEP 387 — Elastic Metaspace (Java 16)
-
-**Gains (Elastic Metaspace):** class-metadata memory returned to the OS promptly after unloading — matters most for app servers, OSGi, plugin systems.
-
 ---
 
 ## Ahead-of-Time Compilation
@@ -545,23 +519,6 @@ This app only loads a few hundred classes — a heavier real app (Spring Boot, l
 **Gains:** faster time-to-peak performance, reduced warmup latency — most impactful for containerized/serverless cold starts.
 
 **Conditions:** needs a training run on a representative workload. Initially x64 Linux only.
-
----
-
-## JIT & Runtime — Other Notable JEPs
-
-- JEP 197 — Segmented Code Cache (Java 9)
-- JEP 312 — Thread-Local Handshakes (Java 10)
-- JEP 315 — AArch64 Intrinsics (Java 11)
-- JEP 416 — Reflection via Method Handles (Java 18)
-
---
-
-## Other JIT/Runtime — Gains & Conditions
-
-**Gains:** thread-local handshakes cut latency for profiling/deopt ops. Segmented code cache reduces JIT overhead under load. AArch64 intrinsics matter for ARM (Graviton, Apple Silicon). Reflection speedup shows up most in Spring/Hibernate-style frameworks.
-
-**Conditions:** AArch64 gains only on ARM hardware.
 
 ---
 
@@ -719,6 +676,34 @@ The JDK eats its own dog food: 30 platform classes (`Integer`, `LocalDate`, `Opt
 **Conditions:** opt-in only (`value` modifier + `--enable-preview`). Brian Goetz: "optimistic" to expect this out of preview even by JDK 29. Budget 12–18 months of evaluation.
 
 This is also **why Vector API is still incubating** — Valhalla ships first, then Vector API stabilizes on top of it.
+
+---
+
+<!-- .slide: data-visibility="hidden" -->
+
+## GC — Other notable JEPs
+
+- JEP 363 — Remove CMS Garbage Collector (Java 14)
+- JEP 387 — Elastic Metaspace (Java 16)
+
+**Gains (Elastic Metaspace):** class-metadata memory returned to the OS promptly after unloading — matters most for app servers, OSGi, plugin systems.
+
+--
+
+## JIT & Runtime — Other Notable JEPs
+
+- JEP 197 — Segmented Code Cache (Java 9)
+- JEP 312 — Thread-Local Handshakes (Java 10)
+- JEP 315 — AArch64 Intrinsics (Java 11)
+- JEP 416 — Reflection via Method Handles (Java 18)
+
+--
+
+## Other JIT/Runtime — Gains & Conditions
+
+**Gains:** thread-local handshakes cut latency for profiling/deopt ops. Segmented code cache reduces JIT overhead under load. AArch64 intrinsics matter for ARM (Graviton, Apple Silicon). Reflection speedup shows up most in Spring/Hibernate-style frameworks.
+
+**Conditions:** AArch64 gains only on ARM hardware.
 
 ---
 
