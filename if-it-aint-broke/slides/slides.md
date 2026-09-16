@@ -362,23 +362,10 @@ G1 · ZGC · Shenandoah — one decade, three very different answers to the same
 | **ZGC** | Concurrent, colored pointers — pauses stay sub-ms regardless of heap size |
 | **Shenandoah** | Concurrent, Brooks pointers — same latency goal as ZGC, different mechanism |
 
-**Default since Java 9 (JEP 248): G1.** As of **Java 27** (JEP 523, GA'd Sept 15 2026): G1 is default in *every* environment — no more ergonomic fallback to Serial GC on tiny heaps either.
+**Default since Java 9 (JEP 248): G1.** 
 
 :notes:
 This deck's own demos target Java 26 (the day before this fact changed) — on very small heaps/single-core environments pre-27, JVM ergonomics could still pick Serial GC instead of G1 by default. JEP 523 closes that last exception. Worth saying live since it's one day old at time of writing — genuinely current news, not something read off a slide from months ago.
-
---
-
-## Why the GC demo actually shows a difference
-
-Pure allocation churn is exactly what *every* modern collector handles well — it wouldn't tell G1 apart from ZGC.
-
-Four choices make the difference real:
-
-1. A **retained set** (~300MB of a 1GB heap), not just throwaway garbage
-2. A **small, fixed heap** — real pressure in a live-demo window
-3. Latency timed **on the working thread itself** — a stop-the-world pause shows up directly
-4. Reporting **percentiles (p99, max)**, not averages — averages bury rare, large pauses
 
 --
 
@@ -394,29 +381,6 @@ Four choices make the difference real:
 
 --
 
-## G1 GC — Demo
-
-```
-cd code/gc-comparison
-gradle runG1        # baseline
-gradle runG1Numa    # + -XX:+UseNUMA
-```
-
-Same allocation-heavy workload, only the NUMA flag changes.
-
-:notes:
-Fallback numbers if the live run misbehaves: on this (single-socket) dev machine, runG1 and runG1Numa reported near-identical max latency (~1.8–2.0ms) — exactly the "NUMA only matters on multi-socket hardware" caveat. Re-run on real multi-socket hardware before the talk for an actual delta, or narrate the caveat honestly if using single-socket hardware live.
-
---
-
-## G1 GC — Gains & Conditions
-
-**Gains:** better pause-time predictability, proactive memory return, NUMA-aware throughput on multi-socket servers, JNI-pinning stalls eliminated.
-
-**Conditions:** NUMA gains only on multi-socket hardware. JNI pinning fix only matters with frequent native calls.
-
---
-
 ## ZGC
 *Sub-millisecond pauses, any heap size*
 
@@ -425,26 +389,6 @@ Fallback numbers if the live run misbehaves: on this (single-socket) dev machine
 - JEP 439 — Generational ZGC (Java 21)
 - JEP 474 — Generational by default (Java 23)
 - JEP 490 — Non-generational mode removed (Java 24)
-
---
-
-## ZGC — Demo
-
-```
-cd code/gc-comparison
-gradle runG1
-gradle runZGC
-```
-
-**Verified:** G1 `max` ≈ **2.0ms** vs ZGC `max` ≈ **0.37ms** — same workload, same heap.
-
---
-
-## ZGC — Gains & Conditions
-
-**Gains:** <1ms pauses at any heap size. Generational mode (21+) adds 10–20% throughput on top.
-
-**Conditions:** best for latency-sensitive workloads. ~10–20% higher memory overhead than G1. No non-generational opt-out since Java 24.
 
 --
 
@@ -457,25 +401,95 @@ gradle runZGC
 
 --
 
-## Shenandoah — Demo
+## GC Demo — Run Commands
 
 ```
 cd code/gc-comparison
+gradle runG1           # baseline
+gradle runG1Numa       # + -XX:+UseNUMA
+gradle runZGC
 gradle runShenandoah   # needs a non-Oracle JDK build!
 ```
 
-**Verified:** `max` ≈ **0.42ms** — comparable to ZGC, well under G1.
+Same allocation-heavy workload every time — only the GC flag changes.
 
 :notes:
-Not available in Oracle JDK — needs Red Hat build of OpenJDK, Eclipse Temurin, etc. Worth calling out live: "notice I had to switch JDK vendors for this one" — a lived-in example of the vendor fragmentation from the earlier section.
+Shenandoah needs a Red Hat build of OpenJDK, Eclipse Temurin, etc. — not available in Oracle JDK. Worth calling out live: "notice I had to switch JDK vendors for this one" — a lived-in example of the vendor fragmentation from the earlier section.
 
 --
 
-## Shenandoah — Gains & Conditions
+## What's Actually Happening in the Demo
+
+A single 1GB-heap JVM runs two things at once — a rough mockup of a real backend server under load:
+
+- **Background thread:** continuous garbage churn (512B–8KB throwaway allocations) *plus* a slowly growing 300MB retained set — caches, connection pools, buffers that never get freed
+- **Main thread:** simulates incoming requests every 200µs (a small CPU-bound loop), timing each one
+
+Every pause the collector causes shows up directly as request latency — exactly what a GC pause looks like from inside a live service.
+
+:notes:
+Reports p50/p99/p99.9/max, not averages — averages bury the rare large pauses that stop-the-world collections cause. This is deliberately adversarial: real services do carry both a large retained working set and continuous request traffic, so a collector's pause behavior becomes user-facing latency directly.
+
+--
+
+## What Is NUMA?
+
+**N**on-**U**niform **M**emory **A**ccess — multi-socket servers where each CPU has its own local bank of memory.
+
+- Local memory access: fast
+- Reaching another socket's memory: slower — crosses an interconnect
+
+NUMA-aware allocation keeps a thread's memory on its own socket. G1 added this in JEP 345 (Java 14).
+
+:notes:
+Only matters on multi-socket hardware — a single-socket dev laptop or small cloud VM has one memory bank, so there's no "remote" memory to avoid. Fallback if the live run misbehaves: on this (single-socket) dev machine, runG1 and runG1Numa reported near-identical max latency (~1.8–2.0ms) — exactly this caveat, live and unforced.
+
+--
+
+## G1 GC — Where It Thrives
+
+**Thrives when:** general-purpose services with no strict sub-ms latency requirement — multi-socket hardware and frequent JNI calls sharpen the win further.
+
+**Gains:** better pause-time predictability, proactive memory return, NUMA-aware throughput on multi-socket servers, JNI-pinning stalls eliminated.
+
+**Conditions:** NUMA gains only on multi-socket hardware. JNI pinning fix only matters with frequent native calls.
+
+--
+
+## ZGC — Where It Thrives
+
+**Thrives when:** latency-sensitive services on large heaps, where a single slow GC pause hurts more than some extra memory overhead.
+
+**Gains:** <1ms pauses at any heap size. Generational mode (21+) adds 10–20% throughput on top.
+
+**Verified:** G1 `max` ≈ **2.0ms** vs ZGC `max` ≈ **0.37ms** — same workload, same heap.
+
+**Conditions:** best for latency-sensitive workloads. ~10–20% higher memory overhead than G1. No non-generational opt-out since Java 24.
+
+--
+
+## Shenandoah — Where It Thrives
+
+**Thrives when:** you need ZGC's latency profile but you're locked out of Oracle JDK — or you're already on Red Hat/Temurin builds.
 
 **Gains:** ~1ms pauses, throughput competitive with G1, concurrent compaction avoids fragmentation under long-running load.
 
+**Verified:** `max` ≈ **0.42ms** — comparable to ZGC, well under G1.
+
 **Conditions:** higher CPU overhead than G1 (concurrent work). Not in Oracle JDK.
+
+--
+
+## Why the GC Demo Actually Shows a Difference
+
+Pure allocation churn is exactly what *every* modern collector handles well — it wouldn't tell G1 apart from ZGC.
+
+Four choices make the difference real:
+
+1. A **retained set** (~300MB of a 1GB heap), not just throwaway garbage
+2. A **small, fixed heap** — real pressure in a live-demo window
+3. Latency timed **on the working thread itself** — a stop-the-world pause shows up directly
+4. Reporting **percentiles (p99, max)**, not averages — averages bury rare, large pauses
 
 --
 
