@@ -138,9 +138,9 @@ Server RDIMM doubling: Network World, citing TrendForce/Counterpoint research �
 
 ## Two Streams of Work
 
-**Seen** — JEPs: headline features, public proposals, design docs, community consensus. Everything in this talk so far.
+**Seen** — JEPs: headline features, public proposals, design docs, community consensus
 
-**Unseen** — JBS tickets: routine enhancement/bug tickets (`JDK-XXXXXXX`). No proposal, no public design doc, no JEP number. They just quietly ship — hundreds of them, every release.
+**Unseen** — JBS tickets: routine enhancement/bug tickets. No proposal, no public design doc, no JEP number. They just quietly ship — hundreds of them, every release.
 
 :notes:
 JEP 1's own criteria for needing a JEP: 2+ weeks of engineering effort, a significant change to the JDK, or high developer/customer demand. Everything smaller ships as a plain JBS enhancement instead — tracked at bugs.openjdk.org, never announced. Both streams are "free performance you didn't have to ask for" — the unseen stream is just easy to miss because nobody writes a talk about a single JBS ticket.
@@ -558,7 +558,7 @@ gradle runThroughput
 
 ```
 gradle runPinningPre491    # Java 21
-gradle runPinningPost491   # Java 26
+gradle runPinningPost491   # Java 24
 ```
 
 Identical bytecode (`--release 21`), each virtual thread `synchronized` on its own private lock.
@@ -566,7 +566,7 @@ Identical bytecode (`--release 21`), each virtual thread `synchronized` on its o
 | JDK | Actual |
 |---|---|
 | Java 21 (pre-491) | 6,419 ms |
-| Java 26 (post-491) | 210 ms |
+| Java 24 (post-491) | 214 ms |
 
 Nothing changed but the JDK. That gap **is** the JEP.
 

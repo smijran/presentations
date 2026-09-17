@@ -40,10 +40,12 @@ tasks.register('runThroughput', JavaExec) {
 }
 
 // Act 2: JEP 491 (Synchronize Virtual Threads without Pinning, Java 24).
-// Same class file, run on two different JDKs. Override with
-// -Pjava21Home=... / -Pjava26Home=... if your installs live elsewhere.
+// Same class file, run on two different JDKs. Post-491 targets Java 24
+// itself (the exact release the JEP landed in), not a later version, so
+// the comparison is right at the fix boundary. Override with
+// -Pjava21Home=... / -Pjava24Home=... if your installs live elsewhere.
 def java21Home = findProperty('java21Home') ?: "${System.getProperty('user.home')}/.sdkman/candidates/java/21.0.12+1.1-tem"
-def java26Home = findProperty('java26Home') ?: "${System.getProperty('user.home')}/.sdkman/candidates/java/26.0.2-tem"
+def java24Home = findProperty('java24Home') ?: "${System.getProperty('user.home')}/.sdkman/candidates/java/24.0.2-tem"
 
 tasks.register('runPinningPre491', JavaExec) {
     group = 'application'
@@ -55,8 +57,8 @@ tasks.register('runPinningPre491', JavaExec) {
 
 tasks.register('runPinningPost491', JavaExec) {
     group = 'application'
-    description = 'Pinning demo on Java 26 (post-JEP-491): no pinning'
+    description = 'Pinning demo on Java 24 (post-JEP-491): no pinning'
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'virtual.threads.demo.PinningApp'
-    executable = "${java26Home}/bin/java"
+    executable = "${java24Home}/bin/java"
 }
