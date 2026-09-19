@@ -361,17 +361,15 @@ Lead with **Virtual Threads** — "scaled out because platform threads ran out" 
 *Sources: [e2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/e2-standard-4/), [n2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/n2-standard-4/), [Google Cloud Compute Engine Pricing Guide (2026)](https://www.cloudzero.com/blog/google-cloud-compute-engine-pricing-guide/)*
 
 > **Interlude — AhaSlides:** Poll slide, "Allow multiple answers" enabled — "Which of these free, opt-in wins are you actually using today?"
-> 1. G1 NUMA-aware allocation (`-XX:+UseNUMA`)
-> 2. ZGC (`-XX:+UseZGC`)
-> 3. Shenandoah (`-XX:+UseShenandoahGC`)
-> 4. AppCDS / Dynamic CDS archives (`-XX:SharedArchiveFile`)
-> 5. AOT cache — training run + `-XX:AOTMode=record`/`use`
-> 6. Compact Object Headers pre-Java 27 (`-XX:+UseCompactObjectHeaders`)
-> 7. Virtual Threads (Project Loom)
-> 8. Vector API (`--add-modules jdk.incubator.vector`)
-> 9. None of the above
+> 1. Non-default GC (ZGC / Shenandoah / G1 NUMA — grouped into one option)
+> 2. AppCDS / Dynamic CDS archives (`-XX:SharedArchiveFile`)
+> 3. AOT cache — training run + `-XX:AOTMode=record`/`use`
+> 4. Compact Object Headers pre-Java 27 (`-XX:+UseCompactObjectHeaders`)
+> 5. Virtual Threads (Project Loom)
+> 6. Vector API (`--add-modules jdk.incubator.vector`)
+> 7. None of the above
 >
-> All eight are things covered in this talk, all free, all opt-in — none of them are the default. The likely result (mostly "none of the above") *is* the closing punchline: the money is already sitting there, unclaimed.
+> All six are things covered in this talk, all free, all opt-in — none of them are the default. The likely result (mostly "none of the above") *is* the closing punchline: the money is already sitting there, unclaimed.
 
 - Every release since Java 8 is free performance — you just have to show up
 - The upgrade path is manageable: `--release`, multi-release JARs, incremental rollout
