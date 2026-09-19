@@ -367,9 +367,11 @@ Lead with **Virtual Threads** — "scaled out because platform threads ran out" 
 > 4. Compact Object Headers pre-Java 27 (`-XX:+UseCompactObjectHeaders`)
 > 5. Virtual Threads (Project Loom)
 > 6. Vector API (`--add-modules jdk.incubator.vector`)
-> 7. None of the above
+> 7. Compact Strings (JEP 254 — on by default since Java 9, so most of the room is already using it)
+> 8. Running on ARM: Graviton / Apple Silicon (AArch64 intrinsics, JEP 315)
+> 9. None of the above
 >
-> All six are things covered in this talk, all free, all opt-in — none of them are the default. The likely result (mostly "none of the above") *is* the closing punchline: the money is already sitting there, unclaimed.
+> All eight are things covered in this talk, all free, and all but Compact Strings are opt-in (Compact Strings, and arguably ARM, are deliberate "you're already getting it" options). The likely result (mostly "none of the above") *is* the closing punchline: the money is already sitting there, unclaimed.
 
 - Every release since Java 8 is free performance — you just have to show up
 - The upgrade path is manageable: `--release`, multi-release JARs, incremental rollout

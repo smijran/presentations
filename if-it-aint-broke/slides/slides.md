@@ -766,7 +766,7 @@ Multi-select — pick all that apply
 https://presenter.ahaslides.com/presentation/10026566
 
 :notes:
-Switch to AhaSlides slide 3 (multi-select poll). Options (7): Non-default GC (ZGC / Shenandoah / G1 NUMA, grouped into one) · AppCDS/Dynamic CDS · AOT cache · Compact Object Headers pre-27 · Virtual Threads · Vector API · None of the above.
+Switch to AhaSlides slide 3 (multi-select poll). Options (9): Non-default GC (ZGC / Shenandoah / G1 NUMA, grouped into one) · AppCDS/Dynamic CDS · AOT cache · Compact Object Headers pre-27 · Virtual Threads · Vector API · Compact Strings (on by default since 9) · Running on ARM (AArch64 intrinsics) · None of the above.
 The likely result (mostly "none of the above") IS the closing punchline — the money is already sitting there, unclaimed.
 
 --
