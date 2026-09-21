@@ -20,7 +20,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Interlude — AhaSlides:** Survey which Java version attendees run in production. Consider keeping this cumulative across every run of this talk.
 >
-> AhaSlides' Poll slide supports up to 30 answer options — enough headroom to list every version 8–27 individually (20 options) if you'd rather skip bucketing. Grouped version kept below for readability; single-select:
+> AhaSlides' Poll slide supports up to 30 answer options — enough headroom to list every version 8–27 individually (20 options) if you'd rather skip bucketing. Grouped version kept below for readability; multi-select (many shops run more than one version):
 > 1. 8
 > 2. 9–10
 > 3. 11 (LTS)
