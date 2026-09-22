@@ -147,6 +147,34 @@ JEP 1's own criteria for needing a JEP: 2+ weeks of engineering effort, a signif
 
 --
 
+## The Unseen Work — JDK 27 Examples
+
+| Ticket | What Changed | Gain |
+|---|---|---|
+| `JDK-8384353` | SHA-3 AVX2/AVX-512 intrinsics for ML-KEM/ML-DSA | 38–74% |
+| `JDK-8378893` | X25519 larger limb size — X25519 key agreement, Ed25519 signing | 14–55% |
+
+:notes:
+JDK 27 GA'd Sept 15 2026 — one week ago at time of writing — so no inside.java performance roundup exists yet (the JDK 26 one wasn't published until ~3 months after that release's GA); rows sourced from the official release notes instead, cross-checked against each ticket's Fix Version on bugs.openjdk.org.
+Checked and discarded: JDK-8238686 (G1 heap-free-ratio bug fix) — real, verified ticket, but no quantified gain published — and JDK-8360700 (Compact Object Headers default-on), which is just JEP 534 tracked as a ticket, not unseen work.
+
+--
+
+## The Unseen Work — JDK 26 Examples
+
+| Ticket | What Changed | Gain |
+|---|---|---|
+| `JDK-8362893` | `MemorySegment::getString` — less intermediate allocation/copying | lower latency, biggest on short strings |
+| `JDK-8366424` | Fixed missing type profiling in generated record `hashCode`/`equals` | matches hand-written implementation speed |
+| `JDK-8371319` | `Method::equals` short-circuits on identical instances | noticeable in dynamic-proxy-heavy code (Spring, etc.) |
+| `JDK-8369238` | Virtual threads can now unmount during class-initialization waits | removes a pinning-adjacent scalability trap |
+
+:notes:
+Source: inside.java's "Performance Improvements in JDK 26" roundup, cross-checked against each ticket's Fix Version on bugs.openjdk.org.
+Checked and discarded: a WebSearch summary claimed JDK-8340093 (C2 SuperWord cost model) showed "up to 4x" — that number never appeared when the actual source article was fetched directly, so it's excluded rather than repeated unverified. Also excluded JDK-8371986 (removed default `InitialRAMPercentage`) — real, verified ticket, but no quantified gain published.
+
+--
+
 ## The Unseen Work — JDK 25 Examples
 
 | Ticket | What Changed | Gain |
@@ -723,6 +751,9 @@ This is also **why Vector API is still incubating** — Valhalla ships first, th
 ---
 
 ## Cost Impact
+
+--
+
 ### Putting a $ Number on It
 
 Baseline: 100 × GCP `n2-standard-4` ≈ **$13,870/month** ($166,440/year)

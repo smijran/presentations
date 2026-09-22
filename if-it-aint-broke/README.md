@@ -92,6 +92,26 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 > **Two Streams of Work.** Everything below this point is **seen** work — JEPs: headline features with a public proposal, a design doc, community consensus. There's a second, **unseen** stream: plain JBS tickets (`JDK-XXXXXXX`, bugs.openjdk.org) — routine enhancement/bug fixes with no proposal, no JEP number, that just quietly ship. Per JEP 1's own criteria, a JEP is only needed for changes requiring 2+ weeks of engineering effort, a significant JDK change, or high developer demand — everything smaller ships as a plain ticket instead.
 >
+> **The unseen work, JDK 27 examples** (GA'd Sept 15 2026 — one week ago at time of writing, so no inside.java roundup exists yet; rows sourced from the official release notes instead, cross-checked against each ticket's Fix Version on bugs.openjdk.org):
+>
+> | Ticket | What Changed | Gain |
+> |---|---|---|
+> | `JDK-8384353` | SHA-3 AVX2/AVX-512 intrinsics for ML-KEM/ML-DSA | 38–74% |
+> | `JDK-8378893` | X25519 larger limb size — X25519 key agreement, Ed25519 signing | 14–55% |
+>
+> Checked and discarded: `JDK-8238686` (G1 heap-free-ratio bug fix) — real, verified ticket, but no quantified gain published — and `JDK-8360700` (Compact Object Headers default-on), which is just JEP 534 tracked as a ticket, not unseen work.
+>
+> **The unseen work, JDK 26 examples** (source: inside.java's "Performance Improvements in JDK 26" roundup, cross-checked against each ticket's Fix Version on bugs.openjdk.org):
+>
+> | Ticket | What Changed | Gain |
+> |---|---|---|
+> | `JDK-8362893` | `MemorySegment::getString` — less intermediate allocation/copying | lower latency, biggest on short strings |
+> | `JDK-8366424` | Fixed missing type profiling in generated record `hashCode`/`equals` | matches hand-written implementation speed |
+> | `JDK-8371319` | `Method::equals` short-circuits on identical instances | noticeable in dynamic-proxy-heavy code (Spring, etc.) |
+> | `JDK-8369238` | Virtual threads can now unmount during class-initialization waits | removes a pinning-adjacent scalability trap |
+>
+> Checked and discarded: a WebSearch summary claimed `JDK-8340093` (C2 SuperWord cost model) showed "up to 4x" — that number never appeared when the actual source article was fetched directly, so it's excluded rather than repeated unverified. Also excluded `JDK-8371986` (removed default `InitialRAMPercentage`) — real, verified ticket, but no quantified gain published.
+>
 > **The unseen work, JDK 25 examples** (source: inside.java's "Performance Improvements in JDK 25" roundup — the OpenJDK performance team's own annual aggregation, itself an informal process, not a JEP-style one):
 >
 > | Ticket | What Changed | Gain |
