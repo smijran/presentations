@@ -164,13 +164,17 @@ Checked and discarded: JDK-8238686 (G1 heap-free-ratio bug fix) — real, verifi
 
 | Ticket | What Changed | Gain |
 |---|---|---|
-| `JDK-8362893` | `MemorySegment::getString` — less intermediate allocation/copying | lower latency, biggest on short strings |
-| `JDK-8366424` | Fixed missing type profiling in generated record `hashCode`/`equals` | matches hand-written implementation speed |
-| `JDK-8371319` | `Method::equals` short-circuits on identical instances | noticeable in dynamic-proxy-heavy code (Spring, etc.) |
+| `JDK-8362893` | `MemorySegment::getString` — less intermediate allocation/copying | ~1.3–1.4x, 35–49% less allocation |
+| `JDK-8366424` | Fixed missing type profiling in generated record `hashCode`/`equals` | ~5.0x (`hashCode`), ~2.2x (`equals`) |
+| `JDK-8371319` | `Method::equals` short-circuits on identical instances | ~2.3x on the same-instance path |
 | `JDK-8369238` | Virtual threads can now unmount during class-initialization waits | removes a pinning-adjacent scalability trap |
 
 :notes:
-Source: inside.java's "Performance Improvements in JDK 26" roundup, cross-checked against each ticket's Fix Version on bugs.openjdk.org.
+Source: inside.java's "Performance Improvements in JDK 26" roundup for the qualitative picture; the actual numbers here are sourced deeper, from each fix's own OpenJDK PR JMH output (roundup article gave no numbers for 3 of these 4) — cross-checked against each ticket's Fix Version on bugs.openjdk.org.
+JDK-8362893 (PR #26493): `ToJavaStringTest.panama_readString`, avgt ns/op, sizes 5–451 bytes, before→after e.g. 18.996→13.851 (size 5) to 81.145→58.975 (size 451); `gc.alloc.rate.norm` dropped 33–49% across the same sizes.
+JDK-8366424 (PR #27533): `RecordMethodsBenchmark`, thrpt ops/us — hashCodePolluted 239.675 → hashCodeGenerated 1201.802; equalsPolluted 185.471 → equalsGenerated 410.474. "Polluted" is the pre-fix behavior (shared/degraded type profile); "Generated" is post-fix (each record gets its own profile).
+JDK-8371319 (PR #28221): `ExecutableCompareBenchmark.equalMethods`, avgt ns/op, 2.449 → 1.078 (the same-instance-different-object case the short-circuit targets); the true-negative case (`distinctParams`) is unchanged, as expected.
+JDK-8369238 (PR #27802): no JMH numbers published — it's a scalability/deadlock-avoidance fix (same category as JEP 491, but for class-initialization blocking instead of `synchronized`), not something with a clean before/after throughput number.
 Checked and discarded: a WebSearch summary claimed JDK-8340093 (C2 SuperWord cost model) showed "up to 4x" — that number never appeared when the actual source article was fetched directly, so it's excluded rather than repeated unverified. Also excluded JDK-8371986 (removed default `InitialRAMPercentage`) — real, verified ticket, but no quantified gain published.
 
 --
@@ -810,20 +814,111 @@ The likely result (mostly "none of the above") IS the closing punchline — the 
 
 It's a compounding tax.
 
+--
+
+## Thank You
+
+**Konrad Szałkowski**
+
+Principal Software Engineer @ Egnyte · Poznań JUG leader
+
+<img src="img/github-qr.png" style="height: 260px;" />
+
+Slides, demos & sources: github.com/smijran
+
 ---
 
 ## Links
 
-**This talk's demos**
+Everything below, for later — JEPs, further reading, and where the $ numbers came from.
+
+--
+
+## JEPs — Memory & Class Data Sharing
+
+- [JEP 254](https://openjdk.org/jeps/254) — Compact Strings
+- [JEP 280](https://openjdk.org/jeps/280) — Indify String Concatenation
+- [JEP 450](https://openjdk.org/jeps/450) — Compact Object Headers (Experimental)
+- [JEP 519](https://openjdk.org/jeps/519) — Compact Object Headers (Production)
+- [JEP 534](https://openjdk.org/jeps/534) — Compact Object Headers by Default
+- [JEP 310](https://openjdk.org/jeps/310) — Application Class-Data Sharing
+- [JEP 341](https://openjdk.org/jeps/341) — Default CDS Archives
+- [JEP 350](https://openjdk.org/jeps/350) — Dynamic CDS Archives
+
+--
+
+## JEPs — Garbage Collection
+
+- [JEP 248](https://openjdk.org/jeps/248) — Make G1 the Default Garbage Collector
+- [JEP 307](https://openjdk.org/jeps/307) — Parallel Full GC for G1
+- [JEP 344](https://openjdk.org/jeps/344) — Abortable Mixed Collections for G1
+- [JEP 345](https://openjdk.org/jeps/345) — NUMA-Aware Memory Allocation for G1
+- [JEP 423](https://openjdk.org/jeps/423) — Region Pinning for G1
+- [JEP 475](https://openjdk.org/jeps/475) — Late Barrier Expansion for G1
+- [JEP 523](https://openjdk.org/jeps/523) — G1 GC: Default Everywhere
+- [JEP 333](https://openjdk.org/jeps/333) / [377](https://openjdk.org/jeps/377) — ZGC (Experimental / Production)
+- [JEP 439](https://openjdk.org/jeps/439) / [474](https://openjdk.org/jeps/474) / [490](https://openjdk.org/jeps/490) — Generational ZGC, default, non-gen removed
+- [JEP 189](https://openjdk.org/jeps/189) / [379](https://openjdk.org/jeps/379) — Shenandoah (Experimental / Production)
+- [JEP 404](https://openjdk.org/jeps/404) / [521](https://openjdk.org/jeps/521) — Generational Shenandoah
+- [JEP 363](https://openjdk.org/jeps/363) — Remove the CMS Garbage Collector
+- [JEP 387](https://openjdk.org/jeps/387) — Elastic Metaspace
+
+--
+
+## JEPs — JIT, Runtime & Concurrency
+
+- [JEP 295](https://openjdk.org/jeps/295) — Ahead-of-Time Compilation (abandoned)
+- [JEP 410](https://openjdk.org/jeps/410) — Remove the Experimental AOT/JIT Compiler
+- [JEP 483](https://openjdk.org/jeps/483) — Ahead-of-Time Class Loading & Linking
+- [JEP 514](https://openjdk.org/jeps/514) / [515](https://openjdk.org/jeps/515) — AOT CLI Ergonomics & Method Profiling
+- [JEP 197](https://openjdk.org/jeps/197) — Segmented Code Cache
+- [JEP 312](https://openjdk.org/jeps/312) — Thread-Local Handshakes
+- [JEP 315](https://openjdk.org/jeps/315) — Improve AArch64 Intrinsics
+- [JEP 246](https://openjdk.org/jeps/246) — CPU Instructions for GHASH and RSA
+- [JEP 416](https://openjdk.org/jeps/416) — Reimplement Core Reflection with Method Handles
+- [JEP 143](https://openjdk.org/jeps/143) / [270](https://openjdk.org/jeps/270) / [285](https://openjdk.org/jeps/285) — Locking: contended locking, reserved stack areas, spin-wait hints
+- [JEP 374](https://openjdk.org/jeps/374) — Deprecate & Disable Biased Locking
+- [JEP 425](https://openjdk.org/jeps/425) / [436](https://openjdk.org/jeps/436) / [444](https://openjdk.org/jeps/444) — Virtual Threads (Preview → Second Preview → Final)
+- [JEP 491](https://openjdk.org/jeps/491) — Synchronize Virtual Threads without Pinning
+
+--
+
+## JEPs — Vector API & Valhalla
+
+- [JEP 338](https://openjdk.org/jeps/338) → [537](https://openjdk.org/jeps/537) — Vector API, 12 incubator rounds (Java 16 → 27)
+- [JEP 401](https://openjdk.org/jeps/401) — Value Classes and Objects (Preview, targeting Java 28)
+- [JEP 539](https://openjdk.org/jeps/539) — Strict Field Initialization (Preview, Java 28)
+
+--
+
+## Further Reading — Performance
+
+- [inside.java — Performance Improvements in JDK 25](https://inside.java/2025/10/20/jdk-25-performance-improvements/)
+- [inside.java — Performance Improvements in JDK 26](https://inside.java/2026/06/09/jdk-26-performance-improvements/)
+- [JDK 27 Release Notes](https://jdk.java.net/27/release-notes)
+- [bugs.openjdk.org](https://bugs.openjdk.org) — the JBS, source of every `JDK-XXXXXXX` ticket in this talk
+- [JDK-8180450 — secondary_super_cache does not scale well](https://bugs.openjdk.org/browse/JDK-8180450)
+- [Apache Lucene #12091 — Speeding up Vector Similarity through the Java Vector API](https://github.com/apache/lucene/issues/12091)
+- [Ben Trent — Java Must Be Faster: Time for the Vector API (Carolina Code Conference 2023)](https://www.youtube.com/watch?v=8mRKqjCuSEw)
+
+--
+
+## Further Reading — Cloud & Hardware Pricing
+
+- [Google Cloud Compute Engine VM instance pricing](https://cloud.google.com/compute/vm-instance-pricing)
+- [instances.vantage.sh](https://instances.vantage.sh) — cross-cloud instance/price comparison
+- [economize.cloud — e2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/e2-standard-4/)
+- [economize.cloud — n2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/n2-standard-4/)
+- [CloudZero — Google Cloud Compute Engine Pricing Guide (2026)](https://www.cloudzero.com/blog/google-cloud-compute-engine-pricing-guide/)
+
+--
+
+## This Talk
+
+**Repo (slides, demos, plan):** https://github.com/smijran/presentations
 `if-it-aint-broke/code/` — gc-comparison, compact-strings, cds-demo, aot-demo, virtual-threads-demo, vector-api-demo
 
-**Project Lilliput**
-https://wiki.openjdk.org/display/lilliput/Main
-https://openjdk.org/jeps/450 · https://openjdk.org/jeps/519
-
-**Cloud pricing**
-https://cloud.google.com/compute/vm-instance-pricing
-https://instances.vantage.sh
+**Project Lilliput:** https://wiki.openjdk.org/display/lilliput/Main
 
 --
 

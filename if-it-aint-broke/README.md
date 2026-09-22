@@ -101,14 +101,16 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 >
 > Checked and discarded: `JDK-8238686` (G1 heap-free-ratio bug fix) — real, verified ticket, but no quantified gain published — and `JDK-8360700` (Compact Object Headers default-on), which is just JEP 534 tracked as a ticket, not unseen work.
 >
-> **The unseen work, JDK 26 examples** (source: inside.java's "Performance Improvements in JDK 26" roundup, cross-checked against each ticket's Fix Version on bugs.openjdk.org):
+> **The unseen work, JDK 26 examples** (source: inside.java's "Performance Improvements in JDK 26" roundup for the qualitative picture; the numbers below are sourced deeper, from each fix's own OpenJDK PR JMH output, since the roundup gave no numbers for 3 of these 4 — cross-checked against each ticket's Fix Version on bugs.openjdk.org):
 >
 > | Ticket | What Changed | Gain |
 > |---|---|---|
-> | `JDK-8362893` | `MemorySegment::getString` — less intermediate allocation/copying | lower latency, biggest on short strings |
-> | `JDK-8366424` | Fixed missing type profiling in generated record `hashCode`/`equals` | matches hand-written implementation speed |
-> | `JDK-8371319` | `Method::equals` short-circuits on identical instances | noticeable in dynamic-proxy-heavy code (Spring, etc.) |
+> | `JDK-8362893` | `MemorySegment::getString` — less intermediate allocation/copying | ~1.3–1.4x, 35–49% less allocation |
+> | `JDK-8366424` | Fixed missing type profiling in generated record `hashCode`/`equals` | ~5.0x (`hashCode`), ~2.2x (`equals`) |
+> | `JDK-8371319` | `Method::equals` short-circuits on identical instances | ~2.3x on the same-instance path |
 > | `JDK-8369238` | Virtual threads can now unmount during class-initialization waits | removes a pinning-adjacent scalability trap |
+>
+> `JDK-8362893` (PR #26493): `ToJavaStringTest.panama_readString`, avgt ns/op, sizes 5–451 bytes, before→after e.g. 18.996→13.851 (size 5) to 81.145→58.975 (size 451); `gc.alloc.rate.norm` dropped 33–49% across the same sizes. `JDK-8366424` (PR #27533): `RecordMethodsBenchmark`, thrpt ops/us — hashCodePolluted 239.675 → hashCodeGenerated 1201.802; equalsPolluted 185.471 → equalsGenerated 410.474 ("polluted" = pre-fix shared/degraded type profile, "generated" = post-fix). `JDK-8371319` (PR #28221): `ExecutableCompareBenchmark.equalMethods`, avgt ns/op, 2.449 → 1.078 (the same-instance-different-object case the short-circuit targets); the true-negative case is unchanged, as expected. `JDK-8369238` (PR #27802): no JMH numbers published — a scalability/deadlock-avoidance fix (same category as JEP 491, but for class-initialization blocking), not something with a clean before/after throughput number.
 >
 > Checked and discarded: a WebSearch summary claimed `JDK-8340093` (C2 SuperWord cost model) showed "up to 4x" — that number never appeared when the actual source article was fetched directly, so it's excluded rather than repeated unverified. Also excluded `JDK-8371986` (removed default `InitialRAMPercentage`) — real, verified ticket, but no quantified gain published.
 >
