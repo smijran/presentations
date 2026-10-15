@@ -725,6 +725,32 @@ Project Loom: rethinking what a "thread" costs.
 
 --
 
+## Virtual Threads — What's the Idea
+
+One OS thread per in-flight request is expensive — real memory, real context-switch cost — capping concurrency at your pool size.
+
+Virtual threads are JVM-scheduled and cheap: millions of them multiplex onto a small set of real "carrier" OS threads, parking around blocking calls instead of occupying a carrier the whole time.
+
+--
+
+## Virtual Threads — What Changed
+
+JEP 425 (Java 19) / 436 (Java 20) — preview rounds.
+
+JEP 444 (Java 21) — finalized.
+
+JEP 491 (Java 24) — fixed `synchronized`-block pinning, so a virtual thread can now unmount even while holding a monitor.
+
+--
+
+## Virtual Threads — Gains & Conditions
+
+**Gains:** IO-bound throughput scales without tuning pool sizes — orders of magnitude more concurrent requests. JEP 491 removes `synchronized` pinning — critical for Spring/JDBC.
+
+**Conditions:** IO-intensive workloads only. CPU-bound tasks see no benefit. JEP 491 (Java 24) is a practical prerequisite for real frameworks.
+
+--
+
 ## Virtual Threads — Demo, Act 1: Throughput
 
 ```
@@ -756,13 +782,7 @@ Nothing changed but the JDK. That gap **is** the JEP.
 
 --
 
-## Virtual Threads — Gains & Conditions
-
-**Gains:** IO-bound throughput scales without tuning pool sizes — orders of magnitude more concurrent requests. JEP 491 removes `synchronized` pinning — critical for Spring/JDBC.
-
-**Conditions:** IO-intensive workloads only. CPU-bound tasks see no benefit. JEP 491 (Java 24) is a practical prerequisite for real frameworks.
-
---
+<!-- .slide: data-visibility="hidden" -->
 
 ## Locking
 *Reduce monitor overhead — from acquisition to edge cases*
@@ -773,6 +793,8 @@ Nothing changed but the JDK. That gap **is** the JEP.
 - JEP 374 — Deprecate & disable Biased Locking (Java 15)
 
 --
+
+<!-- .slide: data-visibility="hidden" -->
 
 ## Locking — Gains & Conditions
 

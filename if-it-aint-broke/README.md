@@ -304,6 +304,9 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 > **Demo idea:** Fire N concurrent IO-bound tasks (simulate a blocking call, e.g. `Thread.sleep` or a real HTTP/DB call) against a fixed-size platform thread pool (e.g. 200 threads) vs `Executors.newVirtualThreadPerTaskExecutor()`. Crank N into the tens of thousands — the platform pool queues and stalls while virtual threads complete near-linearly. Second act: reproduce the JEP 491 pinning fix live — wrap the blocking call in a `synchronized` block on Java 21 vs Java 24+, and show virtual-thread pinning events (JFR `jdk.VirtualThreadPinned`) appear pre-491 and disappear after. **Built:** `code/virtual-threads-demo`. Act 1 (`gradle runThroughput`, Java 26): 50,000 tasks × 50ms — platform pool (200 threads) 12,569ms vs virtual threads 278ms, a 45.2x speedup, tracking the pool's theoretical bound almost exactly. Act 2 turned out not to need JFR at all — timing alone proves JEP 491: same bytecode (compiled `--release 21`), each virtual thread `synchronized` on its own private lock then `Thread.sleep`s inside it; run on Java 21 (`gradle runPinningPre491`) takes 6,419ms (matches the pinned prediction of 6,400ms = 500 tasks ÷ 16 carrier threads × 200ms); the identical code on Java 24 — the exact release JEP 491 landed in — (`gradle runPinningPost491`) takes 214ms. The ~30x gap between those two runs, nothing else changed, *is* the JEP. (Java 24 is EOL and no longer in sdkman's candidate list, but Temurin still publishes it in Adoptium's release archive.)
 
 ##### Locking
+
+> **PARKED — hidden in the deck for now** (matching `data-visibility="hidden"` on the "Locking" and "Locking — Gains & Conditions" slides in `slides.md`).
+
 *Reduce overhead of monitor operations — from acquisition to edge-case safety.*
 
 - JEP 143: Improve Contended Locking (Java 9)
