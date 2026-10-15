@@ -332,6 +332,30 @@ gradle runWithoutCompactStrings
 
 --
 
+## Compact Object Headers — What's the Idea
+
+Every Java object carries a header (mark word + klass pointer) — 96–128 bits, regardless of what the object actually holds.
+
+For apps with millions of small objects (caches, DTOs, linked structures), that header overhead can add up to a real fraction of total heap.
+
+--
+
+## Compact Object Headers — What Changed
+
+**JEP 450 / 519:** compress the mark word and klass pointer into a single 64-bit word, when compatible (no biased locking, compatible hash-code state) — transparent, no object-layout API to touch.
+
+**JEP 534:** on by default from Java 27 — no flag needed at all.
+
+--
+
+## Compact Object Headers — Gains & Conditions
+
+**Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure; ~5–10% CPU time. Scales with object *count*, not size.
+
+**Conditions:** experimental in 24, production (opt-in) in 25, **default in 27**. Transparent — no app code changes.
+
+--
+
 ## Compact Object Headers — Demo
 
 ```
@@ -344,14 +368,6 @@ cd ../project_liliput/code
 
 :notes:
 On Java 27+, add a third run with no flags at all to show the same reduction now happens with zero configuration.
-
---
-
-## Compact Object Headers — Gains & Conditions
-
-**Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure; ~5–10% CPU time. Scales with object *count*, not size.
-
-**Conditions:** experimental in 24, production (opt-in) in 25, **default in 27**. Transparent — no app code changes.
 
 ---
 
