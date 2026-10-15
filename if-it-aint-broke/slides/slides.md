@@ -21,7 +21,7 @@
 
 <img src="img/piotr-przybyl.jpg" style="height: 320px; border-radius: 8px;" />
 
-**Piotr Przybył** 🍷
+**Piotr Przybył & 🍷**
 
 ---
 
