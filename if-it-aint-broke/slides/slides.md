@@ -823,6 +823,30 @@ Nothing changed but the JDK. That gap **is** the JEP.
 
 --
 
+## Vector API — What's the Idea
+
+Modern CPUs can do one instruction across multiple data lanes at once — add 8 floats in a single op instead of 8 separate ones.
+
+Auto-vectorization in the JIT is best-effort and unreliable for anything non-trivial. The Vector API gives you an explicit, portable way to write SIMD code that compiles down to whatever width the CPU actually has (128/256/512-bit), instead of hand-rolling per-architecture intrinsics.
+
+--
+
+## Vector API — What Changed
+
+12 incubator rounds, JEP 338 (Java 16) through JEP 537 (Java 27) — still incubating.
+
+Why so long: vector lanes need a flattened, unboxed representation to avoid per-lane object overhead, and that requires Project Valhalla's value types to ship first.
+
+--
+
+## Vector API — Gains & Conditions
+
+**Gains:** 2–10x speedup for explicitly vectorized code — ML inference, signal/image processing, crypto, numerics.
+
+**Conditions:** needs CPU vector support (AVX2/AVX-512, SVE/SVE2). Not general-purpose — only code rewritten to use it benefits. Long incubation is a Valhalla dependency. Not stable — can't ship in a library.
+
+--
+
 ## Vector API — Demo
 
 ```
@@ -831,10 +855,6 @@ gradle run
 ```
 
 Dot product of two large `float[]` arrays — scalar loop vs. `jdk.incubator.vector` with `fma`.
-
---
-
-## Vector API — Results
 
 | Array length | Scalar | Vector API | Speedup |
 |---|---|---|---|
@@ -858,20 +878,32 @@ Source: Ben Trent (Elastic), "Java Must Be Faster: Time for the Vector API," Car
 
 --
 
-## Vector API — Gains & Conditions
-
-**Gains:** 2–10x speedup for explicitly vectorized code — ML inference, signal/image processing, crypto, numerics.
-
-**Conditions:** needs CPU vector support (AVX2/AVX-512, SVE/SVE2). Not general-purpose — only code rewritten to use it benefits. Long incubation is a Valhalla dependency. Not stable — can't ship in a library.
-
---
-
 ## CPU Intrinsics
 *Route specific ops straight to hardware instructions*
 
 - JEP 246 — CPU instructions for GHASH & RSA (Java 9)
 
+--
+
+## CPU Intrinsics — What's the Idea
+
+Some operations — GCM authentication, RSA modular exponentiation — have dedicated hardware instructions that are far faster than a generic compiled loop.
+
+An "intrinsic" lets the JIT recognize a specific method call and swap in that single hardware instruction instead of running the Java fallback.
+
+--
+
+## CPU Intrinsics — What Changed
+
+JEP 246 (Java 9) added CPU-specific intrinsics for GHASH (used in AES-GCM) and RSA modular exponentiation — fully transparent, the JIT substitutes the hardware instruction automatically when available.
+
+--
+
+## CPU Intrinsics — Gains & Conditions
+
 **Gains:** 2–10x throughput for AES-GCM and RSA — directly relevant for TLS-heavy services.
+
+**Conditions:** needs a CPU with the relevant instruction-set extension (e.g. carry-less multiplication for GHASH) — virtually universal on modern x86/ARM server hardware, but not guaranteed on exotic/older targets.
 
 ---
 
