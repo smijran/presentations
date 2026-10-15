@@ -280,6 +280,30 @@ JEPs cover more massive changes that may influence user of Java.
 
 --
 
+## Compact Strings — What's the Idea
+
+Every `String` stores its characters as UTF-16 — 2 bytes per char, no matter the content.
+
+Most real-world text is pure ASCII/Latin-1, which only needs 1 byte per char. Half that backing array is wasted for the common case.
+
+--
+
+## Compact Strings — What Changed
+
+**JEP 254:** `String` now carries an internal `coder` byte. If every char fits in Latin-1, the JVM backs it with a `byte[]` instead of `char[]` — fully transparent, zero API change.
+
+**JEP 280:** string concatenation (`+`) now compiles to `invokedynamic` → `StringConcatFactory`, instead of hardcoded `StringBuilder` bytecode — lets the JVM pick/evolve the concat strategy at runtime.
+
+--
+
+## Compact Strings — Gains & Conditions
+
+**Gains:** ~50% smaller backing array for Latin-1/ASCII content; less GC pressure. Indify concat: faster string building, smaller bytecode.
+
+**Conditions:** apps with predominantly ASCII/Latin-1 content benefit most. Heavy CJK/emoji content sees far less array saving (but still gains from concat).
+
+--
+
 ## Compact Strings — Demo
 
 ```
@@ -290,24 +314,12 @@ gradle runWithoutCompactStrings
 
 5,000,000 ASCII strings, 40 chars each — one flag changes.
 
---
-
-## Compact Strings — Results
-
 | | Heap used | Bytes/string |
 |---|---|---|
 | `-XX:+CompactStrings` (default) | 401.51 MB | 84.2 |
 | `-XX:-CompactStrings` | 592.25 MB | 124.2 |
 
 **~32% less heap.** Zero application code changes.
-
---
-
-## Compact Strings — Gains & Conditions
-
-**Gains:** ~50% smaller backing array for Latin-1/ASCII content; less GC pressure. Indify concat: faster string building, smaller bytecode.
-
-**Conditions:** apps with predominantly ASCII/Latin-1 content benefit most. Heavy CJK/emoji content sees far less array saving (but still gains from concat).
 
 ---
 
