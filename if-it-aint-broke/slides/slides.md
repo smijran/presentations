@@ -15,6 +15,14 @@
 - Java enthusiast & Poznań JUG leader
 - Java performance freak
 
+--
+
+## Inspired By
+
+<img src="img/piotr-przybyl.jpg" style="height: 320px; border-radius: 8px;" />
+
+**Piotr Przybył** 🍷
+
 ---
 
 ## 🔴 Live Poll
