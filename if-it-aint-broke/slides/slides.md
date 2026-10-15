@@ -1,7 +1,7 @@
 # If It Ain't Broke
 ## The Hidden Cost of Your Java Comfort Zone
 
-<img src="img/devcluj-logo_black.png" style="height: 90px; margin-top: 20px;" />
+<img src="img/jdd-logo.svg" style="height: 90px; margin-top: 20px;" />
 
 ### 24th September 2026
 

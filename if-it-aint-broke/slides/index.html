@@ -5,14 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>If It Ain't Broke — Slides</title>
     <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css" />
-    <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/white.css" id="theme" />
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/black.css" id="theme" />
     <link rel="stylesheet" href="node_modules/reveal.js/plugin/highlight/monokai.css" />
     <style>
+      /* Palette pulled from jdd.org.pl's own stylesheet (dark navy theme, orange primary accent) */
       :root {
         --r-main-font-size: 32px;
+        --r-background-color: #030915;
+        --r-main-color: #eeebe4;
+        --r-heading-color: #eeebe4;
+        --r-link-color: #efa831;
+        --r-link-color-dark: #c4841f;
+        --r-link-color-hover: #f5be5f;
+        --r-selection-background-color: rgba(239, 168, 49, 0.75);
+      }
+      body {
+        background: #030915;
       }
       .reveal table {
         font-size: 0.7em;
+      }
+      .reveal table th,
+      .reveal table td {
+        border-bottom-color: #273347;
       }
       .reveal .slides section .fragment.demo-note {
         font-size: 0.6em;
@@ -35,20 +50,21 @@
         text-align: right;
       }
       .reveal .barchart .bar-track {
-        background: #e8e8e8;
+        background: #111b2b;
         flex-grow: 1;
         height: 30px;
         position: relative;
+        border: 1px solid #273347;
       }
       .reveal .barchart .bar-fill {
-        background: #2a6fdb;
+        background: #efa831;
         height: 100%;
       }
       .reveal .barchart .bar-value {
         width: 80px;
         flex-shrink: 0;
         font-weight: bold;
-        color: #2a6fdb;
+        color: #efa831;
       }
     </style>
   </head>
