@@ -380,6 +380,32 @@ On Java 27+, add a third run with no flags at all to show the same reduction now
 
 --
 
+## Class Data Sharing — What's the Idea
+
+Every JVM startup re-parses, re-verifies, and re-loads the same core class metadata from scratch — work that's identical across every instance of the same app.
+
+CDS does that work once, dumps the result into an archive file, and every later JVM start just memory-maps it back in instead of redoing it.
+
+--
+
+## Class Data Sharing — What Changed
+
+**JEP 310 (Application CDS):** manual 2-step — `-Xshare:dump -XX:SharedClassListFile=<list> -XX:SharedArchiveFile=<archive>.jsa` to build it, `-XX:SharedArchiveFile=<archive>.jsa` to use it.
+
+**JEP 341 (Default CDS Archives):** a base JDK-classes archive, on automatically via `-Xshare:auto` (the default) — `-Xshare:off` disables it.
+
+**JEP 350 (Dynamic CDS Archives):** one flag to capture — `-XX:ArchiveClassesAtExit=<archive>.jsa` — then run with `-XX:SharedArchiveFile=<archive>.jsa`. This is what the demo uses.
+
+--
+
+## CDS — Gains & Conditions
+
+**Gains:** faster startup, lower memory across multiple JVM instances of the same app sharing one archive.
+
+**Conditions:** it's an **OS page-cache sharing effect between processes on the same host** — not inherently a Kubernetes feature. Only holds for same-node co-location sharing the archive file, never across nodes.
+
+--
+
 ## CDS — Demo
 
 ```
@@ -389,26 +415,14 @@ cd code/cds-demo
 
 8 concurrent JVM instances, real Jackson dependency for a realistic class graph, PSS measured from `/proc/<pid>/smaps_rollup`.
 
-:notes:
-A toy app first only showed 1.4% — too few classes to matter. Adding a real dependency is what made the effect real. Worth explaining if asked.
-
---
-
-## CDS — Results
-
 | | Total PSS (8 instances) | Startup |
 |---|---|---|
 | Without CDS | 459.2 MB | 434.1 ms |
 | With Dynamic CDS | 358.5 MB | 234.2 ms |
 | **Delta** | **−21.9%** | **1.85x faster** |
 
---
-
-## CDS — Gains & Conditions
-
-**Gains:** faster startup, lower memory across multiple JVM instances of the same app sharing one archive.
-
-**Conditions:** it's an **OS page-cache sharing effect between processes on the same host** — not inherently a Kubernetes feature. Only holds for same-node co-location sharing the archive file, never across nodes.
+:notes:
+A toy app first only showed 1.4% — too few classes to matter. Adding a real dependency is what made the effect real. Worth explaining if asked.
 
 ---
 
