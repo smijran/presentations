@@ -650,6 +650,44 @@ Shenandoah needs a Red Hat build of OpenJDK, Eclipse Temurin, etc. — not avail
 
 --
 
+## Ahead-of-Time Compilation — What's the Idea
+
+The JIT compiles hot methods on the fly — but every single JVM start pays the same warmup tax: interpret bytecode, profile it, slowly tier up to optimized machine code, all over again.
+
+AOT tries to skip (or front-load) that process by recording what a prior "training" run learned, and reusing it on every real startup.
+
+--
+
+## Ahead-of-Time Compilation — What Changed
+
+**JEP 295 (Java 9):** Graal-based AOT compiler — experimental, needed a separate toolchain, limited coverage. Abandoned, removed by **JEP 410 (Java 17)**.
+
+**JEP 483 (Java 24):** an AOT *cache* of class/linking data — a three-step flow:
+
+```
+-XX:AOTMode=record -XX:AOTConfiguration=app.aotconf   # 1. train
+-XX:AOTMode=create -XX:AOTConfiguration=app.aotconf \
+                   -XX:AOTCache=app.aot                # 2. create cache
+-XX:AOTCache=app.aot                                    # 3. run
+```
+
+**JEP 514 / 515 (Java 25):** collapses this to one step, plus method-profiling capture:
+
+```
+-XX:AOTCacheOutput=app.aot   # train + create in one run
+-XX:AOTCache=app.aot         # run — what the demo uses
+```
+
+--
+
+## Ahead-of-Time Compilation — Gains & Conditions
+
+**Gains:** faster time-to-peak performance, reduced warmup latency — most impactful for containerized/serverless cold starts.
+
+**Conditions:** needs a training run on a representative workload. Initially x64 Linux only.
+
+--
+
 ## AOT — Demo
 
 ```
@@ -658,10 +696,6 @@ cd code/aot-demo
 ```
 
 JDK-builtin `HttpServer`/`HttpClient`, one-step `-XX:AOTCacheOutput` / `-XX:AOTCache`.
-
---
-
-## AOT — Results
 
 | | Time to first request |
 |---|---|
@@ -673,14 +707,6 @@ Consistent across 10 runs each, no overlap between the two ranges.
 
 :notes:
 This app only loads a few hundred classes — a heavier real app (Spring Boot, large dependency graph) has far more startup linking to skip and would show a bigger win. Say this out loud so the modest number doesn't undersell the feature.
-
---
-
-## AOT — Gains & Conditions
-
-**Gains:** faster time-to-peak performance, reduced warmup latency — most impactful for containerized/serverless cold starts.
-
-**Conditions:** needs a training run on a representative workload. Initially x64 Linux only.
 
 ---
 
