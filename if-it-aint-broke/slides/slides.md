@@ -466,6 +466,20 @@ This deck's own demos target Java 26 (the day before this fact changed) — on v
 
 --
 
+## What's Actually Happening in the Demo
+
+A single 1GB-heap JVM runs two things at once — a rough mockup of a real backend server under load:
+
+- **Background thread:** continuous garbage churn (512B–8KB throwaway allocations) *plus* a slowly growing 300MB retained set — caches, connection pools, buffers that never get freed
+- **Main thread:** simulates incoming requests every 200µs (a small CPU-bound loop), timing each one
+
+Every pause the collector causes shows up directly as request latency — exactly what a GC pause looks like from inside a live service. All three collectors below run against this exact same workload.
+
+:notes:
+Reports p50/p99/p99.9/max, not averages — averages bury the rare large pauses that stop-the-world collections cause. This is deliberately adversarial: real services do carry both a large retained working set and continuous request traffic, so a collector's pause behavior becomes user-facing latency directly.
+
+--
+
 ## G1 GC
 *Make the default GC faster, smarter, less wasteful*
 
@@ -478,52 +492,39 @@ This deck's own demos target Java 26 (the day before this fact changed) — on v
 
 --
 
-## ZGC
-*Sub-millisecond pauses, any heap size*
+## G1 GC — What's the Idea
 
-- JEP 333 — Experimental (Java 11)
-- JEP 377 — Production (Java 15)
-- JEP 439 — Generational ZGC (Java 21)
-- JEP 474 — Generational by default (Java 23)
-- JEP 490 — Non-generational mode removed (Java 24)
+Instead of one contiguous heap, G1 divides memory into many fixed-size regions and tracks how much garbage sits in each one.
+
+It collects the garbage-heaviest regions first — "Garbage First" — evacuating live objects out before reclaiming the region. Tunable pause-time goal, not a fixed algorithm phase.
 
 --
 
-## Shenandoah
-*Concurrent compaction — low pauses, no fragmentation*
+## G1 GC — What Changed
 
-- JEP 189 — Experimental (Java 12)
-- JEP 379 — Production (Java 15)
-- JEP 404 / 521 — Generational Shenandoah (Java 24 → 25)
+JEP 248 (Java 9) made G1 default. JEP 307 (Java 10) parallelized the full-GC fallback path. JEP 344 / 346 (Java 12) made mixed collections abortable and returned unused committed memory to the OS promptly.
+
+JEP 345 (Java 14) added NUMA-aware allocation. JEP 423 (Java 22) added region pinning, so JNI critical sections no longer force a full stop-the-world pause. JEP 475 (Java 24) shrank the compiler-generated barrier code around every reference write.
 
 --
 
-## GC Demo — Run Commands
+## G1 GC — Where It Thrives
+
+**Thrives when:** general-purpose services with no strict sub-ms latency requirement — multi-socket hardware and frequent JNI calls sharpen the win further.
+
+**Gains:** better pause-time predictability, proactive memory return, NUMA-aware throughput on multi-socket servers, JNI-pinning stalls eliminated.
+
+**Conditions:** NUMA gains only on multi-socket hardware. JNI pinning fix only matters with frequent native calls.
+
+--
+
+## G1 GC — Demo
 
 ```
 cd code/gc-comparison
-gradle runG1           # baseline
-gradle runG1Numa       # + -XX:+UseNUMA
-gradle runZGC
-gradle runShenandoah   
+gradle runG1        # baseline
+gradle runG1Numa    # + -XX:+UseNUMA
 ```
-
-:notes:
-Shenandoah needs a Red Hat build of OpenJDK, Eclipse Temurin, etc. — not available in Oracle JDK. Worth calling out live: "notice I had to switch JDK vendors for this one" — a lived-in example of the vendor fragmentation from the earlier section.
-
---
-
-## What's Actually Happening in the Demo
-
-A single 1GB-heap JVM runs two things at once — a rough mockup of a real backend server under load:
-
-- **Background thread:** continuous garbage churn (512B–8KB throwaway allocations) *plus* a slowly growing 300MB retained set — caches, connection pools, buffers that never get freed
-- **Main thread:** simulates incoming requests every 200µs (a small CPU-bound loop), timing each one
-
-Every pause the collector causes shows up directly as request latency — exactly what a GC pause looks like from inside a live service.
-
-:notes:
-Reports p50/p99/p99.9/max, not averages — averages bury the rare large pauses that stop-the-world collections cause. This is deliberately adversarial: real services do carry both a large retained working set and continuous request traffic, so a collector's pause behavior becomes user-facing latency directly.
 
 --
 
@@ -541,13 +542,30 @@ Only matters on multi-socket hardware — a single-socket dev laptop or small cl
 
 --
 
-## G1 GC — Where It Thrives
+## ZGC
+*Sub-millisecond pauses, any heap size*
 
-**Thrives when:** general-purpose services with no strict sub-ms latency requirement — multi-socket hardware and frequent JNI calls sharpen the win further.
+- JEP 333 — Experimental (Java 11)
+- JEP 377 — Production (Java 15)
+- JEP 439 — Generational ZGC (Java 21)
+- JEP 474 — Generational by default (Java 23)
+- JEP 490 — Non-generational mode removed (Java 24)
 
-**Gains:** better pause-time predictability, proactive memory return, NUMA-aware throughput on multi-socket servers, JNI-pinning stalls eliminated.
+--
 
-**Conditions:** NUMA gains only on multi-socket hardware. JNI pinning fix only matters with frequent native calls.
+## ZGC — What's the Idea
+
+Concurrent collection via colored pointers — a few bits of the 64-bit reference itself encode GC state (marked, remapped, finalizable...). A load barrier checks and heals those bits on every reference read.
+
+Relocation happens while the app keeps running, so pauses stay sub-millisecond regardless of heap size.
+
+--
+
+## ZGC — What Changed
+
+JEP 333 (Java 11) shipped it experimental; JEP 377 (Java 15) made it production.
+
+JEP 439 (Java 21) added a generational mode. JEP 474 (Java 23) made generational the default. JEP 490 (Java 24) removed non-generational mode entirely — no opt-out since.
 
 --
 
@@ -563,6 +581,41 @@ Only matters on multi-socket hardware — a single-socket dev laptop or small cl
 
 --
 
+## ZGC — Demo
+
+```
+cd code/gc-comparison
+gradle runG1
+gradle runZGC
+```
+
+--
+
+## Shenandoah
+*Concurrent compaction — low pauses, no fragmentation*
+
+- JEP 189 — Experimental (Java 12)
+- JEP 379 — Production (Java 15)
+- JEP 404 / 521 — Generational Shenandoah (Java 24 → 25)
+
+--
+
+## Shenandoah — What's the Idea
+
+Same latency goal as ZGC, different mechanism: Brooks (forwarding) pointers add one extra word to every object header, pointing to that object's current (possibly relocated) location.
+
+Read/write barriers follow that indirection on every access — a real, fixed per-object memory cost ZGC's colored-pointer approach avoids structurally.
+
+--
+
+## Shenandoah — What Changed
+
+JEP 189 (Java 12) shipped it experimental; JEP 379 (Java 15) made it production.
+
+JEP 404 (Java 24) added a generational mode, experimental; JEP 521 (Java 25) made it production — still opt-in, unlike ZGC's forced generational default.
+
+--
+
 ## Shenandoah — Where It Thrives
 
 **Thrives when:** you need ZGC's latency profile but you're locked out of Oracle JDK — or you're already on Red Hat/Temurin builds.
@@ -572,6 +625,18 @@ Only matters on multi-socket hardware — a single-socket dev laptop or small cl
 **Verified:** `max` ≈ **0.42ms** — comparable to ZGC, well under G1.
 
 **Conditions:** higher CPU overhead than G1 (concurrent work). Not in Oracle JDK.
+
+--
+
+## Shenandoah — Demo
+
+```
+cd code/gc-comparison
+gradle runShenandoah   # needs a non-Oracle JDK build!
+```
+
+:notes:
+Shenandoah needs a Red Hat build of OpenJDK, Eclipse Temurin, etc. — not available in Oracle JDK. Worth calling out live: "notice I had to switch JDK vendors for this one" — a lived-in example of the vendor fragmentation from the earlier section.
 
 ---
 
