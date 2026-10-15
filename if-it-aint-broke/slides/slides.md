@@ -922,11 +922,19 @@ JEP 246 (Java 9) added CPU-specific intrinsics for GHASH (used in AES-GCM) and R
 
 --
 
-## Valhalla — What it changes
+## Value Classes and Objects — What's the Idea
 
-Value objects flatten directly into arrays/fields — no header, no identity, no pointer-chasing.
+Today, every object has identity — usable in `==`, synchronizable, has an address — plus a header, even for simple data carriers like `Optional` or a `Point(x,y)`.
 
-The JDK eats its own dog food: 30 platform classes (`Integer`, `LocalDate`, `Optional`, …) are already value classes under `--enable-preview`.
+That identity and header cost memory and block flattening into arrays. Value classes give up identity to become flat, header-free, inlined directly into fields/arrays — like a primitive, but user-defined.
+
+--
+
+## Value Classes and Objects — What Changed
+
+JEP 401 introduces the `value` modifier for declaring these classes (preview). JEP 539 adds strict field-initialization-order rules — needed because the JVM must guarantee every field is set before a value object is used or flattened, so a partially-initialized one can never leak.
+
+The JDK already converts 30 platform classes (`Integer`, `LocalDate`, `Optional`, …) to value classes under `--enable-preview` — a real dog-fooding test.
 
 --
 
