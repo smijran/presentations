@@ -390,11 +390,30 @@ CDS does that work once, dumps the result into an archive file, and every later 
 
 ## Class Data Sharing — What Changed
 
-**JEP 310 (Application CDS):** manual 2-step — `-Xshare:dump -XX:SharedClassListFile=<list> -XX:SharedArchiveFile=<archive>.jsa` to build it, `-XX:SharedArchiveFile=<archive>.jsa` to use it.
+**JEP 310 (Application CDS):** manual 2-step.
 
-**JEP 341 (Default CDS Archives):** a base JDK-classes archive, on automatically via `-Xshare:auto` (the default) — `-Xshare:off` disables it.
+```
+# build: dump an archive from a class list
+-Xshare:dump -XX:SharedClassListFile=<list>
+             -XX:SharedArchiveFile=<archive>.jsa
 
-**JEP 350 (Dynamic CDS Archives):** one flag to capture — `-XX:ArchiveClassesAtExit=<archive>.jsa` — then run with `-XX:SharedArchiveFile=<archive>.jsa`. This is what the demo uses.
+# use: run against that archive
+-XX:SharedArchiveFile=<archive>.jsa
+```
+
+**JEP 341 (Default CDS Archives):** a base JDK-classes archive, on automatically.
+
+```
+-Xshare:auto   # the default
+-Xshare:off    # disables it
+```
+
+**JEP 350 (Dynamic CDS Archives):** one flag to capture, then run with it. This is what the demo uses.
+
+```
+-XX:ArchiveClassesAtExit=<archive>.jsa   # capture
+-XX:SharedArchiveFile=<archive>.jsa      # use
+```
 
 --
 
