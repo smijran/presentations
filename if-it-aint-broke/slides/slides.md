@@ -500,7 +500,7 @@ Every pause the collector causes shows up directly as request latency — exactl
 :notes:
 Reports p50/p99/p99.9/max, not averages — averages bury the rare large pauses that stop-the-world collections cause. This is deliberately adversarial: real services do carry both a large retained working set and continuous request traffic, so a collector's pause behavior becomes user-facing latency directly.
 
---
+---
 
 ## G1 GC
 *Make the default GC faster, smarter, less wasteful*
