@@ -473,19 +473,11 @@ G1 · ZGC · Shenandoah — one decade, three very different answers to the same
 
 --
 
-## What Came Before G1
+## What Came Before
 
 - **Serial GC:** single-threaded, fully stop-the-world. Fine for tiny heaps, hopeless at scale.
 - **Parallel GC:** multi-threaded, but still fully stop-the-world — optimized for throughput, not latency. Java 8's default.
 - **CMS:** first concurrent-marking collector, but never compacted — fragmentation could force a full stop-the-world fallback ("concurrent mode failure"). Deprecated Java 9, removed Java 14.
-
---
-
-## G1 vs. the Old Ones
-
-- **vs. Parallel:** G1 also marks concurrently, so most of the work doesn't stop the app.
-- **vs. CMS:** G1 always compacts via region-based evacuation — never fragments, no "concurrent mode failure" trap.
-- **New trick:** regions make pause time *tunable* — G1 picks the garbage-heaviest regions first ("Garbage First") to hit a configurable goal, instead of an unpredictable one.
 
 --
 
@@ -543,6 +535,14 @@ It collects the garbage-heaviest regions first — "Garbage First" — evacuatin
 JEP 248 (Java 9) made G1 default. JEP 307 (Java 10) parallelized the full-GC fallback path. JEP 344 / 346 (Java 12) made mixed collections abortable and returned unused committed memory to the OS promptly.
 
 JEP 345 (Java 14) added NUMA-aware allocation. JEP 423 (Java 22) added region pinning, so JNI critical sections no longer force a full stop-the-world pause. JEP 475 (Java 24) shrank the compiler-generated barrier code around every reference write.
+
+--
+
+## G1 vs. the Old Ones
+
+- **vs. Parallel:** G1 also marks concurrently, so most of the work doesn't stop the app.
+- **vs. CMS:** G1 always compacts via region-based evacuation — never fragments, no "concurrent mode failure" trap.
+- **New trick:** regions make pause time *tunable* — G1 picks the garbage-heaviest regions first ("Garbage First") to hit a configurable goal, instead of an unpredictable one.
 
 --
 
