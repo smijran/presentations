@@ -601,9 +601,11 @@ Both avoid stop-the-world relocation entirely — the app keeps running while ob
 
 ## ZGC & Shenandoah — Where They Thrive
 
-**ZGC thrives when:** latency-sensitive services on large heaps, where a single slow GC pause hurts more than some extra memory overhead. **Verified:** G1 `max` ≈ **2.0ms** vs ZGC `max` ≈ **0.37ms** — same workload, same heap. ~10–20% higher memory overhead than G1. No non-generational opt-out since Java 24.
+**Both thrive in the same situation:** latency-sensitive services with a hard p99 SLA, where a single slow GC pause hurts more than some extra memory/CPU overhead — especially on large heaps, where G1's pause times scale with live-set size and these two don't.
 
-**Shenandoah thrives when:** you need ZGC's latency profile but you're locked out of Oracle JDK — or you're already on Red Hat/Temurin builds. **Verified:** `max` ≈ **0.42ms** — comparable to ZGC, well under G1. Higher CPU overhead than G1 (concurrent work). Not in Oracle JDK.
+**Verified:** G1 `max` ≈ **2.0ms** vs ZGC `max` ≈ **0.37ms** vs Shenandoah `max` ≈ **0.42ms** — same workload, same heap. Both comparable, both well under G1.
+
+**The Oracle JDK split:** ZGC ships everywhere, including Oracle JDK. Shenandoah is Red Hat-led and excluded from Oracle JDK — pick it only if you're already on (or can move to) Temurin/Red Hat builds.
 
 --
 
