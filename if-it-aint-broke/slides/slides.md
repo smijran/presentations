@@ -1060,7 +1060,7 @@ Everything below, for later - JEPs, further reading, and where the $ numbers cam
 
 --
 
-## JEPs - JIT, Runtime & Concurrency
+## JEPs - JIT & Runtime
 
 - [JEP 295](https://openjdk.org/jeps/295) - Ahead-of-Time Compilation (abandoned)
 - [JEP 410](https://openjdk.org/jeps/410) - Remove the Experimental AOT/JIT Compiler
@@ -1071,6 +1071,11 @@ Everything below, for later - JEPs, further reading, and where the $ numbers cam
 - [JEP 315](https://openjdk.org/jeps/315) - Improve AArch64 Intrinsics
 - [JEP 246](https://openjdk.org/jeps/246) - CPU Instructions for GHASH and RSA
 - [JEP 416](https://openjdk.org/jeps/416) - Reimplement Core Reflection with Method Handles
+
+--
+
+## JEPs - Concurrency
+
 - [JEP 143](https://openjdk.org/jeps/143) / [270](https://openjdk.org/jeps/270) / [285](https://openjdk.org/jeps/285) - Locking: contended locking, reserved stack areas, spin-wait hints
 - [JEP 374](https://openjdk.org/jeps/374) - Deprecate & Disable Biased Locking
 - [JEP 425](https://openjdk.org/jeps/425) / [436](https://openjdk.org/jeps/436) / [444](https://openjdk.org/jeps/444) - Virtual Threads (Preview → Second Preview → Final)
