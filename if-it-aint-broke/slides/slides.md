@@ -473,6 +473,22 @@ G1 · ZGC · Shenandoah — one decade, three very different answers to the same
 
 --
 
+## What Came Before G1
+
+- **Serial GC:** single-threaded, fully stop-the-world. Fine for tiny heaps, hopeless at scale.
+- **Parallel GC:** multi-threaded, but still fully stop-the-world — optimized for throughput, not latency. Java 8's default.
+- **CMS:** first concurrent-marking collector, but never compacted — fragmentation could force a full stop-the-world fallback ("concurrent mode failure"). Deprecated Java 9, removed Java 14.
+
+--
+
+## G1 vs. the Old Ones
+
+- **vs. Parallel:** G1 also marks concurrently, so most of the work doesn't stop the app.
+- **vs. CMS:** G1 always compacts via region-based evacuation — never fragments, no "concurrent mode failure" trap.
+- **New trick:** regions make pause time *tunable* — G1 picks the garbage-heaviest regions first ("Garbage First") to hit a configurable goal, instead of an unpredictable one.
+
+--
+
 ## GC Models
 
 | GC | Approach |
