@@ -39,11 +39,7 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 
 # If It Ain't Broke
 ## The Hidden Cost of Your Java Comfort Zone
-
-<img src="img/jdd-logo.svg" style="height: 90px; margin-top: 20px;" />
-
-### 24th September 2026
-
+  
 --
 
 ## About me
@@ -60,7 +56,7 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 
 <img src="img/piotr-przybyl.jpg" style="height: 320px; border-radius: 8px;" />
 
-**Piotr Przybył & 🍷**
+**Piotr Przybył**
 
 ---
 
