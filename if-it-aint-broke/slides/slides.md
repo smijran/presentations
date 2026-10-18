@@ -67,7 +67,7 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 # Java Support
 ## Who Actually Has Your Back?
 
----
+--
 
 ## What Paying Actually Buys You
 
@@ -92,7 +92,7 @@ ZGC, Virtual Threads, Compact Strings — all free, in every distribution, regar
 
 Paying gets you patched and covered. Staying current gets you fast — for free.
 
---
+---
 
 ## The Comfort Zone Trap
 
