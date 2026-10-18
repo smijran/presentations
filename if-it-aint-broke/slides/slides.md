@@ -14,9 +14,9 @@
 https://presenter.ahaslides.com/presentation/10026566
 
 :notes:
-That's the presenter link — switch to it live (do not embed as an iframe: it requires login and isn't the audience join view). AhaSlides displays the audience join code/QR automatically once you start presenting there; it's generated per live session, so there's nothing to pre-print here.
+That's the presenter link - switch to it live (do not embed as an iframe: it requires login and isn't the audience join view). AhaSlides displays the audience join code/QR automatically once you start presenting there; it's generated per live session, so there's nothing to pre-print here.
 Consider keeping this poll cumulative across every run of this talk to build a running dataset.
-Options shown to the audience (multi-select — many shops run several versions, so pick all that apply; 11 bucketed options): 8 · 9–10 · 11 (LTS) · 12–16 · 17 (LTS) · 18–20 · 21 (LTS) · 22–24 · 25 (LTS) · 26–27 · Not on Java / other.
+Options shown to the audience (multi-select - many shops run several versions, so pick all that apply; 11 bucketed options): 8 · 9-10 · 11 (LTS) · 12-16 · 17 (LTS) · 18-20 · 21 (LTS) · 22-24 · 25 (LTS) · 26-27 · Not on Java / other.
 
 ---
 
@@ -29,7 +29,7 @@ Options shown to the audience (multi-select — many shops run several versions,
 https://presenter.ahaslides.com/presentation/10026566
 
 :notes:
-Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False" or "I don't know" — that's the setup for the next section.
+Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False" or "I don't know" - that's the setup for the next section.
 
 ---
 
@@ -73,14 +73,14 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 
 Oracle · Red Hat · Azul · Microsoft · Amazon Corretto
 
-1. **Extended security patches** — Java 8's last free update was **8u202** (Jan 2019); Oracle's shipped paying customers all the way to **8u503** since. That gap is CVE fixes free users never got.
-2. **SLA-backed support** — an engineer on the hook, not a mailing list
-3. **TCK-certified builds** — a real guarantee of Java SE spec compliance
-4. **Fleet management tooling** — patching/inventory across your whole JVM estate
+1. **Extended security patches** - Java 8's last free update was **8u202** (Jan 2019); Oracle's shipped paying customers all the way to **8u503** since. That gap is CVE fixes free users never got.
+2. **SLA-backed support** - an engineer on the hook, not a mailing list
+3. **TCK-certified builds** - a real guarantee of Java SE spec compliance
+4. **Fleet management tooling** - patching/inventory across your whole JVM estate
 5. **Legal/licensing cover** *(Oracle-specific)*
 
 :notes:
-Red Hat's and Azul's free OpenJDK builds are fully open source, unrestricted for production — you only pay for support/tooling on top. Oracle ties more value to license compliance itself.
+Red Hat's and Azul's free OpenJDK builds are fully open source, unrestricted for production - you only pay for support/tooling on top. Oracle ties more value to license compliance itself.
 
 --
 
@@ -88,9 +88,9 @@ Red Hat's and Azul's free OpenJDK builds are fully open source, unrestricted for
 
 None of this buys you **performance**.
 
-ZGC, Virtual Threads, Compact Strings — all free, in every distribution, regardless of support tier.
+ZGC, Virtual Threads, Compact Strings - all free, in every distribution, regardless of support tier.
 
-Paying gets you patched and covered. Staying current gets you fast — for free.
+Paying gets you patched and covered. Staying current gets you fast - for free.
 
 ---
 
@@ -109,7 +109,7 @@ Staying on an old/LTS Java version isn't caution.
 It's a tax.
 
 :notes:
-This isn't a migration talk — it's an economics talk. Every release since 8 is free performance sitting on the table.
+This isn't a migration talk - it's an economics talk. Every release since 8 is free performance sitting on the table.
 
 --
 
@@ -122,7 +122,7 @@ Compute isn't getting cheaper. Memory isn't getting cheaper.
 The "just add more machines" era is ending.
 
 :notes:
-Sets up the economics framing right before we dive into the enhancement tour. Ties forward to the Cost Impact section later — the same scarcity story, with real GCP numbers instead of vibes. The next two slides back this up with receipts instead of leaving it as a vibe.
+Sets up the economics framing right before we dive into the enhancement tour. Ties forward to the Cost Impact section later - the same scarcity story, with real GCP numbers instead of vibes. The next two slides back this up with receipts instead of leaving it as a vibe.
 
 --
 
@@ -132,24 +132,24 @@ Sets up the economics framing right before we dive into the enhancement tour. Ti
   <div class="bar-row"><div class="bar-label">Sep 2025</div><div class="bar-track"><div class="bar-fill" style="width:23%"></div></div><div class="bar-value">$90</div></div>
   <div class="bar-row"><div class="bar-label">Nov 2025</div><div class="bar-track"><div class="bar-fill" style="width:68%"></div></div><div class="bar-value">$270</div></div>
   <div class="bar-row"><div class="bar-label">Dec 2025</div><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><div class="bar-value">$350</div></div>
-  <div class="bar-row"><div class="bar-label">Sep 2026 (now)</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-value">$375–400</div></div>
+  <div class="bar-row"><div class="bar-label">Sep 2026 (now)</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-value">$375-400</div></div>
 </div>
 
 **~4.2x in 12 months.**
 
 :notes:
-Sourced: Tom's Hardware's RAM price tracking (Sept 2026 update — basic 32GB DDR5-6000 kits at $375-400, up from ~$90-191 a year earlier) cross-referenced with a Consumer Reports-cited price series for the same component class (Sep 11 2025: $90 → Nov 21 2025: $269.99 → Dec 2025: $349.99). Root cause cited across every source: AI datacenter demand for HBM has pulled fab capacity away from consumer DDR5 — Nvidia, AMD, and hyperscalers (AWS, Microsoft, Google) placing multi-year AI memory orders.
+Sourced: Tom's Hardware's RAM price tracking (Sept 2026 update - basic 32GB DDR5-6000 kits at $375-400, up from ~$90-191 a year earlier) cross-referenced with a Consumer Reports-cited price series for the same component class (Sep 11 2025: $90 → Nov 21 2025: $269.99 → Dec 2025: $349.99). Root cause cited across every source: AI datacenter demand for HBM has pulled fab capacity away from consumer DDR5 - Nvidia, AMD, and hyperscalers (AWS, Microsoft, Google) placing multi-year AI memory orders.
 
 --
 
 ## It's Not Just Consumer RAM
 
 - **Server DDR5 RDIMM** (what's actually in your cloud provider's racks): projected to **double** by end of 2026 vs. early 2025
-- **Laptop makers** (Lenovo, Dell, HP, Acer, ASUS) have confirmed **15–20%** price increases; **up to 30%** on high-end models
+- **Laptop makers** (Lenovo, Dell, HP, Acer, ASUS) have confirmed **15-20%** price increases; **up to 30%** on high-end models
 - Same hardware class behind every $/machine number later in this talk
 
 :notes:
-Server RDIMM doubling: Network World, citing TrendForce/Counterpoint research — DRAM contract prices up 55-60% in Q1 2026 vs Q4 2025 alone, on top of a ~50% year-to-date rise already booked by late 2025. Laptop price increases: Consumer Reports / BGR / Tom's Guide, all citing the same manufacturers directly. Root cause is identical to the RAM chart on the previous slide: AI compute buildout diverting memory fab capacity away from everything else.
+Server RDIMM doubling: Network World, citing TrendForce/Counterpoint research - DRAM contract prices up 55-60% in Q1 2026 vs Q4 2025 alone, on top of a ~50% year-to-date rise already booked by late 2025. Laptop price increases: Consumer Reports / BGR / Tom's Guide, all citing the same manufacturers directly. Root cause is identical to the RAM chart on the previous slide: AI compute buildout diverting memory fab capacity away from everything else.
 
 ---
 
@@ -160,118 +160,118 @@ Server RDIMM doubling: Network World, citing TrendForce/Counterpoint research �
 
 ## Two Streams of Work
 
-**Seen** — JEPs: headline features, public proposals, design docs, community consensus
+**Seen** - JEPs: headline features, public proposals, design docs, community consensus
 
-**Unseen** — JBS tickets: routine enhancement/bug tickets. No proposal, no public design doc, no JEP number. They just quietly ship — hundreds of them, every release.
+**Unseen** - JBS tickets: routine enhancement/bug tickets. No proposal, no public design doc, no JEP number. They just quietly ship - hundreds of them, every release.
 
 :notes:
-JEP 1's own criteria for needing a JEP: 2+ weeks of engineering effort, a significant change to the JDK, or high developer/customer demand. Everything smaller ships as a plain JBS enhancement instead — tracked at bugs.openjdk.org, never announced. Both streams are "free performance you didn't have to ask for" — the unseen stream is just easy to miss because nobody writes a talk about a single JBS ticket.
+JEP 1's own criteria for needing a JEP: 2+ weeks of engineering effort, a significant change to the JDK, or high developer/customer demand. Everything smaller ships as a plain JBS enhancement instead - tracked at bugs.openjdk.org, never announced. Both streams are "free performance you didn't have to ask for" - the unseen stream is just easy to miss because nobody writes a talk about a single JBS ticket.
 
 --
 
-## The Unseen Work — JDK 27 Examples
+## The Unseen Work - JDK 27 Examples
 
 | Ticket | What Changed | Gain |
 |---|---|---|
-| `JDK-8384353` | SHA-3 AVX2/AVX-512 intrinsics for ML-KEM/ML-DSA | 38–74% |
-| `JDK-8378893` | X25519 larger limb size — X25519 key agreement, Ed25519 signing | 14–55% |
+| `JDK-8384353` | SHA-3 AVX2/AVX-512 intrinsics for ML-KEM/ML-DSA | 38-74% |
+| `JDK-8378893` | X25519 larger limb size - X25519 key agreement, Ed25519 signing | 14-55% |
 
 :notes:
-JDK 27 GA'd Sept 15 2026 — one week ago at time of writing — so no inside.java performance roundup exists yet (the JDK 26 one wasn't published until ~3 months after that release's GA); rows sourced from the official release notes instead, cross-checked against each ticket's Fix Version on bugs.openjdk.org.
-Checked and discarded: JDK-8238686 (G1 heap-free-ratio bug fix) — real, verified ticket, but no quantified gain published — and JDK-8360700 (Compact Object Headers default-on), which is just JEP 534 tracked as a ticket, not unseen work.
+JDK 27 GA'd Sept 15 2026 - one week ago at time of writing - so no inside.java performance roundup exists yet (the JDK 26 one wasn't published until ~3 months after that release's GA); rows sourced from the official release notes instead, cross-checked against each ticket's Fix Version on bugs.openjdk.org.
+Checked and discarded: JDK-8238686 (G1 heap-free-ratio bug fix) - real, verified ticket, but no quantified gain published - and JDK-8360700 (Compact Object Headers default-on), which is just JEP 534 tracked as a ticket, not unseen work.
 
 --
 
-## The Unseen Work — JDK 26 Examples
+## The Unseen Work - JDK 26 Examples
 
 | Ticket | What Changed | Gain |
 |---|---|---|
-| `JDK-8362893` | `MemorySegment::getString` — less intermediate allocation/copying | ~1.3–1.4x, 35–49% less allocation |
+| `JDK-8362893` | `MemorySegment::getString` - less intermediate allocation/copying | ~1.3-1.4x, 35-49% less allocation |
 | `JDK-8366424` | Fixed missing type profiling in generated record `hashCode`/`equals` | ~5.0x (`hashCode`), ~2.2x (`equals`) |
 | `JDK-8371319` | `Method::equals` short-circuits on identical instances | ~2.3x on the same-instance path |
 | `JDK-8369238` | Virtual threads can now unmount during class-initialization waits | removes a pinning-adjacent scalability trap |
 
 :notes:
-Source: inside.java's "Performance Improvements in JDK 26" roundup for the qualitative picture; the actual numbers here are sourced deeper, from each fix's own OpenJDK PR JMH output (roundup article gave no numbers for 3 of these 4) — cross-checked against each ticket's Fix Version on bugs.openjdk.org.
-JDK-8362893 (PR #26493): `ToJavaStringTest.panama_readString`, avgt ns/op, sizes 5–451 bytes, before→after e.g. 18.996→13.851 (size 5) to 81.145→58.975 (size 451); `gc.alloc.rate.norm` dropped 33–49% across the same sizes.
-JDK-8366424 (PR #27533): `RecordMethodsBenchmark`, thrpt ops/us — hashCodePolluted 239.675 → hashCodeGenerated 1201.802; equalsPolluted 185.471 → equalsGenerated 410.474. "Polluted" is the pre-fix behavior (shared/degraded type profile); "Generated" is post-fix (each record gets its own profile).
+Source: inside.java's "Performance Improvements in JDK 26" roundup for the qualitative picture; the actual numbers here are sourced deeper, from each fix's own OpenJDK PR JMH output (roundup article gave no numbers for 3 of these 4) - cross-checked against each ticket's Fix Version on bugs.openjdk.org.
+JDK-8362893 (PR #26493): `ToJavaStringTest.panama_readString`, avgt ns/op, sizes 5-451 bytes, before→after e.g. 18.996→13.851 (size 5) to 81.145→58.975 (size 451); `gc.alloc.rate.norm` dropped 33-49% across the same sizes.
+JDK-8366424 (PR #27533): `RecordMethodsBenchmark`, thrpt ops/us - hashCodePolluted 239.675 → hashCodeGenerated 1201.802; equalsPolluted 185.471 → equalsGenerated 410.474. "Polluted" is the pre-fix behavior (shared/degraded type profile); "Generated" is post-fix (each record gets its own profile).
 JDK-8371319 (PR #28221): `ExecutableCompareBenchmark.equalMethods`, avgt ns/op, 2.449 → 1.078 (the same-instance-different-object case the short-circuit targets); the true-negative case (`distinctParams`) is unchanged, as expected.
-JDK-8369238 (PR #27802): no JMH numbers published — it's a scalability/deadlock-avoidance fix (same category as JEP 491, but for class-initialization blocking instead of `synchronized`), not something with a clean before/after throughput number.
-Checked and discarded: a WebSearch summary claimed JDK-8340093 (C2 SuperWord cost model) showed "up to 4x" — that number never appeared when the actual source article was fetched directly, so it's excluded rather than repeated unverified. Also excluded JDK-8371986 (removed default `InitialRAMPercentage`) — real, verified ticket, but no quantified gain published.
+JDK-8369238 (PR #27802): no JMH numbers published - it's a scalability/deadlock-avoidance fix (same category as JEP 491, but for class-initialization blocking instead of `synchronized`), not something with a clean before/after throughput number.
+Checked and discarded: a WebSearch summary claimed JDK-8340093 (C2 SuperWord cost model) showed "up to 4x" - that number never appeared when the actual source article was fetched directly, so it's excluded rather than repeated unverified. Also excluded JDK-8371986 (removed default `InitialRAMPercentage`) - real, verified ticket, but no quantified gain published.
 
 --
 
-## The Unseen Work — JDK 25 Examples
+## The Unseen Work - JDK 25 Examples
 
 | Ticket | What Changed | Gain |
 |---|---|---|
-| `JDK-8354300` | Mark `String.hash` field `@Stable` — constant-folds `String.hashCode()` | 8x |
+| `JDK-8354300` | Mark `String.hash` field `@Stable` - constant-folds `String.hashCode()` | 8x |
 | `JDK-8343685` | C2 SuperWord auto-vectorization refactor | 33x |
 | `JDK-8350748` | Vector API inlining | 14x |
-| `JDK-8356709` | `BigDecimal.valueOf` optimization | 6–9x |
-| `JDK-8307513` | `Math.max`/`min` intrinsification | 3–5x |
+| `JDK-8356709` | `BigDecimal.valueOf` optimization | 6-9x |
+| `JDK-8307513` | `Math.max`/`min` intrinsification | 3-5x |
 | `JDK-8353686` | `Math.cbrt` x86 intrinsic | 3x |
 | `JDK-8354674` | AArch64 intrinsic for `Unsafe::setMemory` | ~2.5x |
 | `JDK-8345687` | Panama FFM native memory segment allocation | up to 2x |
 
 :notes:
-Source: inside.java's "Performance Improvements in JDK 25" roundup — the OpenJDK performance team's own annual aggregation, itself not an official/formal process, just a team publishing a summary. This is one release; every release has its own list this long.
+Source: inside.java's "Performance Improvements in JDK 25" roundup - the OpenJDK performance team's own annual aggregation, itself not an official/formal process, just a team publishing a summary. This is one release; every release has its own list this long.
 
 --
 
 ## ...And Then There's This One
 
-`JDK-8346664` — a mask-check optimization enabling dead-code elimination:
+`JDK-8346664` - a mask-check optimization enabling dead-code elimination:
 
 # 10 000 x
 
-*(narrow, targeted benchmark — not representative of typical gains, but real)*
+*(narrow, targeted benchmark - not representative of typical gains, but real)*
 
 :notes:
-What the ticket actually is: "C2: Optimize mask check with constant offset." C2 already knew how to simplify `(base + offset) & mask` when offset was a left-shift expression, but missed the simpler case where offset is just a constant — this fix closes that gap. Relevant to Panama FFI-style pointer arithmetic with masking. Once C2 recognizes the pattern, it can fold the whole check away at compile time instead of computing it at runtime — that's why a narrow, targeted micro-benchmark isolating exactly this pattern shows 10,000x: the "after" case is doing zero work where the "before" case was doing a real (if cheap) runtime check every time. Resolved in JDK 25 build b11.
-Where this actually comes from: traced via the related ticket JDK-8277850 (same mask-check optimization family). The expression is the Foreign Function & Memory API's (java.lang.foreign.MemorySegment) alignment check — literally `(segmentBaseAddress + accessedOffset) & alignmentMask == 0` — run on every off-heap memory access with an alignment constraint stricter than 1 byte (e.g. reading a 4-byte-aligned int from native memory). It fires on every element in a loop, which is why it matters: JDK-8277850's own benchmark showed the aligned-access variant running 43% slower than unaligned in a tight loop, even though the JIT should have been able to optimize it away. Shows up in code doing bulk off-heap processing via the FFM API — native interop, parsing binary formats, custom off-heap data structures, memory-mapped files.
+What the ticket actually is: "C2: Optimize mask check with constant offset." C2 already knew how to simplify `(base + offset) & mask` when offset was a left-shift expression, but missed the simpler case where offset is just a constant - this fix closes that gap. Relevant to Panama FFI-style pointer arithmetic with masking. Once C2 recognizes the pattern, it can fold the whole check away at compile time instead of computing it at runtime - that's why a narrow, targeted micro-benchmark isolating exactly this pattern shows 10,000x: the "after" case is doing zero work where the "before" case was doing a real (if cheap) runtime check every time. Resolved in JDK 25 build b11.
+Where this actually comes from: traced via the related ticket JDK-8277850 (same mask-check optimization family). The expression is the Foreign Function & Memory API's (java.lang.foreign.MemorySegment) alignment check - literally `(segmentBaseAddress + accessedOffset) & alignmentMask == 0` - run on every off-heap memory access with an alignment constraint stricter than 1 byte (e.g. reading a 4-byte-aligned int from native memory). It fires on every element in a loop, which is why it matters: JDK-8277850's own benchmark showed the aligned-access variant running 43% slower than unaligned in a tight loop, even though the JIT should have been able to optimize it away. Shows up in code doing bulk off-heap processing via the FFM API - native interop, parsing binary formats, custom off-heap data structures, memory-mapped files.
 Flag this one honestly as an outlier, same rigor as the caveats elsewhere in this deck (Amdahl's law for Vector API, tier-boundary framing for memory $, etc.). It's a real number from a real ticket, but it's a compiler-eliminated-a-check case, not "your app gets 10,000x faster." Included because it's a fun, true, and honestly-caveated capstone to the "unseen work" point.
 
 --
 
-## Not Just LTS — JDK 24 Examples
+## Not Just LTS - JDK 24 Examples
 
 | Ticket | What Changed | Gain |
 |---|---|---|
 | `JDK-8333867` | SHA3 digest optimization (fewer byte↔long conversions) | up to 27% |
-| `JDK-8338542` | ClassFile API startup overhead reduction | 40–50% on `ClassfileBenchmark.parse` |
+| `JDK-8338542` | ClassFile API startup overhead reduction | 40-50% on `ClassfileBenchmark.parse` |
 | `JDK-8320448` | `String::indexOf` rewritten for AVX2 instructions | ~1.3x |
 
 
 :notes:
-Checked a fourth candidate and discarded it for accuracy: JDK-8336856 (hidden-classes string concat, 40% startup gain) turned out to be tied to JEP 280 on inspection — excluded since it doesn't fit the "no JEP" claim cleanly. These three verified clean. Source: inside.java's "Performance Improvements in JDK 24" roundup, cross-checked against each ticket's actual Fix Version field on bugs.openjdk.org.
+Checked a fourth candidate and discarded it for accuracy: JDK-8336856 (hidden-classes string concat, 40% startup gain) turned out to be tied to JEP 280 on inspection - excluded since it doesn't fit the "no JEP" claim cleanly. These three verified clean. Source: inside.java's "Performance Improvements in JDK 24" roundup, cross-checked against each ticket's actual Fix Version field on bugs.openjdk.org.
 
 --
 
-## The Scalability Cliff — JDK 23
+## The Scalability Cliff - JDK 23
 
-`JDK-8180450` — a 20-year-old HotSpot design flaw, fixed.
+`JDK-8180450` - a 20-year-old HotSpot design flaw, fixed.
 
-Under thread contention, `instanceof`/`checkcast` against interfaces hammers a single shared cache field — cache-line ping-ponging across cores.
+Under thread contention, `instanceof`/`checkcast` against interfaces hammers a single shared cache field - cache-line ping-ponging across cores.
 
-Hit **Netty, Vert.x, Mutiny, Hibernate, Quarkus** — anything doing heavy interface type-checks in hot paths.
+Hit **Netty, Vert.x, Mutiny, Hibernate, Quarkus** - anything doing heavy interface type-checks in hot paths.
 
 :notes:
-Ticket title: "secondary_super_cache does not scale well." HotSpot caches instanceof/checkcast results against interfaces (secondary supertypes) in one shared field per class. Under multi-threaded contention with varied interface types, concurrent updates to that one cache slot cause false sharing / cache-line ping-ponging between CPU cores — worse on many-core/NUMA hardware, but Red Hat's own writeup showed it was still dramatic on just 2 cores. Netty even filed it as its own GitHub issue (netty/netty#12708) for HttpObjectEncoder. Fix: an update-count counter — if contention is detected, skip the cache update and fall back to a linear scan instead of fighting over the cache line. Confirmed: Fix Version = 23, no JEP.
+Ticket title: "secondary_super_cache does not scale well." HotSpot caches instanceof/checkcast results against interfaces (secondary supertypes) in one shared field per class. Under multi-threaded contention with varied interface types, concurrent updates to that one cache slot cause false sharing / cache-line ping-ponging between CPU cores - worse on many-core/NUMA hardware, but Red Hat's own writeup showed it was still dramatic on just 2 cores. Netty even filed it as its own GitHub issue (netty/netty#12708) for HttpObjectEncoder. Fix: an update-count counter - if contention is detected, skip the cache update and fall back to a linear scan instead of fighting over the cache line. Confirmed: Fix Version = 23, no JEP.
 
 --
 
-## The Scalability Cliff — By the Numbers
+## The Scalability Cliff - By the Numbers
 
 | Benchmark | Before | After | Speedup |
 |---|---|---|---|
 | InterContention | 1873.5 ns/op | 8.2 ns/op | **~228x** |
 | IntraContention | ~2780 ns/op | ~8 ns/op | **~347x** |
 
-**Caveat:** general-purpose benchmarks (Renaissance, SPECjvm) showed no broad change — this fixes a *scalability cliff under contention*, not a universal speedup.
+**Caveat:** general-purpose benchmarks (Renaissance, SPECjvm) showed no broad change - this fixes a *scalability cliff under contention*, not a universal speedup.
 
 :notes:
-Numbers verified from actual JMH output in a later platform-port PR (#22341, s390x) that reuses the same SecondarySuperCache* benchmark this fix family introduced — the original JDK 23 PR (#18309, C2/x86/aarch64) itself only gives qualitative notes ("immeasurably small... down in the noise" on Renaissance/SPECjvm, meaning normal code isn't affected either way) rather than a clean before/after table, so the concrete multiplier is sourced from the platform-port validation using the identical benchmark. Companion tickets extending the same fix to other tiers/platforms: JDK-8331341 (C1/interpreter, JDK 24), plus PPC64/s390x/RISC-V ports (also JDK 24) — this is why the JDK 24 "unseen work" story two slides back mentions platform ports landing for all OpenJDK platforms.
+Numbers verified from actual JMH output in a later platform-port PR (#22341, s390x) that reuses the same SecondarySuperCache* benchmark this fix family introduced - the original JDK 23 PR (#18309, C2/x86/aarch64) itself only gives qualitative notes ("immeasurably small... down in the noise" on Renaissance/SPECjvm, meaning normal code isn't affected either way) rather than a clean before/after table, so the concrete multiplier is sourced from the platform-port validation using the identical benchmark. Companion tickets extending the same fix to other tiers/platforms: JDK-8331341 (C1/interpreter, JDK 24), plus PPC64/s390x/RISC-V ports (also JDK 24) - this is why the JDK 24 "unseen work" story two slides back mentions platform ports landing for all OpenJDK platforms.
 
 --
 
@@ -297,28 +297,28 @@ JEPs cover more massive changes that may influence user of Java.
 
 <img src="https://64.media.tumblr.com/5b083307646a29eb2033d7cc27b8fde4/tumblr_p49f52dx4a1s3jwrdo1_500.gif"/>
 
-- JEP 254 — Compact Strings (Java 9)
-- JEP 280 — Indify String Concatenation (Java 9)
+- JEP 254 - Compact Strings (Java 9)
+- JEP 280 - Indify String Concatenation (Java 9)
 
 --
 
-## Compact Strings — What's the Idea
+## Compact Strings - What's the Idea
 
-Every `String` stores its characters as UTF-16 — 2 bytes per char, no matter the content.
+Every `String` stores its characters as UTF-16 - 2 bytes per char, no matter the content.
 
 Most real-world text is pure ASCII/Latin-1, which only needs 1 byte per char. Half that backing array is wasted for the common case.
 
 --
 
-## Compact Strings — What Changed
+## Compact Strings - What Changed
 
-**JEP 254:** `String` now carries an internal `coder` byte. If every char fits in Latin-1, the JVM backs it with a `byte[]` instead of `char[]` — fully transparent, zero API change.
+**JEP 254:** `String` now carries an internal `coder` byte. If every char fits in Latin-1, the JVM backs it with a `byte[]` instead of `char[]` - fully transparent, zero API change.
 
-**JEP 280:** string concatenation (`+`) now compiles to `invokedynamic` → `StringConcatFactory`, instead of hardcoded `StringBuilder` bytecode — lets the JVM pick/evolve the concat strategy at runtime.
+**JEP 280:** string concatenation (`+`) now compiles to `invokedynamic` → `StringConcatFactory`, instead of hardcoded `StringBuilder` bytecode - lets the JVM pick/evolve the concat strategy at runtime.
 
 --
 
-## Compact Strings — Gains & Conditions
+## Compact Strings - Gains & Conditions
 
 **Gains:** ~50% smaller backing array for Latin-1/ASCII content; less GC pressure. Indify concat: faster string building, smaller bytecode.
 
@@ -326,7 +326,7 @@ Most real-world text is pure ASCII/Latin-1, which only needs 1 byte per char. Ha
 
 --
 
-## Compact Strings — Demo
+## Compact Strings - Demo
 
 ```
 cd code/compact-strings
@@ -334,7 +334,7 @@ gradle runWithCompactStrings
 gradle runWithoutCompactStrings
 ```
 
-5,000,000 ASCII strings, 40 chars each — one flag changes.
+5,000,000 ASCII strings, 40 chars each - one flag changes.
 
 | | Heap used | Bytes/string |
 |---|---|---|
@@ -346,39 +346,39 @@ gradle runWithoutCompactStrings
 ---
 
 ## Compact Object Headers
-*Shrink every object's header from 96–128 bits to 64*
+*Shrink every object's header from 96-128 bits to 64*
 
-- JEP 450 — Experimental (Java 24)
-- JEP 519 — Production (Java 25)
-- JEP 534 — **On by default** (Java 27)
+- JEP 450 - Experimental (Java 24)
+- JEP 519 - Production (Java 25)
+- JEP 534 - **On by default** (Java 27)
 
 --
 
-## Compact Object Headers — What's the Idea
+## Compact Object Headers - What's the Idea
 
-Every Java object carries a header (mark word + klass pointer) — 96–128 bits, regardless of what the object actually holds.
+Every Java object carries a header (mark word + klass pointer) - 96-128 bits, regardless of what the object actually holds.
 
 For apps with millions of small objects (caches, DTOs, linked structures), that header overhead can add up to a real fraction of total heap.
 
 --
 
-## Compact Object Headers — What Changed
+## Compact Object Headers - What Changed
 
-**JEP 450 / 519:** compress the mark word and klass pointer into a single 64-bit word, when compatible (no biased locking, compatible hash-code state) — transparent, no object-layout API to touch.
+**JEP 450 / 519:** compress the mark word and klass pointer into a single 64-bit word, when compatible (no biased locking, compatible hash-code state) - transparent, no object-layout API to touch.
 
-**JEP 534:** on by default from Java 27 — no flag needed at all.
-
---
-
-## Compact Object Headers — Gains & Conditions
-
-**Gains:** ~10–20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure; ~5–10% CPU time. Scales with object *count*, not size.
-
-**Conditions:** experimental in 24, production (opt-in) in 25, **default in 27**. Transparent — no app code changes.
+**JEP 534:** on by default from Java 27 - no flag needed at all.
 
 --
 
-## Compact Object Headers — Demo
+## Compact Object Headers - Gains & Conditions
+
+**Gains:** ~10-20% heap reduction for object-heavy workloads; fewer cache-line evictions; less GC pressure; ~5-10% CPU time. Scales with object *count*, not size.
+
+**Conditions:** experimental in 24, production (opt-in) in 25, **default in 27**. Transparent - no app code changes.
+
+--
+
+## Compact Object Headers - Demo
 
 ```
 cd ../project_liliput/code
@@ -396,21 +396,21 @@ On Java 27+, add a third run with no flags at all to show the same reduction now
 ## Class Data Sharing
 *Pre-load class metadata once, share it across JVM instances*
 
-- JEP 310 — Application CDS (Java 10)
-- JEP 341 — Default CDS Archives (Java 12)
-- JEP 350 — Dynamic CDS Archives (Java 13)
+- JEP 310 - Application CDS (Java 10)
+- JEP 341 - Default CDS Archives (Java 12)
+- JEP 350 - Dynamic CDS Archives (Java 13)
 
 --
 
-## Class Data Sharing — What's the Idea
+## Class Data Sharing - What's the Idea
 
-Every JVM startup re-parses, re-verifies, and re-loads the same core class metadata from scratch — work that's identical across every instance of the same app.
+Every JVM startup re-parses, re-verifies, and re-loads the same core class metadata from scratch - work that's identical across every instance of the same app.
 
 CDS does that work once, dumps the result into an archive file, and every later JVM start just memory-maps it back in instead of redoing it.
 
 --
 
-## Class Data Sharing — What Changed
+## Class Data Sharing - What Changed
 
 **JEP 310 (Application CDS):** manual 2-step.
 
@@ -439,15 +439,15 @@ CDS does that work once, dumps the result into an archive file, and every later 
 
 --
 
-## CDS — Gains & Conditions
+## CDS - Gains & Conditions
 
 **Gains:** faster startup, lower memory across multiple JVM instances of the same app sharing one archive.
 
-**Conditions:** it's an **OS page-cache sharing effect between processes on the same host** — not inherently a Kubernetes feature. Only holds for same-node co-location sharing the archive file, never across nodes.
+**Conditions:** it's an **OS page-cache sharing effect between processes on the same host** - not inherently a Kubernetes feature. Only holds for same-node co-location sharing the archive file, never across nodes.
 
 --
 
-## CDS — Demo
+## CDS - Demo
 
 ```
 cd code/cds-demo
@@ -463,21 +463,21 @@ cd code/cds-demo
 | **Delta** | **−21.9%** | **1.85x faster** |
 
 :notes:
-A toy app first only showed 1.4% — too few classes to matter. Adding a real dependency is what made the effect real. Worth explaining if asked.
+A toy app first only showed 1.4% - too few classes to matter. Adding a real dependency is what made the effect real. Worth explaining if asked.
 
 ---
 
 ## Garbage Collection
 
-G1 · ZGC · Shenandoah — one decade, three very different answers to the same problem.
+G1 · ZGC · Shenandoah - one decade, three very different answers to the same problem.
 
 --
 
 ## What Came Before
 
 - **Serial GC:** single-threaded, fully stop-the-world. Fine for tiny heaps, hopeless at scale.
-- **Parallel GC:** multi-threaded, but still fully stop-the-world — optimized for throughput, not latency. Java 8's default.
-- **CMS:** first concurrent-marking collector, but never compacted — fragmentation could force a full stop-the-world fallback ("concurrent mode failure"). Deprecated Java 9, removed Java 14.
+- **Parallel GC:** multi-threaded, but still fully stop-the-world - optimized for throughput, not latency. Java 8's default.
+- **CMS:** first concurrent-marking collector, but never compacted - fragmentation could force a full stop-the-world fallback ("concurrent mode failure"). Deprecated Java 9, removed Java 14.
 
 --
 
@@ -485,52 +485,52 @@ G1 · ZGC · Shenandoah — one decade, three very different answers to the same
 
 | GC | Approach |
 |---|---|
-| **G1** | Regional heap, incremental "mostly-STW" collection — clears the garbage-heaviest regions first |
-| **ZGC** | Concurrent, colored pointers — pauses stay sub-ms regardless of heap size |
-| **Shenandoah** | Concurrent, Brooks pointers — same latency goal as ZGC, different mechanism |
+| **G1** | Regional heap, incremental "mostly-STW" collection - clears the garbage-heaviest regions first |
+| **ZGC** | Concurrent, colored pointers - pauses stay sub-ms regardless of heap size |
+| **Shenandoah** | Concurrent, Brooks pointers - same latency goal as ZGC, different mechanism |
 
 **Default since Java 9 (JEP 248): G1.** 
 
 :notes:
-This deck's own demos target Java 26 (the day before this fact changed) — on very small heaps/single-core environments pre-27, JVM ergonomics could still pick Serial GC instead of G1 by default. JEP 523 closes that last exception. Worth saying live since it's one day old at time of writing — genuinely current news, not something read off a slide from months ago.
+This deck's own demos target Java 26 (the day before this fact changed) - on very small heaps/single-core environments pre-27, JVM ergonomics could still pick Serial GC instead of G1 by default. JEP 523 closes that last exception. Worth saying live since it's one day old at time of writing - genuinely current news, not something read off a slide from months ago.
 
 --
 
 ## What's Actually Happening in the Demo
 
-A single 1GB-heap JVM runs two things at once — a rough mockup of a real backend server under load:
+A single 1GB-heap JVM runs two things at once - a rough mockup of a real backend server under load:
 
-- **Background thread:** continuous garbage churn (512B–8KB throwaway allocations) *plus* a slowly growing 300MB retained set — caches, connection pools, buffers that never get freed
+- **Background thread:** continuous garbage churn (512B-8KB throwaway allocations) *plus* a slowly growing 300MB retained set - caches, connection pools, buffers that never get freed
 - **Main thread:** simulates incoming requests every 200µs (a small CPU-bound loop), timing each one
 
-Every pause the collector causes shows up directly as request latency — exactly what a GC pause looks like from inside a live service. All three collectors below run against this exact same workload.
+Every pause the collector causes shows up directly as request latency - exactly what a GC pause looks like from inside a live service. All three collectors below run against this exact same workload.
 
 :notes:
-Reports p50/p99/p99.9/max, not averages — averages bury the rare large pauses that stop-the-world collections cause. This is deliberately adversarial: real services do carry both a large retained working set and continuous request traffic, so a collector's pause behavior becomes user-facing latency directly.
+Reports p50/p99/p99.9/max, not averages - averages bury the rare large pauses that stop-the-world collections cause. This is deliberately adversarial: real services do carry both a large retained working set and continuous request traffic, so a collector's pause behavior becomes user-facing latency directly.
 
 ---
 
 ## G1 GC
 *Make the default GC faster, smarter, less wasteful*
 
-- JEP 248 — Default GC (Java 9)
-- JEP 307 — Parallel Full GC (Java 10)
-- JEP 344 / 346 — Abortable mixed collections, prompt memory return (Java 12)
-- JEP 345 — NUMA-aware allocation (Java 14)
-- JEP 423 — Region pinning (Java 22)
-- JEP 475 — Late barrier expansion (Java 24)
+- JEP 248 - Default GC (Java 9)
+- JEP 307 - Parallel Full GC (Java 10)
+- JEP 344 / 346 - Abortable mixed collections, prompt memory return (Java 12)
+- JEP 345 - NUMA-aware allocation (Java 14)
+- JEP 423 - Region pinning (Java 22)
+- JEP 475 - Late barrier expansion (Java 24)
 
 --
 
-## G1 GC — What's the Idea
+## G1 GC - What's the Idea
 
 Instead of one contiguous heap, G1 divides memory into many fixed-size regions and tracks how much garbage sits in each one.
 
-It collects the garbage-heaviest regions first — "Garbage First" — evacuating live objects out before reclaiming the region. Tunable pause-time goal, not a fixed algorithm phase.
+It collects the garbage-heaviest regions first - "Garbage First" - evacuating live objects out before reclaiming the region. Tunable pause-time goal, not a fixed algorithm phase.
 
 --
 
-## G1 GC — What Changed
+## G1 GC - What Changed
 
 JEP 248 (Java 9) made G1 default. JEP 307 (Java 10) parallelized the full-GC fallback path. JEP 344 / 346 (Java 12) made mixed collections abortable and returned unused committed memory to the OS promptly.
 
@@ -541,14 +541,14 @@ JEP 345 (Java 14) added NUMA-aware allocation. JEP 423 (Java 22) added region pi
 ## G1 vs. the Old Ones
 
 - **vs. Parallel:** G1 also marks concurrently, so most of the work doesn't stop the app.
-- **vs. CMS:** G1 always compacts via region-based evacuation — never fragments, no "concurrent mode failure" trap.
-- **New trick:** regions make pause time *tunable* — G1 picks the garbage-heaviest regions first ("Garbage First") to hit a configurable goal, instead of an unpredictable one.
+- **vs. CMS:** G1 always compacts via region-based evacuation - never fragments, no "concurrent mode failure" trap.
+- **New trick:** regions make pause time *tunable* - G1 picks the garbage-heaviest regions first ("Garbage First") to hit a configurable goal, instead of an unpredictable one.
 
 --
 
-## G1 GC — Where It Thrives
+## G1 GC - Where It Thrives
 
-**Thrives when:** general-purpose services with no strict sub-ms latency requirement — multi-socket hardware and frequent JNI calls sharpen the win further.
+**Thrives when:** general-purpose services with no strict sub-ms latency requirement - multi-socket hardware and frequent JNI calls sharpen the win further.
 
 **Gains:** better pause-time predictability, proactive memory return, NUMA-aware throughput on multi-socket servers, JNI-pinning stalls eliminated.
 
@@ -556,7 +556,7 @@ JEP 345 (Java 14) added NUMA-aware allocation. JEP 423 (Java 22) added region pi
 
 --
 
-## G1 GC — Demo
+## G1 GC - Demo
 
 ```
 cd code/gc-comparison
@@ -568,64 +568,64 @@ gradle runG1Numa    # + -XX:+UseNUMA
 
 ## What Is NUMA?
 
-**N**on-**U**niform **M**emory **A**ccess — multi-socket servers where each CPU has its own local bank of memory.
+**N**on-**U**niform **M**emory **A**ccess - multi-socket servers where each CPU has its own local bank of memory.
 
 - Local memory access: fast
-- Reaching another socket's memory: slower — crosses an interconnect
+- Reaching another socket's memory: slower - crosses an interconnect
 
 NUMA-aware allocation keeps a thread's memory on its own socket. G1 added this in JEP 345 (Java 14).
 
 :notes:
-Only matters on multi-socket hardware — a single-socket dev laptop or small cloud VM has one memory bank, so there's no "remote" memory to avoid. Fallback if the live run misbehaves: on this (single-socket) dev machine, runG1 and runG1Numa reported near-identical max latency (~1.8–2.0ms) — exactly this caveat, live and unforced.
+Only matters on multi-socket hardware - a single-socket dev laptop or small cloud VM has one memory bank, so there's no "remote" memory to avoid. Fallback if the live run misbehaves: on this (single-socket) dev machine, runG1 and runG1Numa reported near-identical max latency (~1.8-2.0ms) - exactly this caveat, live and unforced.
 
 ---
 
 ## ZGC & Shenandoah
-*Two concurrent collectors, same latency goal — different mechanism*
+*Two concurrent collectors, same latency goal - different mechanism*
 
 **ZGC**
-- JEP 333 — Experimental (Java 11)
-- JEP 377 — Production (Java 15)
-- JEP 439 — Generational ZGC (Java 21)
-- JEP 474 — Generational by default (Java 23)
-- JEP 490 — Non-generational mode removed (Java 24)
+- JEP 333 - Experimental (Java 11)
+- JEP 377 - Production (Java 15)
+- JEP 439 - Generational ZGC (Java 21)
+- JEP 474 - Generational by default (Java 23)
+- JEP 490 - Non-generational mode removed (Java 24)
 
 **Shenandoah**
-- JEP 189 — Experimental (Java 12)
-- JEP 379 — Production (Java 15)
-- JEP 404 / 521 — Generational Shenandoah (Java 24 → 25)
+- JEP 189 - Experimental (Java 12)
+- JEP 379 - Production (Java 15)
+- JEP 404 / 521 - Generational Shenandoah (Java 24 → 25)
 
 --
 
-## ZGC & Shenandoah — What's the Idea
+## ZGC & Shenandoah - What's the Idea
 
-Both avoid stop-the-world relocation entirely — the app keeps running while objects move, so pauses stay sub-millisecond regardless of heap size. They just get there differently.
+Both avoid stop-the-world relocation entirely - the app keeps running while objects move, so pauses stay sub-millisecond regardless of heap size. They just get there differently.
 
-**ZGC:** colored pointers — a few bits of the 64-bit reference itself encode GC state; a load barrier checks and heals them on every read. No extra per-object memory.
+**ZGC:** colored pointers - a few bits of the 64-bit reference itself encode GC state; a load barrier checks and heals them on every read. No extra per-object memory.
 
-**Shenandoah:** Brooks (forwarding) pointers — one extra word on every object header, pointing to its current location; barriers follow that indirection on every access. A real, fixed per-object cost ZGC's approach avoids structurally.
-
---
-
-## ZGC & Shenandoah — What Changed
-
-**ZGC:** JEP 333 (Java 11) experimental → JEP 377 (Java 15) production. JEP 439 (Java 21) added generational mode; JEP 474 (Java 23) made it default; JEP 490 (Java 24) removed non-generational entirely — no opt-out since.
-
-**Shenandoah:** JEP 189 (Java 12) experimental → JEP 379 (Java 15) production. JEP 404 (Java 24) added generational mode, experimental; JEP 521 (Java 25) made it production — still opt-in, unlike ZGC's forced default.
+**Shenandoah:** Brooks (forwarding) pointers - one extra word on every object header, pointing to its current location; barriers follow that indirection on every access. A real, fixed per-object cost ZGC's approach avoids structurally.
 
 --
 
-## ZGC & Shenandoah — Where They Thrive
+## ZGC & Shenandoah - What Changed
 
-**Both thrive in the same situation:** latency-sensitive services with a hard p99 SLA, where a single slow GC pause hurts more than some extra memory/CPU overhead — especially on large heaps, where G1's pause times scale with live-set size and these two don't.
+**ZGC:** JEP 333 (Java 11) experimental → JEP 377 (Java 15) production. JEP 439 (Java 21) added generational mode; JEP 474 (Java 23) made it default; JEP 490 (Java 24) removed non-generational entirely - no opt-out since.
 
-**Verified:** G1 `max` ≈ **2.0ms** vs ZGC `max` ≈ **0.37ms** vs Shenandoah `max` ≈ **0.42ms** — same workload, same heap. Both comparable, both well under G1.
-
-**The Oracle JDK split:** ZGC ships everywhere, including Oracle JDK. Shenandoah is Red Hat-led and excluded from Oracle JDK — pick it only if you're already on (or can move to) Temurin/Red Hat builds.
+**Shenandoah:** JEP 189 (Java 12) experimental → JEP 379 (Java 15) production. JEP 404 (Java 24) added generational mode, experimental; JEP 521 (Java 25) made it production - still opt-in, unlike ZGC's forced default.
 
 --
 
-## ZGC & Shenandoah — Demo
+## ZGC & Shenandoah - Where They Thrive
+
+**Both thrive in the same situation:** latency-sensitive services with a hard p99 SLA, where a single slow GC pause hurts more than some extra memory/CPU overhead - especially on large heaps, where G1's pause times scale with live-set size and these two don't.
+
+**Verified:** G1 `max` ≈ **2.0ms** vs ZGC `max` ≈ **0.37ms** vs Shenandoah `max` ≈ **0.42ms** - same workload, same heap. Both comparable, both well under G1.
+
+**The Oracle JDK split:** ZGC ships everywhere, including Oracle JDK. Shenandoah is Red Hat-led and excluded from Oracle JDK - pick it only if you're already on (or can move to) Temurin/Red Hat builds.
+
+--
+
+## ZGC & Shenandoah - Demo
 
 ```
 cd code/gc-comparison
@@ -635,33 +635,33 @@ gradle runShenandoah   # needs a non-Oracle JDK build!
 ```
 
 :notes:
-Shenandoah needs a Red Hat build of OpenJDK, Eclipse Temurin, etc. — not available in Oracle JDK. Worth calling out live: "notice I had to switch JDK vendors for this one" — a lived-in example of the vendor fragmentation from the earlier section.
+Shenandoah needs a Red Hat build of OpenJDK, Eclipse Temurin, etc. - not available in Oracle JDK. Worth calling out live: "notice I had to switch JDK vendors for this one" - a lived-in example of the vendor fragmentation from the earlier section.
 
 ---
 
 ## Ahead-of-Time Compilation
-*Eliminate JIT warmup — or at least pre-load its profile*
+*Eliminate JIT warmup - or at least pre-load its profile*
 
-- JEP 295 — Graal-based AOT, experimental (Java 9) ← abandoned
-- JEP 410 — Removed (Java 17)
-- JEP 483 — AOT class loading & linking (Java 24) ← new approach
-- JEP 514 / 515 — CLI ergonomics & method profiling (Java 25)
+- JEP 295 - Graal-based AOT, experimental (Java 9) ← abandoned
+- JEP 410 - Removed (Java 17)
+- JEP 483 - AOT class loading & linking (Java 24) ← new approach
+- JEP 514 / 515 - CLI ergonomics & method profiling (Java 25)
 
 --
 
-## Ahead-of-Time Compilation — What's the Idea
+## Ahead-of-Time Compilation - What's the Idea
 
-The JIT compiles hot methods on the fly — but every single JVM start pays the same warmup tax: interpret bytecode, profile it, slowly tier up to optimized machine code, all over again.
+The JIT compiles hot methods on the fly - but every single JVM start pays the same warmup tax: interpret bytecode, profile it, slowly tier up to optimized machine code, all over again.
 
 AOT tries to skip (or front-load) that process by recording what a prior "training" run learned, and reusing it on every real startup.
 
 --
 
-## Ahead-of-Time Compilation — What Changed
+## Ahead-of-Time Compilation - What Changed
 
-**JEP 295 (Java 9):** Graal-based AOT compiler — experimental, needed a separate toolchain, limited coverage. Abandoned, removed by **JEP 410 (Java 17)**.
+**JEP 295 (Java 9):** Graal-based AOT compiler - experimental, needed a separate toolchain, limited coverage. Abandoned, removed by **JEP 410 (Java 17)**.
 
-**JEP 483 (Java 24):** an AOT *cache* of class/linking data — a three-step flow:
+**JEP 483 (Java 24):** an AOT *cache* of class/linking data - a three-step flow:
 
 ```
 -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf   # 1. train
@@ -674,20 +674,20 @@ AOT tries to skip (or front-load) that process by recording what a prior "traini
 
 ```
 -XX:AOTCacheOutput=app.aot   # train + create in one run
--XX:AOTCache=app.aot         # run — what the demo uses
+-XX:AOTCache=app.aot         # run - what the demo uses
 ```
 
 --
 
-## Ahead-of-Time Compilation — Gains & Conditions
+## Ahead-of-Time Compilation - Gains & Conditions
 
-**Gains:** faster time-to-peak performance, reduced warmup latency — most impactful for containerized/serverless cold starts.
+**Gains:** faster time-to-peak performance, reduced warmup latency - most impactful for containerized/serverless cold starts.
 
 **Conditions:** needs a training run on a representative workload. Initially x64 Linux only.
 
 --
 
-## AOT — Demo
+## AOT - Demo
 
 ```
 cd code/aot-demo
@@ -705,7 +705,7 @@ JDK-builtin `HttpServer`/`HttpClient`, one-step `-XX:AOTCacheOutput` / `-XX:AOTC
 Consistent across 10 runs each, no overlap between the two ranges.
 
 :notes:
-This app only loads a few hundred classes — a heavier real app (Spring Boot, large dependency graph) has far more startup linking to skip and would show a bigger win. Say this out loud so the modest number doesn't undersell the feature.
+This app only loads a few hundred classes - a heavier real app (Spring Boot, large dependency graph) has far more startup linking to skip and would show a bigger win. Say this out loud so the modest number doesn't undersell the feature.
 
 ---
 
@@ -716,15 +716,15 @@ Project Loom: rethinking what a "thread" costs.
 --
 
 ## Virtual Threads
-*M:N threading — millions of cheap threads, a small OS thread pool*
+*M:N threading - millions of cheap threads, a small OS thread pool*
 
-- JEP 425 / 436 — Preview, 2nd Preview (Java 19 / 20)
-- JEP 444 — Virtual Threads (Java 21)
-- JEP 491 — Synchronize without pinning (Java 24)
+- JEP 425 / 436 - Preview, 2nd Preview (Java 19 / 20)
+- JEP 444 - Virtual Threads (Java 21)
+- JEP 491 - Synchronize without pinning (Java 24)
 
 --
 
-## Virtual Threads — What's the Idea
+## Virtual Threads - What's the Idea
 
 One OS thread per in-flight request is expensive - threads are heavy. 
 
@@ -734,38 +734,38 @@ Virtual threads are JVM-scheduled and cheap: millions of them multiplex onto a s
 
 --
 
-## Virtual Threads — What Changed
+## Virtual Threads - What Changed
 
-JEP 425 (Java 19) / 436 (Java 20) — preview rounds.
+JEP 425 (Java 19) / 436 (Java 20) - preview rounds.
 
-JEP 444 (Java 21) — finalized.
+JEP 444 (Java 21) - finalized.
 
-JEP 491 (Java 24) — fixed `synchronized`-block pinning, so a virtual thread can now unmount even while holding a monitor.
+JEP 491 (Java 24) - fixed `synchronized`-block pinning, so a virtual thread can now unmount even while holding a monitor.
 
 --
 
-## Virtual Threads — Gains & Conditions
+## Virtual Threads - Gains & Conditions
 
-**Gains:** IO-bound throughput scales without tuning pool sizes — orders of magnitude more concurrent requests. JEP 491 removes `synchronized` pinning — critical for Spring/JDBC.
+**Gains:** IO-bound throughput scales without tuning pool sizes - orders of magnitude more concurrent requests. JEP 491 removes `synchronized` pinning - critical for Spring/JDBC.
 
 **Conditions:** IO-intensive workloads only. CPU-bound tasks see no benefit. JEP 491 (Java 24) is a practical prerequisite for real frameworks.
 
 --
 
-## Virtual Threads — Demo, Act 1: Throughput
+## Virtual Threads - Demo, Act 1: Throughput
 
 ```
 cd code/virtual-threads-demo
 gradle runThroughput
 ```
 
-50,000 blocking tasks × 50ms — fixed platform pool (200 threads) vs. one virtual thread per task.
+50,000 blocking tasks × 50ms - fixed platform pool (200 threads) vs. one virtual thread per task.
 
-**Verified:** 12,569ms vs **278ms** — **45.2x**.
+**Verified:** 12,569ms vs **278ms** - **45.2x**.
 
 --
 
-## Virtual Threads — Demo, Act 2: The JEP 491 Fix
+## Virtual Threads - Demo, Act 2: The JEP 491 Fix
 
 ```
 gradle runPinningPre491    # Java 21
@@ -784,12 +784,12 @@ Identical bytecode (`--release 21`), each virtual thread `synchronized` on its o
 <!-- .slide: data-visibility="hidden" -->
 
 ## Locking
-*Reduce monitor overhead — from acquisition to edge cases*
+*Reduce monitor overhead - from acquisition to edge cases*
 
-- JEP 143 — Improve Contended Locking (Java 9)
-- JEP 285 — Spin-Wait Hints (Java 9)
-- JEP 270 — Reserved Stack Areas (Java 9)
-- JEP 374 — Deprecate & disable Biased Locking (Java 15)
+- JEP 143 - Improve Contended Locking (Java 9)
+- JEP 285 - Spin-Wait Hints (Java 9)
+- JEP 270 - Reserved Stack Areas (Java 9)
+- JEP 374 - Deprecate & disable Biased Locking (Java 15)
 
 ---
 
@@ -798,15 +798,15 @@ Identical bytecode (`--release 21`), each virtual thread `synchronized` on its o
 --
 
 ## Vector API
-*Explicit SIMD — map straight to CPU vector instructions*
+*Explicit SIMD - map straight to CPU vector instructions*
 
-12 incubator rounds and counting (Java 16 → 27) — still not final after 11 years.
+12 incubator rounds and counting (Java 16 → 27) - still not final after 11 years.
 
 --
 
-## Vector API — What's the Idea
+## Vector API - What's the Idea
 
-Modern CPUs can do one instruction across multiple data lanes at once — add 8 floats in a single op instead of 8 separate ones.
+Modern CPUs can do one instruction across multiple data lanes at once - add 8 floats in a single op instead of 8 separate ones.
 
 Auto-vectorization in the JIT is best-effort and unreliable for anything non-trivial. 
 
@@ -814,39 +814,39 @@ The Vector API gives you an explicit, portable way to write SIMD code that compi
 
 --
 
-## Vector API — What Changed
+## Vector API - What Changed
 
-12 incubator rounds, JEP 338 (Java 16) through JEP 537 (Java 27) — still incubating.
+12 incubator rounds, JEP 338 (Java 16) through JEP 537 (Java 27) - still incubating.
 
 Why so long: vector lanes need a flattened, unboxed representation to avoid per-lane object overhead --> Project Valhalla
 
 --
 
-## Vector API — Gains & Conditions
+## Vector API - Gains & Conditions
 
-**Gains:** 2–10x speedup for explicitly vectorized code — ML inference, signal/image processing, crypto, numerics.
+**Gains:** 2-10x speedup for explicitly vectorized code - ML inference, signal/image processing, crypto, numerics.
 
-**Conditions:** needs CPU vector support (AVX2/AVX-512, SVE/SVE2). Not general-purpose — only code rewritten to use it benefits. 
+**Conditions:** needs CPU vector support (AVX2/AVX-512, SVE/SVE2). Not general-purpose - only code rewritten to use it benefits. 
 
-Not stable — can't ship in a library.
+Not stable - can't ship in a library.
 
 --
 
-## Vector API — Demo
+## Vector API - Demo
 
 ```
 cd code/vector-api-demo
 gradle run
 ```
 
-Dot product of two large `float[]` arrays — scalar loop vs. `jdk.incubator.vector` with `fma`.
+Dot product of two large `float[]` arrays - scalar loop vs. `jdk.incubator.vector` with `fma`.
 
 | Array length | Scalar | Vector API | Speedup |
 |---|---|---|---|
 | 5,000,000 | 8.95 ms/iter | 1.62 ms/iter | **5.52x** |
 | 50,000,000 | 66.35 ms/iter | 14.63 ms/iter | **4.53x** |
 
-16-lane AVX-512. Smaller speedup at scale — becomes memory-bandwidth-bound.
+16-lane AVX-512. Smaller speedup at scale - becomes memory-bandwidth-bound.
 
 --
 
@@ -859,12 +859,12 @@ Their own nightly benchmark jumped so much overnight that the benchmarking team 
 They hadn't. It just got faster.
 
 :notes:
-Source: Ben Trent (Elastic), "Java Must Be Faster: Time for the Vector API," Carolina Code Conference 2023 — Trent worked directly on integrating the Vector API into Lucene's similarity functions. He cites an ~8x throughput speedup on a 256-bit-vector micro-benchmark, and notes the result beat some native (non-Java) implementations on a public vector-search benchmark.
+Source: Ben Trent (Elastic), "Java Must Be Faster: Time for the Vector API," Carolina Code Conference 2023 - Trent worked directly on integrating the Vector API into Lucene's similarity functions. He cites an ~8x throughput speedup on a 256-bit-vector micro-benchmark, and notes the result beat some native (non-Java) implementations on a public vector-search benchmark.
 
 
 ---
 
-## Value Types — What's Coming Next
+## Value Types - What's Coming Next
 ### Project Valhalla
 
 --
@@ -872,47 +872,47 @@ Source: Ben Trent (Elastic), "Java Must Be Faster: Time for the Vector API," Car
 ## Value Classes and Objects
 *Give up object identity, gain a flat, header-free layout*
 
-- JEP 401 — Value Classes and Objects — Preview (targeting **Java 28**, March 2027)
-- JEP 539 — Strict Field Initialization — Preview (Java 28)
+- JEP 401 - Value Classes and Objects - Preview (targeting **Java 28**, March 2027)
+- JEP 539 - Strict Field Initialization - Preview (Java 28)
 
 **Not in Java 27.**
 
 --
 
-## Value Classes and Objects — What's the Idea
+## Value Classes and Objects - What's the Idea
 
-Today, every object has identity — usable in `==`, synchronizable, has an address — plus a header, even for simple data carriers like `Optional` or a `Point(x,y)`.
+Today, every object has identity - usable in `==`, synchronizable, has an address - plus a header, even for simple data carriers like `Optional` or a `Point(x,y)`.
 
-That identity and header cost memory and block flattening into arrays. Value classes give up identity to become flat, header-free, inlined directly into fields/arrays — like a primitive, but user-defined.
-
---
-
-## Value Classes and Objects — What Changed
-
-JEP 401 introduces the `value` modifier for declaring these classes (preview). JEP 539 adds strict field-initialization-order rules — needed because the JVM must guarantee every field is set before a value object is used or flattened, so a partially-initialized one can never leak.
+That identity and header cost memory and block flattening into arrays. Value classes give up identity to become flat, header-free, inlined directly into fields/arrays - like a primitive, but user-defined.
 
 --
 
-## Valhalla — Gains & Conditions
+## Value Classes and Objects - What Changed
+
+JEP 401 introduces the `value` modifier for declaring these classes (preview). JEP 539 adds strict field-initialization-order rules - needed because the JVM must guarantee every field is set before a value object is used or flattened, so a partially-initialized one can never leak.
+
+--
+
+## Valhalla - Gains & Conditions
 
 **Gains:** leaner standard library, zero app code changes for platform types.
 
-**Conditions:** opt-in only (`value` modifier + `--enable-preview`). Brian Goetz: "optimistic" to expect this out of preview even by JDK 29. Budget 12–18 months of evaluation.
+**Conditions:** opt-in only (`value` modifier + `--enable-preview`). Brian Goetz: "optimistic" to expect this out of preview even by JDK 29. Budget 12-18 months of evaluation.
 
-This is also **why Vector API is still incubating** — Valhalla ships first, then Vector API stabilizes on top of it.
+This is also **why Vector API is still incubating** - Valhalla ships first, then Vector API stabilizes on top of it.
 
 ---
 
-## JIT & Runtime — Other Notable JEPs
+## JIT & Runtime - Other Notable JEPs
 
-- JEP 197 — Segmented Code Cache (Java 9)
-- JEP 312 — Thread-Local Handshakes (Java 10)
-- JEP 315 — AArch64 Intrinsics (Java 11)
-- JEP 416 — Reflection via Method Handles (Java 18)
+- JEP 197 - Segmented Code Cache (Java 9)
+- JEP 312 - Thread-Local Handshakes (Java 10)
+- JEP 315 - AArch64 Intrinsics (Java 11)
+- JEP 416 - Reflection via Method Handles (Java 18)
 
 --
 
-## Other JIT/Runtime — Gains & Conditions
+## Other JIT/Runtime - Gains & Conditions
 
 **Gains:** thread-local handshakes cut latency for profiling/deopt ops. Segmented code cache reduces JIT overhead under load. AArch64 intrinsics matter for ARM (Graviton, Apple Silicon). Reflection speedup shows up most in Spring/Hibernate-style frameworks.
 
@@ -930,37 +930,37 @@ Baseline: 100 × GCP `n2-standard-4` ≈ **$13,870/month** ($166,440/year)
 
 --
 
-## Cost Impact — By the numbers
+## Cost Impact - By the numbers
 
 | Improvement | Measured | Realistic fleet reduction |
 |---|---|---|
-| Compact Strings | 32% less heap | ~13–24 machines |
-| Compact Object Headers | ~10–20% less heap (JEP estimate, not demo-measured) | ~5–15 machines |
-| Vector API | 4.53x (pure kernel) | ~23–78 machines |
-| Virtual Threads | 45.2x (pool-bound) | ~50–75 machines |
-| GC (ZGC/Shenandoah vs G1) | ~80% lower max pause | ~15–30 machines (headroom) |
+| Compact Strings | 32% less heap | ~13-24 machines |
+| Compact Object Headers | ~10-20% less heap (JEP estimate, not demo-measured) | ~5-15 machines |
+| Vector API | 4.53x (pure kernel) | ~23-78 machines |
+| Virtual Threads | 45.2x (pool-bound) | ~50-75 machines |
+| GC (ZGC/Shenandoah vs G1) | ~80% lower max pause | ~15-30 machines (headroom) |
 
-**Not additive** — different workload slices, not stackable.
+**Not additive** - different workload slices, not stackable.
 
 --
 
-## Cost Impact — The honest number
+## Cost Impact - The honest number
 
 A blended, non-double-counted estimate:
 
-**~25–40 machines reclaimed → ~$3,500–$5,500/month, ~$42,000–$66,000/year**
+**~25-40 machines reclaimed → ~$3,500-$5,500/month, ~$42,000-$66,000/year**
 
 Zero new hardware. Zero app rewrites for four of the five.
 
 :notes:
-Lead with Virtual Threads — "scaled out because platform threads ran out" is an extremely common real pattern, the most defensible headline number. Vector API and Compact Strings are workload-specific — say so explicitly, don't let 4.53x/45x get quoted as a general fleet number. GC and Compact Object Headers are the softest claims (reclaimed headroom / literature estimate, not demo-measured) — flag both as assumptions, not facts.
+Lead with Virtual Threads - "scaled out because platform threads ran out" is an extremely common real pattern, the most defensible headline number. Vector API and Compact Strings are workload-specific - say so explicitly, don't let 4.53x/45x get quoted as a general fleet number. GC and Compact Object Headers are the softest claims (reclaimed headroom / literature estimate, not demo-measured) - flag both as assumptions, not facts.
 Sources: GCP e2/n2-standard-4 pricing pages, CloudZero Compute Engine Pricing Guide (2026).
 
 ---
 
 ## Closing Argument
 
-- Every release since Java 8 is **free performance** — you just have to show up
+- Every release since Java 8 is **free performance** - you just have to show up
 - The upgrade path is manageable: `--release`, multi-release JARs, incremental rollout
 - Staying behind isn't conservative.
 
@@ -970,23 +970,23 @@ It's a compounding tax.
 
 ## Why Nobody Upgrades
 
-- Java 8 still runs **29%** of production apps (New Relic, 2024) — more than six years after Java 11 shipped
-- JetBrains' 2025 developer survey: Java 8 at **31%** usage — behind only Java 21 (40%) and 17 (39%)
+- Java 8 still runs **29%** of production apps (New Relic, 2024) - more than six years after Java 11 shipped
+- JetBrains' 2025 developer survey: Java 8 at **31%** usage - behind only Java 21 (40%) and 17 (39%)
 - "It works, don't touch it" it is a fact.
 
 :notes:
-Sources: New Relic "State of the Java Ecosystem" 2024 report (35% on 17, 33% on 11, 29% on 8 — Java 21 only 1.4% six months post-release, vs. 0.37% for 17 at the same point post-release, so adoption is actually accelerating release to release). JetBrains State of Developer Ecosystem 2025 survey (developer-reported usage, not production telemetry, so a different methodology — included because it's the freshest available number and points the same direction).
+Sources: New Relic "State of the Java Ecosystem" 2024 report (35% on 17, 33% on 11, 29% on 8 - Java 21 only 1.4% six months post-release, vs. 0.37% for 17 at the same point post-release, so adoption is actually accelerating release to release). JetBrains State of Developer Ecosystem 2025 survey (developer-reported usage, not production telemetry, so a different methodology - included because it's the freshest available number and points the same direction).
 
 --
 
 ## The Wall: Java 8 → 11
 
 - **JPMS:** reflective access to JDK internals now throws `InaccessibleObjectException`
-- **Java EE ripped out (JEP 320):** JAXB, JAX-WS, CORBA — gone from the JDK
+- **Java EE ripped out (JEP 320):** JAXB, JAX-WS, CORBA - gone from the JDK
 - **Split packages:** now fail hard at startup
 
 :notes:
-JAXB fix in practice: add org.glassfish.jaxb:jaxb-runtime as an external dependency — the xjc/schemagen codegen tools also disappeared from the JDK and need a separate download. This is the single most-cited migration blocker across every source checked, and it's the direct reason Java 8 stayed so sticky — 9/10/11 weren't a recompile, they were real remediation work.
+JAXB fix in practice: add org.glassfish.jaxb:jaxb-runtime as an external dependency - the xjc/schemagen codegen tools also disappeared from the JDK and need a separate download. This is the single most-cited migration blocker across every source checked, and it's the direct reason Java 8 stayed so sticky - 9/10/11 weren't a recompile, they were real remediation work.
 
 --
 
@@ -994,20 +994,20 @@ JAXB fix in practice: add org.glassfish.jaxb:jaxb-runtime as an external depende
 
 JEP 403 enforced `--illegal-access=deny` by default.
 
-The `--add-opens` workarounds that worked since Java 9 stopped being enough — code quietly suppressing warnings for years finally had to fix the reflection for real.
+The `--add-opens` workarounds that worked since Java 9 stopped being enough - code quietly suppressing warnings for years finally had to fix the reflection for real.
 
 --
 
 ## Available Solutions
 
-- **Never skip straight to current** — go LTS-to-LTS (8→11→17→21→25), testing at each stop
-- **`jdeps --jdk-internals`** first — turns runtime surprises into a known list before you start
-- **OpenRewrite** (`rewrite-migrate-java`) — automates the mechanical part: deprecated APIs, build-file updates, `javax`→`jakarta`
-- **`--release`, not `-source`/`-target`** — the only flag that also constrains the API surface
+- **Never skip straight to current** - go LTS-to-LTS (8→11→17→21→25), testing at each stop
+- **`jdeps --jdk-internals`** first - turns runtime surprises into a known list before you start
+- **OpenRewrite** (`rewrite-migrate-java`) - automates the mechanical part: deprecated APIs, build-file updates, `javax`→`jakarta`
+- **`--release`, not `-source`/`-target`** - the only flag that also constrains the API surface
 - **Canary rollout** after each version bump, not one big-bang cutover
 
 :notes:
-OpenRewrite's own recipe set is structured exactly this way — composite recipes per LTS version, each building on the previous one. It doesn't cover third-party libraries with no Jakarta variant; those stay manual. jdeps --jdk-internals is built into the JDK already — no extra install.
+OpenRewrite's own recipe set is structured exactly this way - composite recipes per LTS version, each building on the previous one. It doesn't cover third-party libraries with no Jakarta variant; those stay manual. jdeps --jdk-internals is built into the JDK already - no extra install.
 
 ---
 
@@ -1025,93 +1025,93 @@ Slides, demos & sources: github.com/smijran
 
 ## Links
 
-Everything below, for later — JEPs, further reading, and where the $ numbers came from.
+Everything below, for later - JEPs, further reading, and where the $ numbers came from.
 
 --
 
-## JEPs — Memory & Class Data Sharing
+## JEPs - Memory & Class Data Sharing
 
-- [JEP 254](https://openjdk.org/jeps/254) — Compact Strings
-- [JEP 280](https://openjdk.org/jeps/280) — Indify String Concatenation
-- [JEP 450](https://openjdk.org/jeps/450) — Compact Object Headers (Experimental)
-- [JEP 519](https://openjdk.org/jeps/519) — Compact Object Headers (Production)
-- [JEP 534](https://openjdk.org/jeps/534) — Compact Object Headers by Default
-- [JEP 310](https://openjdk.org/jeps/310) — Application Class-Data Sharing
-- [JEP 341](https://openjdk.org/jeps/341) — Default CDS Archives
-- [JEP 350](https://openjdk.org/jeps/350) — Dynamic CDS Archives
-
---
-
-## JEPs — Garbage Collection
-
-- [JEP 248](https://openjdk.org/jeps/248) — Make G1 the Default Garbage Collector
-- [JEP 307](https://openjdk.org/jeps/307) — Parallel Full GC for G1
-- [JEP 344](https://openjdk.org/jeps/344) — Abortable Mixed Collections for G1
-- [JEP 345](https://openjdk.org/jeps/345) — NUMA-Aware Memory Allocation for G1
-- [JEP 423](https://openjdk.org/jeps/423) — Region Pinning for G1
-- [JEP 475](https://openjdk.org/jeps/475) — Late Barrier Expansion for G1
-- [JEP 523](https://openjdk.org/jeps/523) — G1 GC: Default Everywhere
-- [JEP 333](https://openjdk.org/jeps/333) / [377](https://openjdk.org/jeps/377) — ZGC (Experimental / Production)
-- [JEP 439](https://openjdk.org/jeps/439) / [474](https://openjdk.org/jeps/474) / [490](https://openjdk.org/jeps/490) — Generational ZGC, default, non-gen removed
-- [JEP 189](https://openjdk.org/jeps/189) / [379](https://openjdk.org/jeps/379) — Shenandoah (Experimental / Production)
-- [JEP 404](https://openjdk.org/jeps/404) / [521](https://openjdk.org/jeps/521) — Generational Shenandoah
-- [JEP 363](https://openjdk.org/jeps/363) — Remove the CMS Garbage Collector
-- [JEP 387](https://openjdk.org/jeps/387) — Elastic Metaspace
+- [JEP 254](https://openjdk.org/jeps/254) - Compact Strings
+- [JEP 280](https://openjdk.org/jeps/280) - Indify String Concatenation
+- [JEP 450](https://openjdk.org/jeps/450) - Compact Object Headers (Experimental)
+- [JEP 519](https://openjdk.org/jeps/519) - Compact Object Headers (Production)
+- [JEP 534](https://openjdk.org/jeps/534) - Compact Object Headers by Default
+- [JEP 310](https://openjdk.org/jeps/310) - Application Class-Data Sharing
+- [JEP 341](https://openjdk.org/jeps/341) - Default CDS Archives
+- [JEP 350](https://openjdk.org/jeps/350) - Dynamic CDS Archives
 
 --
 
-## JEPs — JIT, Runtime & Concurrency
+## JEPs - Garbage Collection
 
-- [JEP 295](https://openjdk.org/jeps/295) — Ahead-of-Time Compilation (abandoned)
-- [JEP 410](https://openjdk.org/jeps/410) — Remove the Experimental AOT/JIT Compiler
-- [JEP 483](https://openjdk.org/jeps/483) — Ahead-of-Time Class Loading & Linking
-- [JEP 514](https://openjdk.org/jeps/514) / [515](https://openjdk.org/jeps/515) — AOT CLI Ergonomics & Method Profiling
-- [JEP 197](https://openjdk.org/jeps/197) — Segmented Code Cache
-- [JEP 312](https://openjdk.org/jeps/312) — Thread-Local Handshakes
-- [JEP 315](https://openjdk.org/jeps/315) — Improve AArch64 Intrinsics
-- [JEP 246](https://openjdk.org/jeps/246) — CPU Instructions for GHASH and RSA
-- [JEP 416](https://openjdk.org/jeps/416) — Reimplement Core Reflection with Method Handles
-- [JEP 143](https://openjdk.org/jeps/143) / [270](https://openjdk.org/jeps/270) / [285](https://openjdk.org/jeps/285) — Locking: contended locking, reserved stack areas, spin-wait hints
-- [JEP 374](https://openjdk.org/jeps/374) — Deprecate & Disable Biased Locking
-- [JEP 425](https://openjdk.org/jeps/425) / [436](https://openjdk.org/jeps/436) / [444](https://openjdk.org/jeps/444) — Virtual Threads (Preview → Second Preview → Final)
-- [JEP 491](https://openjdk.org/jeps/491) — Synchronize Virtual Threads without Pinning
-
---
-
-## JEPs — Vector API & Valhalla
-
-- [JEP 338](https://openjdk.org/jeps/338) → [537](https://openjdk.org/jeps/537) — Vector API, 12 incubator rounds (Java 16 → 27)
-- [JEP 401](https://openjdk.org/jeps/401) — Value Classes and Objects (Preview, targeting Java 28)
-- [JEP 539](https://openjdk.org/jeps/539) — Strict Field Initialization (Preview, Java 28)
+- [JEP 248](https://openjdk.org/jeps/248) - Make G1 the Default Garbage Collector
+- [JEP 307](https://openjdk.org/jeps/307) - Parallel Full GC for G1
+- [JEP 344](https://openjdk.org/jeps/344) - Abortable Mixed Collections for G1
+- [JEP 345](https://openjdk.org/jeps/345) - NUMA-Aware Memory Allocation for G1
+- [JEP 423](https://openjdk.org/jeps/423) - Region Pinning for G1
+- [JEP 475](https://openjdk.org/jeps/475) - Late Barrier Expansion for G1
+- [JEP 523](https://openjdk.org/jeps/523) - G1 GC: Default Everywhere
+- [JEP 333](https://openjdk.org/jeps/333) / [377](https://openjdk.org/jeps/377) - ZGC (Experimental / Production)
+- [JEP 439](https://openjdk.org/jeps/439) / [474](https://openjdk.org/jeps/474) / [490](https://openjdk.org/jeps/490) - Generational ZGC, default, non-gen removed
+- [JEP 189](https://openjdk.org/jeps/189) / [379](https://openjdk.org/jeps/379) - Shenandoah (Experimental / Production)
+- [JEP 404](https://openjdk.org/jeps/404) / [521](https://openjdk.org/jeps/521) - Generational Shenandoah
+- [JEP 363](https://openjdk.org/jeps/363) - Remove the CMS Garbage Collector
+- [JEP 387](https://openjdk.org/jeps/387) - Elastic Metaspace
 
 --
 
-## Further Reading — Performance
+## JEPs - JIT, Runtime & Concurrency
 
-- [inside.java — Performance Improvements in JDK 25](https://inside.java/2025/10/20/jdk-25-performance-improvements/)
-- [inside.java — Performance Improvements in JDK 26](https://inside.java/2026/06/09/jdk-26-performance-improvements/)
+- [JEP 295](https://openjdk.org/jeps/295) - Ahead-of-Time Compilation (abandoned)
+- [JEP 410](https://openjdk.org/jeps/410) - Remove the Experimental AOT/JIT Compiler
+- [JEP 483](https://openjdk.org/jeps/483) - Ahead-of-Time Class Loading & Linking
+- [JEP 514](https://openjdk.org/jeps/514) / [515](https://openjdk.org/jeps/515) - AOT CLI Ergonomics & Method Profiling
+- [JEP 197](https://openjdk.org/jeps/197) - Segmented Code Cache
+- [JEP 312](https://openjdk.org/jeps/312) - Thread-Local Handshakes
+- [JEP 315](https://openjdk.org/jeps/315) - Improve AArch64 Intrinsics
+- [JEP 246](https://openjdk.org/jeps/246) - CPU Instructions for GHASH and RSA
+- [JEP 416](https://openjdk.org/jeps/416) - Reimplement Core Reflection with Method Handles
+- [JEP 143](https://openjdk.org/jeps/143) / [270](https://openjdk.org/jeps/270) / [285](https://openjdk.org/jeps/285) - Locking: contended locking, reserved stack areas, spin-wait hints
+- [JEP 374](https://openjdk.org/jeps/374) - Deprecate & Disable Biased Locking
+- [JEP 425](https://openjdk.org/jeps/425) / [436](https://openjdk.org/jeps/436) / [444](https://openjdk.org/jeps/444) - Virtual Threads (Preview → Second Preview → Final)
+- [JEP 491](https://openjdk.org/jeps/491) - Synchronize Virtual Threads without Pinning
+
+--
+
+## JEPs - Vector API & Valhalla
+
+- [JEP 338](https://openjdk.org/jeps/338) → [537](https://openjdk.org/jeps/537) - Vector API, 12 incubator rounds (Java 16 → 27)
+- [JEP 401](https://openjdk.org/jeps/401) - Value Classes and Objects (Preview, targeting Java 28)
+- [JEP 539](https://openjdk.org/jeps/539) - Strict Field Initialization (Preview, Java 28)
+
+--
+
+## Further Reading - Performance
+
+- [inside.java - Performance Improvements in JDK 25](https://inside.java/2025/10/20/jdk-25-performance-improvements/)
+- [inside.java - Performance Improvements in JDK 26](https://inside.java/2026/06/09/jdk-26-performance-improvements/)
 - [JDK 27 Release Notes](https://jdk.java.net/27/release-notes)
-- [bugs.openjdk.org](https://bugs.openjdk.org) — the JBS, source of every `JDK-XXXXXXX` ticket in this talk
-- [JDK-8180450 — secondary_super_cache does not scale well](https://bugs.openjdk.org/browse/JDK-8180450)
-- [Apache Lucene #12091 — Speeding up Vector Similarity through the Java Vector API](https://github.com/apache/lucene/issues/12091)
-- [Ben Trent — Java Must Be Faster: Time for the Vector API (Carolina Code Conference 2023)](https://www.youtube.com/watch?v=8mRKqjCuSEw)
+- [bugs.openjdk.org](https://bugs.openjdk.org) - the JBS, source of every `JDK-XXXXXXX` ticket in this talk
+- [JDK-8180450 - secondary_super_cache does not scale well](https://bugs.openjdk.org/browse/JDK-8180450)
+- [Apache Lucene #12091 - Speeding up Vector Similarity through the Java Vector API](https://github.com/apache/lucene/issues/12091)
+- [Ben Trent - Java Must Be Faster: Time for the Vector API (Carolina Code Conference 2023)](https://www.youtube.com/watch?v=8mRKqjCuSEw)
 
 --
 
-## Further Reading — Cloud & Hardware Pricing
+## Further Reading - Cloud & Hardware Pricing
 
 - [Google Cloud Compute Engine VM instance pricing](https://cloud.google.com/compute/vm-instance-pricing)
-- [instances.vantage.sh](https://instances.vantage.sh) — cross-cloud instance/price comparison
-- [economize.cloud — e2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/e2-standard-4/)
-- [economize.cloud — n2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/n2-standard-4/)
-- [CloudZero — Google Cloud Compute Engine Pricing Guide (2026)](https://www.cloudzero.com/blog/google-cloud-compute-engine-pricing-guide/)
+- [instances.vantage.sh](https://instances.vantage.sh) - cross-cloud instance/price comparison
+- [economize.cloud - e2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/e2-standard-4/)
+- [economize.cloud - n2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/n2-standard-4/)
+- [CloudZero - Google Cloud Compute Engine Pricing Guide (2026)](https://www.cloudzero.com/blog/google-cloud-compute-engine-pricing-guide/)
 
 --
 
 ## This Talk
 
 **Repo (slides, demos, plan):** https://github.com/smijran/presentations
-`if-it-aint-broke/code/` — gc-comparison, compact-strings, cds-demo, aot-demo, virtual-threads-demo, vector-api-demo
+`if-it-aint-broke/code/` - gc-comparison, compact-strings, cds-demo, aot-demo, virtual-threads-demo, vector-api-demo
 
 **Project Lilliput:** https://wiki.openjdk.org/display/lilliput/Main
 
