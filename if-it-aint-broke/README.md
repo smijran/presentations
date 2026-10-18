@@ -250,7 +250,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ##### Other
 
-> **PARKED — hidden in the deck for now** (matching `data-visibility="hidden"` on the "GC — Other notable JEPs" slide in `slides.md`).
+> **REMOVED from the deck** (the "GC — Other notable JEPs" slide was deleted outright, not just hidden — kept here for reference only).
 
 - JEP 363: Remove CMS Garbage Collector (Java 14)
 - JEP 387: Elastic Metaspace (Java 16)
@@ -305,7 +305,7 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 
 ##### Locking
 
-> **PARKED — hidden in the deck for now** (matching `data-visibility="hidden"` on the "Locking" and "Locking — Gains & Conditions" slides in `slides.md`).
+> **PARKED** — the "Locking" title slide is still hidden in the deck (`data-visibility="hidden"`), but "Locking — Gains & Conditions" was deleted outright. Content kept here for reference only.
 
 *Reduce overhead of monitor operations — from acquisition to edge-case safety.*
 
@@ -341,14 +341,6 @@ The case is simple: staying on an old Java version isn't caution. It's a tax.
 > **Conditions:** Requires CPU with vector instruction support (x86 AVX2/AVX-512, ARM SVE/SVE2). Not general-purpose — only benefits code explicitly rewritten to use the API. Long incubation due to dependency on Project Valhalla (value types — see §5.8). Not stable API yet — cannot use in libraries shipped as dependencies.
 > **Demo idea:** A simple numeric kernel (dot product, array sum, or a small image-processing filter) over a large `float[]`/`int[]`, run three ways: a plain scalar loop, an auto-vectorization-friendly scalar loop, and an explicit `jdk.incubator.vector` version (`--add-modules jdk.incubator.vector --enable-preview` as needed). Benchmark with JMH to avoid JIT/warmup noise, and report ops/sec — the 2–10x gap over the scalar baseline is the whole point. Worth noting on slide: needs `--add-modules jdk.incubator.vector` since it's still incubating. **Built:** `code/vector-api-demo` (Java 26) — dot product with `fma`, hand-rolled warm-up + timed loop instead of JMH (kept dependency-free like the other demos). Verified on this AVX-512 host (16 lanes/vector): 5.52x speedup at 5M elements, 4.53x at 50M (smaller at scale because it becomes memory-bandwidth-bound). An older, simpler sum-based demo also exists in this repo at `../vector-api/code/geecon2023` (Maven, Java 20) — this one is a fresh, self-contained version matching this talk's Java 26 baseline.
 > **Real-world proof:** Elastic rewrote Apache Lucene's vector-similarity dot product with the Vector API — the same technique as the demo above, shipped in production. The change was significant enough that Elasticsearch's own nightly benchmark jumped overnight — enough that the benchmarking team messaged the engineer on Slack asking if something had broken. It hadn't; it just got faster. Source: Ben Trent (Elastic), "Java Must Be Faster: Time for the Vector API," Carolina Code Conference 2023 — Trent worked directly on the Lucene integration and also cites an ~8x throughput speedup on a 256-bit-vector micro-benchmark.
-
-##### CPU Intrinsics
-*Route specific operations directly to hardware instruction equivalents.*
-
-- JEP 246: Leverage CPU Instructions for GHASH and RSA (Java 9)
-
-> **Gains:** 2–10x throughput improvement for AES-GCM (GHASH) and RSA operations — directly relevant for TLS-heavy services.
-> **Conditions:** x86 only; requires hardware AES-NI and PCLMULQDQ support. Transparent — no code changes needed.
 
 ---
 
@@ -399,3 +391,19 @@ Lead with **Virtual Threads** — "scaled out because platform threads ran out" 
 - Every release since Java 8 is free performance — you just have to show up
 - The upgrade path is manageable: `--release`, multi-release JARs, incremental rollout
 - Staying behind isn't conservative. It's a compounding tax.
+
+---
+
+### 7. Migration Strategies
+
+*New section added after the Closing Argument, before Thank You — four slides.*
+
+> **Why Nobody Upgrades:** Java 8 still runs **29%** of production apps per New Relic's 2024 "State of the Java Ecosystem" report — more than six years after Java 11 shipped (35% on 17, 33% on 11, 29% on 8; Java 21 at only 1.4% six months post-release). JetBrains' 2025 developer survey puts Java 8 usage at **31%**, behind only Java 21 (40%) and 17 (39%) — different methodology (developer-reported, not production telemetry), same direction. "It works, don't touch it" isn't a vibe, it's the industry median.
+
+> **The Wall: Java 8 → 11** (kept short — three bullets): JPMS makes reflective access to JDK internals throw `InaccessibleObjectException`; JEP 320 ripped Java EE modules (JAXB, JAX-WS, CORBA) out of the JDK entirely, forcing external dependencies (e.g. `org.glassfish.jaxb:jaxb-runtime`) for anything that used them; split packages now fail hard at startup. This is the single most-cited migration blocker across every source checked, and the direct reason Java 8 stayed so sticky — 9/10/11 weren't a recompile, they were real remediation work.
+
+> **The Wall: Java 17** (split out as its own slide): JEP 403 enforced `--illegal-access=deny` by default — the `--add-opens` workarounds that had worked since Java 9 stopped being enough. Code quietly suppressing warnings for years finally had to fix the reflection for real.
+
+> **Available Solutions:** never skip straight to current — go LTS-to-LTS (8→11→17→21→25), testing at each stop, which is also how OpenRewrite's own `rewrite-migrate-java` composite recipes are structured (one recipe per LTS, each building on the last, though it doesn't cover third-party libraries with no Jakarta variant). Run `jdeps --jdk-internals` first to turn runtime surprises into a known list before starting. Use `--release`, not `-source`/`-target` — the only flag that also constrains the API surface. Canary rollout after each version bump, not one big-bang cutover.
+>
+> Sources: [New Relic — State of the Java 2024](https://newrelic.com/blog/news/state-of-java), [SD Times coverage](https://sdtimes.com/softwaredev/report-java-17-is-now-the-most-used-version-of-java-in-production/), [Oracle JDK 11 Migration Guide](https://docs.oracle.com/en/java/javase/11/migrate/index.html), [OpenRewrite rewrite-migrate-java](https://github.com/openrewrite/rewrite-migrate-java).
