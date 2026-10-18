@@ -562,98 +562,57 @@ NUMA-aware allocation keeps a thread's memory on its own socket. G1 added this i
 :notes:
 Only matters on multi-socket hardware — a single-socket dev laptop or small cloud VM has one memory bank, so there's no "remote" memory to avoid. Fallback if the live run misbehaves: on this (single-socket) dev machine, runG1 and runG1Numa reported near-identical max latency (~1.8–2.0ms) — exactly this caveat, live and unforced.
 
---
+---
 
-## ZGC
-*Sub-millisecond pauses, any heap size*
+## ZGC & Shenandoah
+*Two concurrent collectors, same latency goal — different mechanism*
 
+**ZGC**
 - JEP 333 — Experimental (Java 11)
 - JEP 377 — Production (Java 15)
 - JEP 439 — Generational ZGC (Java 21)
 - JEP 474 — Generational by default (Java 23)
 - JEP 490 — Non-generational mode removed (Java 24)
 
---
-
-## ZGC — What's the Idea
-
-Concurrent collection via colored pointers — a few bits of the 64-bit reference itself encode GC state (marked, remapped, finalizable...). A load barrier checks and heals those bits on every reference read.
-
-Relocation happens while the app keeps running, so pauses stay sub-millisecond regardless of heap size.
-
---
-
-## ZGC — What Changed
-
-JEP 333 (Java 11) shipped it experimental; JEP 377 (Java 15) made it production.
-
-JEP 439 (Java 21) added a generational mode. JEP 474 (Java 23) made generational the default. JEP 490 (Java 24) removed non-generational mode entirely — no opt-out since.
-
---
-
-## ZGC — Where It Thrives
-
-**Thrives when:** latency-sensitive services on large heaps, where a single slow GC pause hurts more than some extra memory overhead.
-
-**Gains:** <1ms pauses at any heap size. Generational mode (21+) adds 10–20% throughput on top.
-
-**Verified:** G1 `max` ≈ **2.0ms** vs ZGC `max` ≈ **0.37ms** — same workload, same heap.
-
-**Conditions:** best for latency-sensitive workloads. ~10–20% higher memory overhead than G1. No non-generational opt-out since Java 24.
-
---
-
-## ZGC — Demo
-
-```
-cd code/gc-comparison
-gradle runG1
-gradle runZGC
-```
-
---
-
-## Shenandoah
-*Concurrent compaction — low pauses, no fragmentation*
-
+**Shenandoah**
 - JEP 189 — Experimental (Java 12)
 - JEP 379 — Production (Java 15)
 - JEP 404 / 521 — Generational Shenandoah (Java 24 → 25)
 
 --
 
-## Shenandoah — What's the Idea
+## ZGC & Shenandoah — What's the Idea
 
-Same latency goal as ZGC, different mechanism: Brooks (forwarding) pointers add one extra word to every object header, pointing to that object's current (possibly relocated) location.
+Both avoid stop-the-world relocation entirely — the app keeps running while objects move, so pauses stay sub-millisecond regardless of heap size. They just get there differently.
 
-Read/write barriers follow that indirection on every access — a real, fixed per-object memory cost ZGC's colored-pointer approach avoids structurally.
+**ZGC:** colored pointers — a few bits of the 64-bit reference itself encode GC state; a load barrier checks and heals them on every read. No extra per-object memory.
 
---
-
-## Shenandoah — What Changed
-
-JEP 189 (Java 12) shipped it experimental; JEP 379 (Java 15) made it production.
-
-JEP 404 (Java 24) added a generational mode, experimental; JEP 521 (Java 25) made it production — still opt-in, unlike ZGC's forced generational default.
+**Shenandoah:** Brooks (forwarding) pointers — one extra word on every object header, pointing to its current location; barriers follow that indirection on every access. A real, fixed per-object cost ZGC's approach avoids structurally.
 
 --
 
-## Shenandoah — Where It Thrives
+## ZGC & Shenandoah — What Changed
 
-**Thrives when:** you need ZGC's latency profile but you're locked out of Oracle JDK — or you're already on Red Hat/Temurin builds.
+**ZGC:** JEP 333 (Java 11) experimental → JEP 377 (Java 15) production. JEP 439 (Java 21) added generational mode; JEP 474 (Java 23) made it default; JEP 490 (Java 24) removed non-generational entirely — no opt-out since.
 
-**Gains:** ~1ms pauses, throughput competitive with G1, concurrent compaction avoids fragmentation under long-running load.
-
-**Verified:** `max` ≈ **0.42ms** — comparable to ZGC, well under G1.
-
-**Conditions:** higher CPU overhead than G1 (concurrent work). Not in Oracle JDK.
+**Shenandoah:** JEP 189 (Java 12) experimental → JEP 379 (Java 15) production. JEP 404 (Java 24) added generational mode, experimental; JEP 521 (Java 25) made it production — still opt-in, unlike ZGC's forced default.
 
 --
 
-## Shenandoah — Demo
+## ZGC & Shenandoah — Where They Thrive
+
+**ZGC thrives when:** latency-sensitive services on large heaps, where a single slow GC pause hurts more than some extra memory overhead. **Verified:** G1 `max` ≈ **2.0ms** vs ZGC `max` ≈ **0.37ms** — same workload, same heap. ~10–20% higher memory overhead than G1. No non-generational opt-out since Java 24.
+
+**Shenandoah thrives when:** you need ZGC's latency profile but you're locked out of Oracle JDK — or you're already on Red Hat/Temurin builds. **Verified:** `max` ≈ **0.42ms** — comparable to ZGC, well under G1. Higher CPU overhead than G1 (concurrent work). Not in Oracle JDK.
+
+--
+
+## ZGC & Shenandoah — Demo
 
 ```
 cd code/gc-comparison
+gradle runG1
+gradle runZGC
 gradle runShenandoah   # needs a non-Oracle JDK build!
 ```
 
