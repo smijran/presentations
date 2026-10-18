@@ -64,6 +64,11 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 
 ---
 
+# Java Support
+## Who Actually Has Your Back?
+
+---
+
 ## What Paying Actually Buys You
 
 Oracle · Red Hat · Azul · Microsoft · Amazon Corretto
