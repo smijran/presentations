@@ -726,7 +726,9 @@ Project Loom: rethinking what a "thread" costs.
 
 ## Virtual Threads — What's the Idea
 
-One OS thread per in-flight request is expensive — real memory, real context-switch cost — capping concurrency at your pool size.
+One OS thread per in-flight request is expensive - threads are heavy. 
+
+Capping concurrency at your pool size.
 
 Virtual threads are JVM-scheduled and cheap: millions of them multiplex onto a small set of real "carrier" OS threads, parking around blocking calls instead of occupying a carrier the whole time.
 
@@ -777,8 +779,6 @@ Identical bytecode (`--release 21`), each virtual thread `synchronized` on its o
 | Java 21 (pre-491) | 6,419 ms |
 | Java 24 (post-491) | 214 ms |
 
-Nothing changed but the JDK. That gap **is** the JEP.
-
 --
 
 <!-- .slide: data-visibility="hidden" -->
@@ -790,16 +790,6 @@ Nothing changed but the JDK. That gap **is** the JEP.
 - JEP 285 — Spin-Wait Hints (Java 9)
 - JEP 270 — Reserved Stack Areas (Java 9)
 - JEP 374 — Deprecate & disable Biased Locking (Java 15)
-
---
-
-<!-- .slide: data-visibility="hidden" -->
-
-## Locking — Gains & Conditions
-
-**Gains:** faster monitor entry/exit under contention. CPU PAUSE hints cut power/latency in spin-waits. Reserved stack areas stop StackOverflowError from corrupting critical sections.
-
-**Conditions:** contended-locking gains most visible under heavy shared-state concurrency. Biased-locking removal was a net win despite removing an "optimization."
 
 ---
 
@@ -818,7 +808,9 @@ Nothing changed but the JDK. That gap **is** the JEP.
 
 Modern CPUs can do one instruction across multiple data lanes at once — add 8 floats in a single op instead of 8 separate ones.
 
-Auto-vectorization in the JIT is best-effort and unreliable for anything non-trivial. The Vector API gives you an explicit, portable way to write SIMD code that compiles down to whatever width the CPU actually has (128/256/512-bit), instead of hand-rolling per-architecture intrinsics.
+Auto-vectorization in the JIT is best-effort and unreliable for anything non-trivial. 
+
+The Vector API gives you an explicit, portable way to write SIMD code that compiles down to whatever width the CPU actually has (128/256/512-bit).
 
 --
 
@@ -826,7 +818,7 @@ Auto-vectorization in the JIT is best-effort and unreliable for anything non-tri
 
 12 incubator rounds, JEP 338 (Java 16) through JEP 537 (Java 27) — still incubating.
 
-Why so long: vector lanes need a flattened, unboxed representation to avoid per-lane object overhead, and that requires Project Valhalla's value types to ship first.
+Why so long: vector lanes need a flattened, unboxed representation to avoid per-lane object overhead --> Project Valhalla
 
 --
 
@@ -834,7 +826,9 @@ Why so long: vector lanes need a flattened, unboxed representation to avoid per-
 
 **Gains:** 2–10x speedup for explicitly vectorized code — ML inference, signal/image processing, crypto, numerics.
 
-**Conditions:** needs CPU vector support (AVX2/AVX-512, SVE/SVE2). Not general-purpose — only code rewritten to use it benefits. Long incubation is a Valhalla dependency. Not stable — can't ship in a library.
+**Conditions:** needs CPU vector support (AVX2/AVX-512, SVE/SVE2). Not general-purpose — only code rewritten to use it benefits. 
+
+Not stable — can't ship in a library.
 
 --
 
@@ -856,9 +850,9 @@ Dot product of two large `float[]` arrays — scalar loop vs. `jdk.incubator.vec
 
 --
 
-## Real-World Proof: Apache Lucene
+## Apache Lucene - early adoption
 
-Elastic rewrote Lucene's vector-similarity dot product with the Vector API — the same idea as this demo, shipped in production.
+Elastic rewrote Lucene's vector-similarity dot product with the Vector API
 
 Their own nightly benchmark jumped so much overnight that the benchmarking team messaged the engineer on Slack: **"did we break something?"**
 
@@ -867,34 +861,6 @@ They hadn't. It just got faster.
 :notes:
 Source: Ben Trent (Elastic), "Java Must Be Faster: Time for the Vector API," Carolina Code Conference 2023 — Trent worked directly on integrating the Vector API into Lucene's similarity functions. He cites an ~8x throughput speedup on a 256-bit-vector micro-benchmark, and notes the result beat some native (non-Java) implementations on a public vector-search benchmark.
 
---
-
-## CPU Intrinsics
-*Route specific ops straight to hardware instructions*
-
-- JEP 246 — CPU instructions for GHASH & RSA (Java 9)
-
---
-
-## CPU Intrinsics — What's the Idea
-
-Some operations — GCM authentication, RSA modular exponentiation — have dedicated hardware instructions that are far faster than a generic compiled loop.
-
-An "intrinsic" lets the JIT recognize a specific method call and swap in that single hardware instruction instead of running the Java fallback.
-
---
-
-## CPU Intrinsics — What Changed
-
-JEP 246 (Java 9) added CPU-specific intrinsics for GHASH (used in AES-GCM) and RSA modular exponentiation — fully transparent, the JIT substitutes the hardware instruction automatically when available.
-
---
-
-## CPU Intrinsics — Gains & Conditions
-
-**Gains:** 2–10x throughput for AES-GCM and RSA — directly relevant for TLS-heavy services.
-
-**Conditions:** needs a CPU with the relevant instruction-set extension (e.g. carry-less multiplication for GHASH) — virtually universal on modern x86/ARM server hardware, but not guaranteed on exotic/older targets.
 
 ---
 
@@ -925,8 +891,6 @@ That identity and header cost memory and block flattening into arrays. Value cla
 
 JEP 401 introduces the `value` modifier for declaring these classes (preview). JEP 539 adds strict field-initialization-order rules — needed because the JVM must guarantee every field is set before a value object is used or flattened, so a partially-initialized one can never leak.
 
-The JDK already converts 30 platform classes (`Integer`, `LocalDate`, `Optional`, …) to value classes under `--enable-preview` — a real dog-fooding test.
-
 --
 
 ## Valhalla — Gains & Conditions
@@ -938,17 +902,6 @@ The JDK already converts 30 platform classes (`Integer`, `LocalDate`, `Optional`
 This is also **why Vector API is still incubating** — Valhalla ships first, then Vector API stabilizes on top of it.
 
 ---
-
-<!-- .slide: data-visibility="hidden" -->
-
-## GC — Other notable JEPs
-
-- JEP 363 — Remove CMS Garbage Collector (Java 14)
-- JEP 387 — Elastic Metaspace (Java 16)
-
-**Gains (Elastic Metaspace):** class-metadata memory returned to the OS promptly after unloading — matters most for app servers, OSGi, plugin systems.
-
---
 
 ## JIT & Runtime — Other Notable JEPs
 
@@ -1004,20 +957,6 @@ Lead with Virtual Threads — "scaled out because platform threads ran out" is a
 Sources: GCP e2/n2-standard-4 pricing pages, CloudZero Compute Engine Pricing Guide (2026).
 
 ---
-
-## 🔴 Live Poll
-
-### Which of these free, opt-in wins are you actually using today?
-
-Multi-select — pick all that apply
-
-https://presenter.ahaslides.com/presentation/10026566
-
-:notes:
-Switch to AhaSlides slide 3 (multi-select poll). Options (9): Non-default GC (ZGC / Shenandoah / G1 NUMA, grouped into one) · AppCDS/Dynamic CDS · AOT cache · Compact Object Headers pre-27 · Virtual Threads · Vector API · Compact Strings (on by default since 9) · Running on ARM (AArch64 intrinsics) · None of the above.
-The likely result (mostly "none of the above") IS the closing punchline — the money is already sitting there, unclaimed.
-
---
 
 ## Closing Argument
 
