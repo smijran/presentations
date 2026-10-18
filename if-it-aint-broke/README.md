@@ -10,7 +10,7 @@ From there, we trace a decade of JVM evolution: from G1 to ZGC and Shenandoah, J
 
 The case is simple: staying on an old Java version isn't caution. It's a tax.
 
-**AhaSlides:** [Interlude polls](https://presenter.ahaslides.com/presentation/10026566) — the three live interludes below (Java version survey, support True/False, closing "which wins are you using" poll).
+**AhaSlides:** [Interlude polls](https://presenter.ahaslides.com/presentation/10026566) — the two live interludes below (Java version survey, support True/False). The closing "which wins are you using" poll was removed.
 
 ---
 
@@ -385,7 +385,7 @@ Lead with **Virtual Threads** — "scaled out because platform threads ran out" 
 
 *Sources: [e2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/e2-standard-4/), [n2-standard-4 pricing](https://www.economize.cloud/resources/gcp/pricing/compute-engine/n2-standard-4/), [Google Cloud Compute Engine Pricing Guide (2026)](https://www.cloudzero.com/blog/google-cloud-compute-engine-pricing-guide/)*
 
-> **Interlude — AhaSlides:** Poll slide, "Allow multiple answers" enabled — "Which of these free, opt-in wins are you actually using today?"
+> **PARKED — removed from the live AhaSlides presentation** (the closing "which wins are you using" poll, options list kept below for reference in case it comes back):
 > 1. Non-default GC (ZGC / Shenandoah / G1 NUMA — grouped into one option)
 > 2. AppCDS / Dynamic CDS archives (`-XX:SharedArchiveFile`)
 > 3. AOT cache — training run + `-XX:AOTMode=record`/`use`
@@ -395,8 +395,6 @@ Lead with **Virtual Threads** — "scaled out because platform threads ran out" 
 > 7. Compact Strings (JEP 254 — on by default since Java 9, so most of the room is already using it)
 > 8. Running on ARM: Graviton / Apple Silicon (AArch64 intrinsics, JEP 315)
 > 9. None of the above
->
-> All eight are things covered in this talk, all free, and all but Compact Strings are opt-in (Compact Strings, and arguably ARM, are deliberate "you're already getting it" options). The likely result (mostly "none of the above") *is* the closing punchline: the money is already sitting there, unclaimed.
 
 - Every release since Java 8 is free performance — you just have to show up
 - The upgrade path is manageable: `--release`, multi-release JARs, incremental rollout
