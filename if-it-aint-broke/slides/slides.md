@@ -966,7 +966,46 @@ Sources: GCP e2/n2-standard-4 pricing pages, CloudZero Compute Engine Pricing Gu
 
 It's a compounding tax.
 
+---
+
+## Why Nobody Upgrades
+
+- Java 8 still runs **29%** of production apps (New Relic, 2024) — more than six years after Java 11 shipped
+- JetBrains' 2025 developer survey: Java 8 at **31%** usage — behind only Java 21 (40%) and 17 (39%)
+- "It works, don't touch it" isn't a vibe. It's the industry median.
+
+:notes:
+Sources: New Relic "State of the Java Ecosystem" 2024 report (35% on 17, 33% on 11, 29% on 8 — Java 21 only 1.4% six months post-release, vs. 0.37% for 17 at the same point post-release, so adoption is actually accelerating release to release). JetBrains State of Developer Ecosystem 2025 survey (developer-reported usage, not production telemetry, so a different methodology — included because it's the freshest available number and points the same direction).
+
 --
+
+## The Wall: Java 8 → 11
+
+Three things landed together and broke real apps:
+
+- **JPMS:** reflective access to JDK internals now throws `InaccessibleObjectException` instead of silently working
+- **Java EE ripped out (JEP 320):** JAXB, JAX-WS, CORBA, Activation — gone from the JDK, must be added back as external dependencies
+- **Split packages:** two JARs defining the same package now fail at startup (`LayerInstantiationException`)
+
+**Second, smaller wall:** Java 17 (JEP 403) enforced `--illegal-access=deny` by default — the `--add-opens` workarounds that worked since 9 stopped being enough.
+
+:notes:
+JAXB fix in practice: add org.glassfish.jaxb:jaxb-runtime as an external dependency — the xjc/schemagen codegen tools also disappeared from the JDK and need a separate download. This is the single most-cited migration blocker across every source checked, and it's the direct reason Java 8 stayed so sticky — 9/10/11 weren't a recompile, they were real remediation work.
+
+--
+
+## Available Solutions
+
+- **Never skip straight to current** — go LTS-to-LTS (8→11→17→21→25), testing at each stop
+- **`jdeps --jdk-internals`** first — turns runtime surprises into a known list before you start
+- **OpenRewrite** (`rewrite-migrate-java`) — automates the mechanical part: deprecated APIs, build-file updates, `javax`→`jakarta`
+- **`--release`, not `-source`/`-target`** — the only flag that also constrains the API surface
+- **Canary rollout** after each version bump, not one big-bang cutover
+
+:notes:
+OpenRewrite's own recipe set is structured exactly this way — composite recipes per LTS version, each building on the previous one. It doesn't cover third-party libraries with no Jakarta variant; those stay manual. jdeps --jdk-internals is built into the JDK already — no extra install.
+
+---
 
 ## Thank You
 
