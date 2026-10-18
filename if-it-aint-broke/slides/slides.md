@@ -1,3 +1,29 @@
+## 🔴 Live Poll
+
+### Which Java version do you run in production?
+
+https://presenter.ahaslides.com/presentation/10026566
+
+:notes:
+That's the presenter link — switch to it live (do not embed as an iframe: it requires login and isn't the audience join view). AhaSlides displays the audience join code/QR automatically once you start presenting there; it's generated per live session, so there's nothing to pre-print here.
+Consider keeping this poll cumulative across every run of this talk to build a running dataset.
+Options shown to the audience (multi-select — many shops run several versions, so pick all that apply; 11 bucketed options): 8 · 9–10 · 11 (LTS) · 12–16 · 17 (LTS) · 18–20 · 21 (LTS) · 22–24 · 25 (LTS) · 26–27 · Not on Java / other.
+
+---
+
+## 🔴 Live Poll
+
+### True or False
+
+"My organization pays for Java support"
+
+https://presenter.ahaslides.com/presentation/10026566
+
+:notes:
+Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False" or "I don't know" — that's the setup for the next section.
+
+---
+
 # If It Ain't Broke
 ## The Hidden Cost of Your Java Comfort Zone
 
@@ -24,32 +50,6 @@
 **Piotr Przybył & 🍷**
 
 ---
-
-## 🔴 Live Poll
-
-### Which Java version do you run in production?
-
-https://presenter.ahaslides.com/presentation/10026566
-
-:notes:
-That's the presenter link — switch to it live (do not embed as an iframe: it requires login and isn't the audience join view). AhaSlides displays the audience join code/QR automatically once you start presenting there; it's generated per live session, so there's nothing to pre-print here.
-Consider keeping this poll cumulative across every run of this talk to build a running dataset.
-Options shown to the audience (multi-select — many shops run several versions, so pick all that apply; 11 bucketed options): 8 · 9–10 · 11 (LTS) · 12–16 · 17 (LTS) · 18–20 · 21 (LTS) · 22–24 · 25 (LTS) · 26–27 · Not on Java / other.
-
----
-
-## 🔴 Live Poll
-
-### True or False
-
-"My organization pays for Java support"
-
-https://presenter.ahaslides.com/presentation/10026566
-
-:notes:
-Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False" or "I don't know" — that's the setup for the next section.
-
---
 
 <img src="https://i.ytimg.com/vi/z8lPDku-55s/maxresdefault.jpg" />
 
