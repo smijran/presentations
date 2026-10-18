@@ -1,3 +1,12 @@
+# If It Ain't Broke
+## The Hidden Cost of Your Java Comfort Zone
+
+<img src="img/jdd-logo.svg" style="height: 90px; margin-top: 20px;" />
+
+### 24th September 2026
+
+---
+
 ## 🔴 Live Poll
 
 ### Which Java version do you run in production?
@@ -21,6 +30,10 @@ https://presenter.ahaslides.com/presentation/10026566
 
 :notes:
 Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False" or "I don't know" — that's the setup for the next section.
+
+---
+
+<img src="https://i.ytimg.com/vi/z8lPDku-55s/maxresdefault.jpg" />
 
 ---
 
@@ -50,10 +63,6 @@ Switch to AhaSlides slide 2 (True/False poll). Most rooms land heavily on "False
 **Piotr Przybył & 🍷**
 
 ---
-
-<img src="https://i.ytimg.com/vi/z8lPDku-55s/maxresdefault.jpg" />
-
---
 
 ## What Paying Actually Buys You
 
