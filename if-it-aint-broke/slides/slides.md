@@ -465,11 +465,9 @@ A toy app first only showed 1.4% - too few classes to matter. Adding a real depe
 
 ## Garbage Collection
 
-G1 · ZGC · Shenandoah - one decade, three very different answers to the same problem.
-
 --
 
-## What Came Before
+## What Came Before Java 8
 
 - **Serial GC:** single-threaded, fully stop-the-world. Fine for tiny heaps, hopeless at scale.
 - **Parallel GC:** multi-threaded, but still fully stop-the-world - optimized for throughput, not latency. Java 8's default.
@@ -1119,4 +1117,10 @@ Everything below, for later - JEPs, further reading, and where the $ numbers cam
 --
 
 ## Q&A
+
+--
+
+## Survey
+
+<img src="img/survey-qr.png" style="height: 420px;" />
 
