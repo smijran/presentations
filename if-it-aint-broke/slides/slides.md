@@ -771,18 +771,6 @@ Identical bytecode (`--release 21`), each virtual thread `synchronized` on its o
 | Java 21 (pre-491) | 6,419 ms |
 | Java 24 (post-491) | 214 ms |
 
---
-
-<!-- .slide: data-visibility="hidden" -->
-
-## Locking
-*Reduce monitor overhead - from acquisition to edge cases*
-
-- JEP 143 - Improve Contended Locking (Java 9)
-- JEP 285 - Spin-Wait Hints (Java 9)
-- JEP 270 - Reserved Stack Areas (Java 9)
-- JEP 374 - Deprecate & disable Biased Locking (Java 15)
-
 ---
 
 ## Vector & CPU Intrinsics
@@ -892,7 +880,7 @@ JEP 401 introduces the `value` modifier for declaring these classes (preview). J
 
 **Gains:** leaner standard library, zero app code changes for platform types.
 
-**Conditions:** opt-in only (`value` modifier + `--enable-preview`). Brian Goetz: "optimistic" to expect this out of preview even by JDK 29. Budget 12-18 months of evaluation.
+**Conditions:** opt-in only (`value` modifier + `--enable-preview`). Brian Goetz: "optimistic" to expect this out of preview even by JDK 29. 
 
 This is also **why Vector API is still incubating** - Valhalla ships first, then Vector API stabilizes on top of it.
 
@@ -904,14 +892,6 @@ This is also **why Vector API is still incubating** - Valhalla ships first, then
 - JEP 312 - Thread-Local Handshakes (Java 10)
 - JEP 315 - AArch64 Intrinsics (Java 11)
 - JEP 416 - Reflection via Method Handles (Java 18)
-
---
-
-## Other JIT/Runtime - Gains & Conditions
-
-**Gains:** thread-local handshakes cut latency for profiling/deopt ops. Segmented code cache reduces JIT overhead under load. AArch64 intrinsics matter for ARM (Graviton, Apple Silicon). Reflection speedup shows up most in Spring/Hibernate-style frameworks.
-
-**Conditions:** AArch64 gains only on ARM hardware.
 
 ---
 
@@ -935,31 +915,17 @@ Baseline: 100 × GCP `n2-standard-4` ≈ **$13,870/month** ($166,440/year)
 | Virtual Threads | 45.2x (pool-bound) | ~50-75 machines |
 | GC (ZGC/Shenandoah vs G1) | ~80% lower max pause | ~15-30 machines (headroom) |
 
-**Not additive** - different workload slices, not stackable.
-
 --
 
 ## Cost Impact - The honest number
 
-A blended, non-double-counted estimate:
+A blended estimate:
 
 **~25-40 machines reclaimed → ~$3,500-$5,500/month, ~$42,000-$66,000/year**
-
-Zero new hardware. Zero app rewrites for four of the five.
 
 :notes:
 Lead with Virtual Threads - "scaled out because platform threads ran out" is an extremely common real pattern, the most defensible headline number. Vector API and Compact Strings are workload-specific - say so explicitly, don't let 4.53x/45x get quoted as a general fleet number. GC and Compact Object Headers are the softest claims (reclaimed headroom / literature estimate, not demo-measured) - flag both as assumptions, not facts.
 Sources: GCP e2/n2-standard-4 pricing pages, CloudZero Compute Engine Pricing Guide (2026).
-
----
-
-## Closing Argument
-
-- Every release since Java 8 is **free performance** - you just have to show up
-- The upgrade path is manageable: `--release`, multi-release JARs, incremental rollout
-- Staying behind isn't conservative.
-
-It's a compounding tax.
 
 ---
 
@@ -1006,6 +972,16 @@ OpenRewrite's own recipe set is structured exactly this way - composite recipes 
 
 ---
 
+## Closing Argument
+
+- Every release since Java 8 is **free performance** - you just have to show up
+- The upgrade path is manageable: `--release`, multi-release JARs, incremental rollout
+- Staying behind isn't conservative.
+
+It's a compounding tax.
+
+---
+
 ## Thank You
 
 **Konrad Szałkowski**
@@ -1015,6 +991,17 @@ Principal Software Engineer @ Egnyte · Poznań JUG leader
 <img src="img/github-qr.png" style="height: 260px;" />
 
 Slides, demos & sources: github.com/smijran
+
+
+--
+
+## Q&A
+
+--
+
+## Survey
+
+<img src="img/survey-qr.png" style="height: 420px;" />
 
 ---
 
@@ -1115,13 +1102,4 @@ Everything below, for later - JEPs, further reading, and where the $ numbers cam
 
 **Project Lilliput:** https://wiki.openjdk.org/display/lilliput/Main
 
---
-
-## Q&A
-
---
-
-## Survey
-
-<img src="img/survey-qr.png" style="height: 420px;" />
 
