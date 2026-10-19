@@ -328,6 +328,10 @@ Most real-world text is pure ASCII/Latin-1, which only needs 1 byte per char. Ha
 cd code/compact-strings
 gradle runWithCompactStrings
 gradle runWithoutCompactStrings
+
+# underlying java invocation:
+java -Xms3g -Xmx3g -XX:+CompactStrings strings.compaction.App
+java -Xms3g -Xmx3g -XX:-CompactStrings strings.compaction.App
 ```
 
 5,000,000 ASCII strings, 40 chars each - one flag changes.
@@ -380,6 +384,9 @@ For apps with millions of small objects (caches, DTOs, linked structures), that 
 cd ../project_liliput/code
 ./gradlew runWithLilliput
 ./gradlew runWithoutLilliput
+
+# underlying java invocation:
+java -XX:+UseCompactObjectHeaders project.liliput.App
 ```
 
 `-XX:+UseCompactObjectHeaders` toggled over a large object population.
@@ -448,6 +455,11 @@ CDS does that work once, dumps the result into an archive file, and every later 
 ```
 cd code/cds-demo
 ./compare-cds.sh 8
+
+# underlying java invocation:
+java -XX:ArchiveClassesAtExit=cds-demo.jsa cds.demo.App   # capture
+java -Xshare:off cds.demo.App                              # baseline
+java -XX:SharedArchiveFile=cds-demo.jsa cds.demo.App        # with CDS
 ```
 
 8 concurrent JVM instances, real Jackson dependency for a realistic class graph, PSS measured from `/proc/<pid>/smaps_rollup`.
@@ -488,20 +500,6 @@ A toy app first only showed 1.4% - too few classes to matter. Adding a real depe
 :notes:
 This deck's own demos target Java 26 (the day before this fact changed) - on very small heaps/single-core environments pre-27, JVM ergonomics could still pick Serial GC instead of G1 by default. JEP 523 closes that last exception. Worth saying live since it's one day old at time of writing - genuinely current news, not something read off a slide from months ago.
 
---
-
-## What's Actually Happening in the Demo
-
-A single 1GB-heap JVM runs two things at once - a rough mockup of a real backend server under load:
-
-- **Background thread:** continuous garbage churn (512B-8KB throwaway allocations) *plus* a slowly growing 300MB retained set - caches, connection pools, buffers that never get freed
-- **Main thread:** simulates incoming requests every 200µs (a small CPU-bound loop), timing each one
-
-Every pause the collector causes shows up directly as request latency - exactly what a GC pause looks like from inside a live service. All three collectors below run against this exact same workload.
-
-:notes:
-Reports p50/p99/p99.9/max, not averages - averages bury the rare large pauses that stop-the-world collections cause. This is deliberately adversarial: real services do carry both a large retained working set and continuous request traffic, so a collector's pause behavior becomes user-facing latency directly.
-
 ---
 
 ## G1 GC
@@ -524,14 +522,6 @@ It collects the garbage-heaviest regions first - "Garbage First" - evacuating li
 
 --
 
-## G1 GC - What Changed
-
-JEP 248 (Java 9) made G1 default. JEP 307 (Java 10) parallelized the full-GC fallback path. JEP 344 / 346 (Java 12) made mixed collections abortable and returned unused committed memory to the OS promptly.
-
-JEP 345 (Java 14) added NUMA-aware allocation. JEP 423 (Java 22) added region pinning, so JNI critical sections no longer force a full stop-the-world pause. JEP 475 (Java 24) shrank the compiler-generated barrier code around every reference write.
-
---
-
 ## G1 vs. the Old Ones
 
 - **vs. Parallel:** G1 also marks concurrently, so most of the work doesn't stop the app.
@@ -542,35 +532,9 @@ JEP 345 (Java 14) added NUMA-aware allocation. JEP 423 (Java 22) added region pi
 
 ## G1 GC - Where It Thrives
 
-**Thrives when:** general-purpose services with no strict sub-ms latency requirement - multi-socket hardware and frequent JNI calls sharpen the win further.
+**Thrives when:** general-purpose services with no strict sub-ms latency requirement - multi-socket hardware (NUMA) and frequent JNI calls sharpen the win further.
 
-**Gains:** better pause-time predictability, proactive memory return, NUMA-aware throughput on multi-socket servers, JNI-pinning stalls eliminated.
-
-**Conditions:** NUMA gains only on multi-socket hardware. JNI pinning fix only matters with frequent native calls.
-
---
-
-## G1 GC - Demo
-
-```
-cd code/gc-comparison
-gradle runG1        # baseline
-gradle runG1Numa    # + -XX:+UseNUMA
-```
-
---
-
-## What Is NUMA?
-
-**N**on-**U**niform **M**emory **A**ccess - multi-socket servers where each CPU has its own local bank of memory.
-
-- Local memory access: fast
-- Reaching another socket's memory: slower - crosses an interconnect
-
-NUMA-aware allocation keeps a thread's memory on its own socket. G1 added this in JEP 345 (Java 14).
-
-:notes:
-Only matters on multi-socket hardware - a single-socket dev laptop or small cloud VM has one memory bank, so there's no "remote" memory to avoid. Fallback if the live run misbehaves: on this (single-socket) dev machine, runG1 and runG1Numa reported near-identical max latency (~1.8-2.0ms) - exactly this caveat, live and unforced.
+**Gains:** better pause-time predictability vs old-ones, proactive memory return, NUMA-aware throughput on multi-socket servers, JNI-pinning stalls eliminated.
 
 ---
 
@@ -613,19 +577,41 @@ Both avoid stop-the-world relocation entirely - the app keeps running while obje
 
 **Both thrive in the same situation:** latency-sensitive services with a hard p99 SLA, where a single slow GC pause hurts more than some extra memory/CPU overhead - especially on large heaps, where G1's pause times scale with live-set size and these two don't.
 
-**Verified:** G1 `max` ≈ **2.0ms** vs ZGC `max` ≈ **0.37ms** vs Shenandoah `max` ≈ **0.42ms** - same workload, same heap. Both comparable, both well under G1.
-
 **The Oracle JDK split:** ZGC ships everywhere, including Oracle JDK. Shenandoah is Red Hat-led and excluded from Oracle JDK - pick it only if you're already on (or can move to) Temurin/Red Hat builds.
+
+
+---
+
+# GC DEMO
 
 --
 
-## ZGC & Shenandoah - Demo
+## What's Actually Happening in the Demo
+
+A single 1GB-heap JVM runs two things at once - a rough mockup of a real backend server under load:
+
+- **Background thread:** continuous garbage churn (512B-8KB throwaway allocations) *plus* a slowly growing 300MB retained set - caches, connection pools, buffers that never get freed
+- **Main thread:** simulates incoming requests every 200µs (a small CPU-bound loop), timing each one
+
+Every pause the collector causes shows up directly as request latency - exactly what a GC pause looks like from inside a live service. All three collectors below run against this exact same workload.
+
+:notes:
+Reports p50/p99/p99.9/max, not averages - averages bury the rare large pauses that stop-the-world collections cause. This is deliberately adversarial: real services do carry both a large retained working set and continuous request traffic, so a collector's pause behavior becomes user-facing latency directly.
+
+--
+
+## GC - Demo
 
 ```
 cd code/gc-comparison
 gradle runG1
 gradle runZGC
 gradle runShenandoah   # needs a non-Oracle JDK build!
+
+# underlying java invocation:
+java -Xms1g -Xmx1g -XX:+UseG1GC gc.comparison.App
+java -Xms1g -Xmx1g -XX:+UseZGC gc.comparison.App
+java -Xms1g -Xmx1g -XX:+UseShenandoahGC gc.comparison.App
 ```
 
 :notes:
@@ -686,6 +672,11 @@ AOT tries to skip (or front-load) that process by recording what a prior "traini
 ```
 cd code/aot-demo
 ./compare-aot.sh 10
+
+# underlying java invocation:
+java aot.demo.App                              # cold baseline
+java -XX:AOTCacheOutput=app.aot aot.demo.App   # train + create cache
+java -XX:AOTCache=app.aot aot.demo.App         # run with cache
 ```
 
 JDK-builtin `HttpServer`/`HttpClient`, one-step `-XX:AOTCacheOutput` / `-XX:AOTCache`.
@@ -751,6 +742,9 @@ JEP 491 (Java 24) - fixed `synchronized`-block pinning, so a virtual thread can 
 ```
 cd code/virtual-threads-demo
 gradle runThroughput
+
+# underlying java invocation - no special flags, that's the point:
+java virtual.threads.demo.ThroughputApp
 ```
 
 50,000 blocking tasks × 50ms - fixed platform pool (200 threads) vs. one virtual thread per task.
@@ -764,6 +758,10 @@ gradle runThroughput
 ```
 gradle runPinningPre491    # Java 21
 gradle runPinningPost491   # Java 24
+
+# underlying java invocation - identical bytecode, only the JDK binary changes:
+~/temurin/21/bin/java virtual.threads.demo.PinningApp
+~/temurin/24/bin/java virtual.threads.demo.PinningApp
 ```
 
 Identical bytecode (`--release 21`), each virtual thread `synchronized` on its own private lock.
@@ -831,6 +829,9 @@ Not stable - can't ship in a library.
 ```
 cd code/vector-api-demo
 gradle run
+
+# underlying java invocation:
+java --add-modules jdk.incubator.vector -Xms1g -Xmx2g vector.demo.App
 ```
 
 Dot product of two large `float[]` arrays - scalar loop vs. `jdk.incubator.vector` with `fma`.
