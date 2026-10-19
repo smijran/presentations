@@ -84,9 +84,11 @@ Red Hat's and Azul's free OpenJDK builds are fully open source, unrestricted for
 
 None of this buys you **performance**.
 
-ZGC, Virtual Threads, Compact Strings - all free, in every distribution, regardless of support tier.
+ZGC, Virtual Threads, Compact Strings - all free, in every distribution.
 
-Paying gets you patched and covered. Staying current gets you fast - for free.
+Paying gets you patched and covered. 
+
+Staying current gets you fast - for free.
 
 ---
 
@@ -142,10 +144,11 @@ Sourced: Tom's Hardware's RAM price tracking (Sept 2026 update - basic 32GB DDR5
 
 - **Server DDR5 RDIMM** (what's actually in your cloud provider's racks): projected to **double** by end of 2026 vs. early 2025
 - **Laptop makers** (Lenovo, Dell, HP, Acer, ASUS) have confirmed **15-20%** price increases; **up to 30%** on high-end models
+- **SSDs too:** enterprise SSD contract prices up **~80%** in Q1 2026 alone - and still accelerating into Q4 2026, not cooling off
 - Same hardware class behind every $/machine number later in this talk
 
 :notes:
-Server RDIMM doubling: Network World, citing TrendForce/Counterpoint research - DRAM contract prices up 55-60% in Q1 2026 vs Q4 2025 alone, on top of a ~50% year-to-date rise already booked by late 2025. Laptop price increases: Consumer Reports / BGR / Tom's Guide, all citing the same manufacturers directly. Root cause is identical to the RAM chart on the previous slide: AI compute buildout diverting memory fab capacity away from everything else.
+Server RDIMM doubling: Network World, citing TrendForce/Counterpoint research - DRAM contract prices up 55-60% in Q1 2026 vs Q4 2025 alone, on top of a ~50% year-to-date rise already booked by late 2025. Laptop price increases: Consumer Reports / BGR / Tom's Guide, all citing the same manufacturers directly. SSD/NAND: TrendForce direct - enterprise SSD contract prices +80% in Q1 2026; TrendForce's own Q4 2026 outlook (30 Sept 2026 release) projects overall NAND Flash contract prices +15-20% QoQ, with enterprise SSD "the only product category to see a larger increase than the previous quarter" - i.e. this is still getting worse, not stabilizing. Same root cause as RAM: fabs prioritizing high-margin AI/enterprise capacity (HBM, enterprise SSD) over consumer-grade production - one analysis expects no meaningful new NAND capacity before 2027.
 
 ---
 
