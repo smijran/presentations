@@ -920,7 +920,7 @@ Baseline: 100 × GCP `n2-standard-4` ≈ **$13,870/month** ($166,440/year)
 
 --
 
-## Cost Impact - The honest number
+## Cost Impact
 
 A blended estimate:
 
@@ -934,9 +934,10 @@ Sources: GCP e2/n2-standard-4 pricing pages, CloudZero Compute Engine Pricing Gu
 
 ## Why Nobody Upgrades
 
-- Java 8 still runs **29%** of production apps (New Relic, 2024) - more than six years after Java 11 shipped
+- Java 8 still runs **29%** of production apps (New Relic, 2024) 
 - JetBrains' 2025 developer survey: Java 8 at **31%** usage - behind only Java 21 (40%) and 17 (39%)
 - "It works, don't touch it" it is a fact.
+- People hear stories about "THE MIGRATIONS"
 
 :notes:
 Sources: New Relic "State of the Java Ecosystem" 2024 report (35% on 17, 33% on 11, 29% on 8 - Java 21 only 1.4% six months post-release, vs. 0.37% for 17 at the same point post-release, so adoption is actually accelerating release to release). JetBrains State of Developer Ecosystem 2025 survey (developer-reported usage, not production telemetry, so a different methodology - included because it's the freshest available number and points the same direction).
@@ -960,6 +961,8 @@ JEP 403 enforced `--illegal-access=deny` by default.
 
 The `--add-opens` workarounds that worked since Java 9 stopped being enough - code quietly suppressing warnings for years finally had to fix the reflection for real.
 
+A lot of libraries broke because of this - old Mockito/PowerMock, bytecode tools like ASM/cglib, custom serializers.
+
 --
 
 ## Available Solutions
@@ -979,6 +982,7 @@ OpenRewrite's own recipe set is structured exactly this way - composite recipes 
 
 - Every release since Java 8 is **free performance** - you just have to show up
 - The upgrade path is manageable: `--release`, multi-release JARs, incremental rollout
+- Tons of sources on the internet
 - Staying behind isn't conservative.
 
 It's a compounding tax.
