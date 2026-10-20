@@ -3,7 +3,7 @@
 
 <img src="img/jdd-logo.svg" style="height: 90px; margin-top: 20px;" />
 
-### 24th September 2026
+### 20th October 2026
 
 ---
 
@@ -95,7 +95,9 @@ Staying current gets you fast - for free.
 ## The Comfort Zone Trap
 
 - "It works, don't touch it"
+- It is "supported" version
 - Version decisions get made by *not* deciding
+- Software developers just want new syntax
 - Real cost: CPU time, memory bills, missed concurrency gains
 
 --
@@ -399,85 +401,6 @@ On Java 27+, add a third run with no flags at all to show the same reduction now
 
 ---
 
-## Class Data Sharing
-*Pre-load class metadata once, share it across JVM instances*
-
-- JEP 310 - Application CDS (Java 10)
-- JEP 341 - Default CDS Archives (Java 12)
-- JEP 350 - Dynamic CDS Archives (Java 13)
-
---
-
-## Class Data Sharing - What's the Idea
-
-Every JVM startup re-parses, re-verifies, and re-loads the same core class metadata from scratch - work that's identical across every instance of the same app.
-
-CDS does that work once, dumps the result into an archive file, and every later JVM start just memory-maps it back in instead of redoing it.
-
---
-
-## Class Data Sharing - What Changed
-
-**JEP 310 (Application CDS):** manual 2-step.
-
-```
-# build: dump an archive from a class list
--Xshare:dump -XX:SharedClassListFile=<list>
-             -XX:SharedArchiveFile=<archive>.jsa
-
-# use: run against that archive
--XX:SharedArchiveFile=<archive>.jsa
-```
-
-**JEP 341 (Default CDS Archives):** a base JDK-classes archive, on automatically.
-
-```
--Xshare:auto   # the default
--Xshare:off    # disables it
-```
-
-**JEP 350 (Dynamic CDS Archives):** one flag to capture, then run with it. This is what the demo uses.
-
-```
--XX:ArchiveClassesAtExit=<archive>.jsa   # capture
--XX:SharedArchiveFile=<archive>.jsa      # use
-```
-
---
-
-## CDS - Gains & Conditions
-
-**Gains:** faster startup, lower memory across multiple JVM instances of the same app sharing one archive.
-
-**Conditions:** it's an **OS page-cache sharing effect between processes on the same host** - not inherently a Kubernetes feature. Only holds for same-node co-location sharing the archive file, never across nodes.
-
---
-
-## CDS - Demo
-
-```
-cd code/cds-demo
-./compare-cds.sh 8
-
-# underlying java invocation:
-java -XX:ArchiveClassesAtExit=cds-demo.jsa cds.demo.App   # capture
-java -Xshare:off cds.demo.App                              # baseline
-java -XX:SharedArchiveFile=cds-demo.jsa cds.demo.App        # with CDS
-```
-
-8 concurrent JVM instances, real Jackson dependency for a realistic class graph, PSS measured from `/proc/<pid>/smaps_rollup`.
-
-| | Total PSS (8 instances) | Startup |
-|---|---|---|
-| Without CDS | 459.2 MB | 434.1 ms |
-| With Dynamic CDS | 358.5 MB | 234.2 ms |
-| **Delta** | **−21.9%** | **1.85x faster** |
-
-:notes:
-A toy app first only showed 1.4% - too few classes to matter. Adding a real dependency is what made the effect real. Worth explaining if asked.
-
----
-
 ## Garbage Collection
 
 --
@@ -619,6 +542,85 @@ java -Xms1g -Xmx1g -XX:+UseShenandoahGC gc.comparison.App
 
 :notes:
 Shenandoah needs a Red Hat build of OpenJDK, Eclipse Temurin, etc. - not available in Oracle JDK. Worth calling out live: "notice I had to switch JDK vendors for this one" - a lived-in example of the vendor fragmentation from the earlier section.
+
+---
+
+## Class Data Sharing
+*Pre-load class metadata once, share it across JVM instances*
+
+- JEP 310 - Application CDS (Java 10)
+- JEP 341 - Default CDS Archives (Java 12)
+- JEP 350 - Dynamic CDS Archives (Java 13)
+
+--
+
+## Class Data Sharing - What's the Idea
+
+Every JVM startup re-parses, re-verifies, and re-loads the same core class metadata from scratch - work that's identical across every instance of the same app.
+
+CDS does that work once, dumps the result into an archive file, and every later JVM start just memory-maps it back in instead of redoing it.
+
+--
+
+## Class Data Sharing - What Changed
+
+**JEP 310 (Application CDS):** manual 2-step.
+
+```
+# build: dump an archive from a class list
+-Xshare:dump -XX:SharedClassListFile=<list>
+             -XX:SharedArchiveFile=<archive>.jsa
+
+# use: run against that archive
+-XX:SharedArchiveFile=<archive>.jsa
+```
+
+**JEP 341 (Default CDS Archives):** a base JDK-classes archive, on automatically.
+
+```
+-Xshare:auto   # the default
+-Xshare:off    # disables it
+```
+
+**JEP 350 (Dynamic CDS Archives):** one flag to capture, then run with it. This is what the demo uses.
+
+```
+-XX:ArchiveClassesAtExit=<archive>.jsa   # capture
+-XX:SharedArchiveFile=<archive>.jsa      # use
+```
+
+--
+
+## CDS - Gains & Conditions
+
+**Gains:** faster startup, lower memory across multiple JVM instances of the same app sharing one archive.
+
+**Conditions:** it's an **OS page-cache sharing effect between processes on the same host** - not inherently a Kubernetes feature. Only holds for same-node co-location sharing the archive file, never across nodes.
+
+--
+
+## CDS - Demo
+
+```
+cd code/cds-demo
+./compare-cds.sh 8
+
+# underlying java invocation:
+java -XX:ArchiveClassesAtExit=cds-demo.jsa cds.demo.App   # capture
+java -Xshare:off cds.demo.App                              # baseline
+java -XX:SharedArchiveFile=cds-demo.jsa cds.demo.App        # with CDS
+```
+
+8 concurrent JVM instances, real Jackson dependency for a realistic class graph, PSS measured from `/proc/<pid>/smaps_rollup`.
+
+| | Total PSS (8 instances) | Startup |
+|---|---|---|
+| Without CDS | 459.2 MB | 434.1 ms |
+| With Dynamic CDS | 358.5 MB | 234.2 ms |
+| **Delta** | **−21.9%** | **1.85x faster** |
+
+:notes:
+A toy app first only showed 1.4% - too few classes to matter. Adding a real dependency is what made the effect real. Worth explaining if asked.
 
 ---
 
@@ -982,7 +984,7 @@ OpenRewrite's own recipe set is structured exactly this way - composite recipes 
 
 - Every release since Java 8 is **free performance** - you just have to show up
 - The upgrade path is manageable: `--release`, multi-release JARs, incremental rollout
-- Tons of sources on the internet
+- Tons of sources on the internet → put AI to work
 - Staying behind isn't conservative.
 
 It's a compounding tax.
